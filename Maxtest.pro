@@ -20,4 +20,4 @@ HEADERS  += maxtest.h
 FORMS    += maxtest.ui
 
 DISTFILES += \
-    muse.doc
+    muse.zip
