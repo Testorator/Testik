@@ -15,6 +15,9 @@ public:
     explicit Maxtest(QWidget *parent = 0);
     ~Maxtest();
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::Maxtest *ui;
 };
