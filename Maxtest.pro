@@ -18,3 +18,6 @@ SOURCES += main.cpp\
 HEADERS  += maxtest.h
 
 FORMS    += maxtest.ui
+
+DISTFILES += \
+    muse.doc
