@@ -17,7 +17,22 @@ SOURCES += main.cpp\
 
 HEADERS  += maxtest.h
 
-FORMS    += maxtest.ui
+FORMS    += maxtest.ui \
+    begin.ui \
+    begin-dialog.ui \
+    second.ui \
+    third-study.ui \
+    third-test.ui \
+    test-studies-help.ui \
+    test-studies-one.ui \
+    test-one.ui \
+    test-many.ui \
+    test-word.ui \
+    test-studies-many.ui \
+    test-studies-word.ui \
+    testendquestion.ui \
+    results.ui \
+    result-studies.ui
 
 DISTFILES += \
     muse.zip

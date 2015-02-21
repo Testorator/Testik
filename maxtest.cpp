@@ -21,10 +21,13 @@ Maxtest::~Maxtest()
 void Maxtest::on_pushButton_clicked()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QIBASE");
+   // db.setHostName("localhost");
+    db.setDatabaseName("/Users/maksimserbakov/Documents/work/Test/Maxtest/data/BLANK.QLT");
 
-    db.setDatabaseName("d:\test.qfb");
- //   db.setUserName("SYSDBA");
- //   db.setPassword("masterkey");
+
+
+ // db.setUserName("USER");
+  //db.setPassword("user");
     db.open();
     QMessageBox::critical(this,"ERROR",db.lastError().text());
 }
