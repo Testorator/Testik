@@ -13,9 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        maxtest.cpp
+        maxtest.cpp \
+    test_results.cpp
 
-HEADERS  += maxtest.h
+HEADERS  += maxtest.h \
+    test_results.h
 
 FORMS    += maxtest.ui \
     begin.ui \
@@ -31,8 +33,7 @@ FORMS    += maxtest.ui \
     test-studies-many.ui \
     test-studies-word.ui \
     testendquestion.ui \
-    results.ui \
-    result-studies.ui
+    test_results.ui
 
 DISTFILES += \
     muse.zip
