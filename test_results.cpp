@@ -34,29 +34,29 @@ test_results::~test_results()
 void test_results::on_pushButton_SaveOrReturn_clicked()
 {
      if(curResType == this->Learn){
-         QMessageBox::information(this,"The return function is under construction");
+         QMessageBox::information(this,"INFO","The return function is under construction");
      }
      else{
-         QMessageBox::information(this,"The function of saving results is under construction");
+         QMessageBox::information(this,"INFO","The function of saving results is under construction");
      }
 }
 //
 void test_results::on_pushButton_MailOrRetry_clicked()
 {
     if(curResType == this->Learn){
-        QMessageBox::information(this,"The function of re-test is under construction");
+        QMessageBox::information(this,"INFO","The function of re-test is under construction");
     }
     else{
-        QMessageBox::information(this,"The function of sending results by e-mail, is under construction");
+        QMessageBox::information(this,"INFO","The function of sending results by e-mail, is under construction");
     }
 }
 //
 void test_results::on_pushButton_RetryOrStartTest_clicked()
 {
     if(curResType == this->Learn){
-        QMessageBox::information(this,"The function of start testing, is under construction");
+        QMessageBox::information(this,"INFO","The function of start testing, is under construction");
     }
     else{
-        QMessageBox::information(this,"The function of re-test is under construction");
+        QMessageBox::information(this,"INFO","The function of re-test is under construction");
     }
 }

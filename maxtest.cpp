@@ -30,5 +30,7 @@ void Maxtest::on_pushButton_clicked()
  // db.setUserName("USER");
   //db.setPassword("user");
     db.open();
-    QMessageBox::critical(this,"ERROR",db.lastError().text());
+    qDebug() << "db is open: " << db.isOpen();
+    qDebug() << "db last error: " << db.lastError().text();
+
 }

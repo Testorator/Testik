@@ -13,9 +13,10 @@ class test_results : public QWidget
     Q_ENUMS(resultType)
 
 public:
+    enum resultType { Learn, Test };
     explicit test_results(resultType resType, QWidget *parent = 0);
     ~test_results();
-    enum resultType { Learn, Test };
+
 
 private slots:
     void on_pushButton_SaveOrReturn_clicked();
