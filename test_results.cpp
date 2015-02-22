@@ -2,6 +2,7 @@
 #include "ui_test_results.h"
 #include <QMessageBox>
 
+
 test_results::test_results(resultType resType, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::test_results)
