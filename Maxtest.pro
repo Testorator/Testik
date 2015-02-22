@@ -14,26 +14,26 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         maxtest.cpp \
-    test_results.cpp
+    test_results.cpp \
+    test.cpp \
+    begin_first.cpp \
+    third.cpp \
+    second.cpp
 
 HEADERS  += maxtest.h \
-    test_results.h
+    test_results.h \
+    test.h \
+    begin_first.h \
+    third.h \
+    second.h
 
 FORMS    += maxtest.ui \
-    begin.ui \
-    begin-dialog.ui \
     second.ui \
-    third-study.ui \
-    third-test.ui \
-    test-studies-help.ui \
-    test-studies-one.ui \
-    test-one.ui \
-    test-many.ui \
-    test-word.ui \
-    test-studies-many.ui \
-    test-studies-word.ui \
     testendquestion.ui \
-    test_results.ui
+    test_results.ui \
+    test.ui \
+    begin_first.ui \
+    third.ui
 
 DISTFILES += \
     muse.zip
