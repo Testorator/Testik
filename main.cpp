@@ -8,10 +8,10 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    if(argc == 1){
+   // if(argc == 1){
         Maxtest w;
         w.show();
-    }
+/*    }
     else
     {
         for (int i = 1; i < argc; ++i){
@@ -22,5 +22,5 @@ int main(int argc, char *argv[])
             }
         }
     }
-    return app.exec();
+  */  return app.exec();
 }

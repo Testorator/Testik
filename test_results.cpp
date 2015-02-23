@@ -10,16 +10,17 @@ test_results::test_results(resultType resType, QWidget *parent) :
     ui->setupUi(this);
 
     curResType = resType;
+     ui->label_result_type->setAlignment(Qt::AlignHCenter);
     if(curResType == this->Learn){
         this->setWindowTitle(tr("Learning outcomes"));
-        ui->label_result_type->setText('<html><head/><body><p align="center">'+tr("Learning outcomes")+'</p></body></html>');
+        ui->label_result_type->setText(tr("Learning outcomes"));
         ui->pushButton_SaveOrReturn->setText(tr("Return"));
         ui->pushButton_MailOrRetry->setText(tr("Go re-test"));
         ui->pushButton_RetryOrStartTest->setText(tr("Start test"));
     }
     else {
         this->setWindowTitle(tr("The test result"));
-        ui->label_result_type->setText('<html><head/><body><p align="center">'+tr("The test result")+'</p></body></html>');
+        ui->label_result_type->setText(tr("The test result"));
         ui->pushButton_SaveOrReturn->setText(tr("Save results"));
         ui->pushButton_MailOrRetry->setText(tr("Send results by e-mail"));
         ui->pushButton_RetryOrStartTest->setText(tr("Go re-test"));
