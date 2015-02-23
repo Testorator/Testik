@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     begin_first.cpp \
     third.cpp \
     second.cpp \
-    admin_form.cpp
+    admin_form.cpp \
+    test_help.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \
@@ -27,7 +28,8 @@ HEADERS  += maxtest.h \
     begin_first.h \
     third.h \
     second.h \
-    admin_form.h
+    admin_form.h \
+    test_help.h
 
 FORMS    += maxtest.ui \
     second.ui \
@@ -36,7 +38,8 @@ FORMS    += maxtest.ui \
     test.ui \
     begin_first.ui \
     third.ui \
-    admin_form.ui
+    admin_form.ui \
+    test_help.ui
 
 DISTFILES += \
     muse.zip
