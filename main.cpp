@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
             if(!qstrcmp(argv[i], "-adm")){
                 admin_mode = true;
             }
-            qDebug() << "argv["<<i<<"]="<<argv[i];
+//            qDebug() << "argv["<<i<<"]="<<argv[i];
         }
     }
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
                                            QObject::tr("Input password"),
                                            QObject::tr("Please input admin password"),
                                            QLineEdit::Password);
- //       qDebug() << "pw = " << in_pw << " hash = " << QString(QCryptographicHash::hash(in_pw.toByteArray(),QCryptographicHash::Sha3_512).toHex());
+//        qDebug() << "pw = " << in_pw << " hash = " << QString(QCryptographicHash::hash(in_pw.toByteArray(),QCryptographicHash::Sha3_512).toHex());
         if(in_pw == "111"){
             af.show();
         }
