@@ -8,19 +8,30 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-   // if(argc == 1){
-        Maxtest w;
-        w.show();
-/*    }
-    else
-    {
-        for (int i = 1; i < argc; ++i){
+    bool admin_mode = false;
+
+    admin_form af;
+    Maxtest nf;
+
+    qDebug() << "argc=" << argc;
+    if(argc > 1){
+        for (int i = 0; i < argc; ++i){
             if(!qstrcmp(argv[i], "-adm")){
-                qDebug() << "Start in admin mode";
-           //     admin_form af;
-           //     af.show();
+                admin_mode = true;
             }
+            qDebug() << "argv["<<i<<"]="<<argv[i];
         }
     }
-  */  return app.exec();
+
+    if(admin_mode){
+        qDebug() << "Start in admin mode";
+        af.show();
+    }
+    else
+    {
+        qDebug() << "Start in normal mode";
+        nf.show();
+    }
+
+    return app.exec();
 }
