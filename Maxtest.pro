@@ -8,9 +8,10 @@ QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Maxtest
+TARGET = maxtest
 TEMPLATE = app
 
+DESTDIR += ../Testik_bin
 
 SOURCES += main.cpp\
         maxtest.cpp \

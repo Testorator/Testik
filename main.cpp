@@ -4,7 +4,6 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QCryptographicHash>
-#include <QFile>
 #include <QDebug>
 #include <QSettings>
 
@@ -33,19 +32,30 @@ int main(int argc, char *argv[])
                                            QObject::tr("Input password"),
                                            QObject::tr("Please input admin password"),
                                            QLineEdit::Password);
-//qDebug() << "pw = " << in_pw << " hash = " << QVariant(QCryptographicHash::hash(in_pw.toByteArray(),QCryptographicHash::Sha3_512).toHex()).toByteArray();
-qDebug() << "pw = " << in_pw << " hash = " << QVariant(QCryptographicHash::hash(QVariant(QCryptographicHash::hash(in_pw.toByteArray(),QCryptographicHash::Sha3_512).toHex()).toByteArray(),QCryptographicHash::Sha3_512).toHex()).toByteArray();
-QSettings settings("/Users/maksimserbakov/Documents/work/Testik/Testik/maxtest.prp",
-                   QSettings::IniFormat);
-settings.setValue("crc", QCryptographicHash::hash(QVariant(QCryptographicHash::hash(in_pw.toByteArray(),QCryptographicHash::Sha3_512).toHex()).toByteArray(),QCryptographicHash::Sha3_512).toHex());
-        if(in_pw == "111"){
+
+//        qDebug() << "pw = " << in_pw << " hash = " <<
+//                    QVariant(QCryptographicHash::hash(QVariant(QCryptographicHash::hash(in_pw.toByteArray(),
+//                             QCryptographicHash::Sha3_512).toHex()).toByteArray(),QCryptographicHash::Sha3_512).toHex()).toByteArray();
+
+        QSettings settings(app.applicationDirPath().append("/maxtest.prp"),QSettings::IniFormat);
+
+//        settings.setValue("crc", QString(QCryptographicHash::hash(QVariant(QCryptographicHash::hash(in_pw.toByteArray(),
+//                                                      QCryptographicHash::Sha3_512).toHex()).toByteArray(),
+//                                                      QCryptographicHash::Sha3_512).toHex()));
+
+        QString iv = ;
+
+        qDebug() << res;
+
+        if(settings.value("crc").toString() == QString(QCryptographicHash::hash(
+                                                       QVariant(QCryptographicHash::hash(in_pw.toByteArray(),
+                                                                QCryptographicHash::Sha3_512).toHex()).toByteArray(),
+                                                                QCryptographicHash::Sha3_512).toHex())){
             af.show();
         }
         else{
             qDebug() << "err: Wrong admin password.";
-            QMessageBox::critical(new QWidget,
-                                  "Authentication failed",
-                                  "Wrong admin password");
+            QMessageBox::critical(new QWidget,"Authentication failed", "Wrong admin password");
             launch_app = false;
         }
     }
