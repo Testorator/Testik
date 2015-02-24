@@ -42,4 +42,5 @@ FORMS    += maxtest.ui \
     test_help.ui
 
 DISTFILES += \
-    muse.zip
+    muse.zip \
+    maxtest.prp
