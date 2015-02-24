@@ -1,9 +1,9 @@
 #include "maxtest.h"
 #include "admin_form.h"
+#include "crypt.h"
 #include <QApplication>
 #include <QMessageBox>
 #include <QInputDialog>
-#include <QCryptographicHash>
 #include <QDebug>
 #include <QSettings>
 
@@ -39,18 +39,9 @@ int main(int argc, char *argv[])
 
         QSettings settings(app.applicationDirPath().append("/maxtest.prp"),QSettings::IniFormat);
 
-//        settings.setValue("crc", QString(QCryptographicHash::hash(QVariant(QCryptographicHash::hash(in_pw.toByteArray(),
-//                                                      QCryptographicHash::Sha3_512).toHex()).toByteArray(),
-//                                                      QCryptographicHash::Sha3_512).toHex()));
+//        settings.setValue("crc", cryptStr(in_pw));
 
-        QString iv = ;
-
-        qDebug() << res;
-
-        if(settings.value("crc").toString() == QString(QCryptographicHash::hash(
-                                                       QVariant(QCryptographicHash::hash(in_pw.toByteArray(),
-                                                                QCryptographicHash::Sha3_512).toHex()).toByteArray(),
-                                                                QCryptographicHash::Sha3_512).toHex())){
+        if(settings.value("crc").toString() == cryptPWStr(in_pw)){
             af.show();
         }
         else{
