@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     admin_form.cpp \
     test_help.cpp \
     change_admin_pw_dialog.cpp \
-    crypt.cpp
+    crypt.cpp \
+    admin_form_add.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \
@@ -34,7 +35,8 @@ HEADERS  += maxtest.h \
     admin_form.h \
     test_help.h \
     change_admin_pw_dialog.h \
-    crypt.h
+    crypt.h \
+    admin_form_add.h
 
 FORMS    += maxtest.ui \
     second.ui \
@@ -45,7 +47,8 @@ FORMS    += maxtest.ui \
     third.ui \
     admin_form.ui \
     test_help.ui \
-    change_admin_pw_dialog.ui
+    change_admin_pw_dialog.ui \
+    admin_form_add.ui
 
 DISTFILES += \
     muse.zip \

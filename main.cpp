@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
         QSettings settings(app.applicationDirPath().append("/maxtest.prp"),QSettings::IniFormat);
 
-//        settings.setValue("crc", cryptStr(in_pw));
+        settings.setValue("crc", cryptStr(in_pw));
 
         if(settings.value("crc").toString() == cryptStr(in_pw)){
             af.show();
