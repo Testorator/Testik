@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     second.cpp \
     admin_form.cpp \
     test_help.cpp \
-    change_admin_pw_dialog.cpp
+    change_admin_pw_dialog.cpp \
+    crypt.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \

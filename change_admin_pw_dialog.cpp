@@ -1,6 +1,6 @@
 #include "change_admin_pw_dialog.h"
 #include "ui_change_admin_pw_dialog.h"
-//#include "crypt.h"
+#include "crypt.h"
 #include <QMessageBox>
 
 change_admin_pw_dialog::change_admin_pw_dialog(QWidget *parent) :

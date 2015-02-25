@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 //        settings.setValue("crc", cryptStr(in_pw));
 
-        if(settings.value("crc").toString() == cryptPWStr(in_pw)){
+        if(settings.value("crc").toString() == cryptStr(in_pw)){
             af.show();
         }
         else{
