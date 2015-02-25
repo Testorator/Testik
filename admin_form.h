@@ -19,6 +19,8 @@ public:
 private slots:
     void on_actionChange_admin_password_triggered();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::admin_form *ui;
 };

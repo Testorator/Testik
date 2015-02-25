@@ -1,6 +1,7 @@
 #include "admin_form.h"
 #include "ui_admin_form.h"
-//#include "change_admin_pw_dialog.h"
+#include "change_admin_pw_dialog.h"
+#include "question_mod_dialog.h"
 
 admin_form::admin_form(QWidget *parent) :
     QMainWindow(parent),
@@ -18,4 +19,10 @@ void admin_form::on_actionChange_admin_password_triggered()
 {
     change_admin_pw_dialog chPW_dialog;
     chPW_dialog.exec();
+}
+//
+void admin_form::on_pushButton_clicked()
+{
+    question_mod_dialog qmd;
+    qmd.exec();
 }

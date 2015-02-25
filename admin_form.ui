@@ -52,7 +52,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_DB">
        <attribute name="title">
@@ -137,7 +137,7 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
         <item row="0" column="0" colspan="3">
-         <widget class="QTabWidget" name="tabWidget_2">
+         <widget class="QTabWidget" name="tabWidget_Questions">
           <property name="minimumSize">
            <size>
             <width>465</width>
@@ -145,11 +145,11 @@
            </size>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
-          <widget class="QWidget" name="tab_3">
+          <widget class="QWidget" name="tab_Test">
            <attribute name="title">
-            <string>control</string>
+            <string>Test</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_12">
             <item row="0" column="0">
@@ -157,9 +157,9 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_4">
+          <widget class="QWidget" name="tab_Learn">
            <attribute name="title">
-            <string>studies</string>
+            <string>Learn</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_13">
             <item row="0" column="0">
