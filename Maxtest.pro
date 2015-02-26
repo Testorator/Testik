@@ -53,3 +53,6 @@ FORMS    += maxtest.ui \
 DISTFILES += \
     muse.zip \
     maxtest.prp
+
+RESOURCES += \
+    res.qrc

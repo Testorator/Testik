@@ -9,7 +9,7 @@ question_mod_dialog::question_mod_dialog(QWidget *parent) :
 {
     ui->setupUi(this);
     QToolBar* ptb = new QToolBar("answers toolbar");
-    ptb->addAction(tr("Add"));
+    ptb->addAction(QIcon("/img/button_green_add.png"),tr("Add"));
     ptb->addSeparator();
     ptb->addAction(tr("Save"));
     ptb->addSeparator();
