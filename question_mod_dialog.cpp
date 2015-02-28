@@ -9,17 +9,13 @@ question_mod_dialog::question_mod_dialog(QWidget *parent) :
 {
     ui->setupUi(this);
     QToolBar* ptb = new QToolBar("answers toolbar");
-    ptb->addAction(QIcon(":/resourse/add"),tr("Add"),SLOT());
+    ptb->addAction(QIcon(":/resourse/add"),tr("Add"));
     ptb->setIconSize(QSize(24, 24));
     ptb->addSeparator();
-    ptb->addAction(QIcon(":/resourse/save"),tr("Save"),SLOT());
+    ptb->addAction(QIcon(":/resourse/save"),tr("Save"));
     ptb->addSeparator();
-    ptb->addAction(QIcon(":/resourse/del"),tr("Del"),SLOT());
+    ptb->addAction(QIcon(":/resourse/del"),tr("Del"));
     ui->gridLayout_Answers_tb->addWidget(ptb,0,0,0,2,Qt::AlignTop);
-
-
-
-    return ptb;
 
 }
 

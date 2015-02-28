@@ -153,7 +153,13 @@
            </attribute>
            <layout class="QGridLayout" name="gridLayout_12">
             <item row="0" column="0">
-             <widget class="QTableWidget" name="tableWidget"/>
+             <widget class="QTreeWidget" name="treeWidget_test_questions">
+              <column>
+               <property name="text">
+                <string notr="true">1</string>
+               </property>
+              </column>
+             </widget>
             </item>
            </layout>
           </widget>

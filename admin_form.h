@@ -21,8 +21,11 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_pushButton_AddDB_clicked();
+
 private:
     Ui::admin_form *ui;
+    void getDataBases();
 };
 
 #endif // ADMIN_FORM_H
