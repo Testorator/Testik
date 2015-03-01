@@ -54,44 +54,14 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="tab_DB">
+      <widget class="QWidget" name="tab_Opt">
        <attribute name="title">
-        <string>Database</string>
+        <string>Options</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
-           <widget class="QGroupBox" name="groupBox_2">
-            <property name="title">
-             <string>Dababase</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_9">
-             <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_8">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label_2">
-                 <property name="text">
-                  <string>Database file:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLineEdit" name="lineEdit_DBFile"/>
-               </item>
-               <item row="0" column="2">
-                <widget class="QToolButton" name="toolButton_SelectDBFile">
-                 <property name="text">
-                  <string>...</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="1" column="0">
            <widget class="QGroupBox" name="groupBox_SendEMail">
             <property name="title">
              <string>Send results of testing by email</string>
