@@ -7,6 +7,8 @@
 #include <QDir>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlError>
 
 admin_form::admin_form(QWidget *parent) :
     QMainWindow(parent),
@@ -60,4 +62,20 @@ void admin_form::on_pushButton_AddDB_clicked()
                               tr("Error"),
                               tr("The name of the new database is empty!\nOperaion cancelled."));
     }
+else
+{
+        QSqlDatabase db = QSqlDatabase::addDatabase("QIBASE");
+        db.setDatabaseName("/Users/maksimserbakov/Documents/work/Testik/Testik/data/BLANK.QLT");
+        db.setUserName("USER");
+        db.setPassword("user");
+        db.open();
+        if(!db.open()){
+          qDebug() << db.lastError().text();
+        }
+        else {
+
+           qDebug() << "success";
+        }
+    }
 }
+
