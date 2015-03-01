@@ -66,7 +66,7 @@ else
 {
         QSqlDatabase db = QSqlDatabase::addDatabase("QIBASE");
         db.setDatabaseName("BLANK.QLT");
-        db.setUserName("USER");
+        db.setUserName("user");
         db.setPassword("user");
         db.open();
         if(!db.open()){
