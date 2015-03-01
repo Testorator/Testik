@@ -54,28 +54,36 @@ void admin_form::getDataBases()
 void admin_form::on_pushButton_AddDB_clicked()
 {
     QString new_db_name = QInputDialog::getText(this,
-                                       QObject::tr("Input database name"),
-                                       QObject::tr("Please input name for new database"));
+                                                QObject::tr("Input database name"),
+                                                QObject::tr("Please input name for new database"));
 
     if(new_db_name.trimmed().length() == 0){
         QMessageBox::critical(this,
                               tr("Error"),
                               tr("The name of the new database is empty!\nOperaion cancelled."));
     }
-else
-{
-        QSqlDatabase db = QSqlDatabase::addDatabase("QIBASE");
-        db.setDatabaseName("BLANK.QLT");
-        db.setUserName("user");
-        db.setPassword("user");
-        db.open();
-        if(!db.open()){
-          qDebug() << db.lastError().text();
+    else{
+        if(QFile::copy(QApplication::applicationDirPath()+"/data/BLANK.QLT",
+                       QApplication::applicationDirPath()+"/data/"+new_db_name+".QLT")){
+            getDataBases();
         }
-        else {
+        else{
+            QMessageBox::critical(this,
+                                  tr("Error"),
+                                  tr("Error on create new database."));
 
-           qDebug() << "success";
         }
+        //        QSqlDatabase db = QSqlDatabase::addDatabase("QIBASE");
+        //        db.setDatabaseName("BLANK.QLT");
+        //        db.setUserName("user");
+        //        db.setPassword("user");
+        //        db.open();
+        //        if(!db.open()){
+        //            qDebug() << db.lastError().text();
+        //        }
+        //        else {
+        //            qDebug() << "success";
+        //        }
     }
 }
 
