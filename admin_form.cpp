@@ -65,7 +65,7 @@ void admin_form::on_pushButton_AddDB_clicked()
 else
 {
         QSqlDatabase db = QSqlDatabase::addDatabase("QIBASE");
-        db.setDatabaseName("/Users/maksimserbakov/Documents/work/Testik/Testik/data/BLANK.QLT");
+        db.setDatabaseName("BLANK.QLT");
         db.setUserName("USER");
         db.setPassword("user");
         db.open();
