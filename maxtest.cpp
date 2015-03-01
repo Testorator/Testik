@@ -22,8 +22,8 @@ void Maxtest::on_pushButton_clicked()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QIBASE");
    // db.setHostName("localhost");
-    //db.setDatabaseName("D:/Maks/project/Testik/data/BLANK.QLT");
-    db.setDatabaseName("/Users/maksimserbakov/Documents/work/Testik/Testik/data/BLANK.QLT");
+    db.setDatabaseName("D:/Maks/project/Testik/data/BLANK.QLT");
+   // db.setDatabaseName("/Users/maksimserbakov/Documents/work/Testik/Testik/data/BLANK.QLT");
 
 
 

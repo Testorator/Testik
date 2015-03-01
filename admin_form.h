@@ -3,6 +3,8 @@
 
 #include "change_admin_pw_dialog.h"
 #include <QMainWindow>
+#include <QtSql/QSqlDatabase>
+
 
 namespace Ui {
 class admin_form;
@@ -18,14 +20,17 @@ public:
 
 private slots:
     void on_actionChange_admin_password_triggered();
-
     void on_pushButton_clicked();
-
     void on_pushButton_AddDB_clicked();
+    void on_listWidget_DB_clicked();
 
 private:
     Ui::admin_form *ui;
+    QSqlDatabase db;
     void getDataBases();
+    void createDBStruct();
+    void setAvailabilityOfItems(bool val);
+
 };
 
 #endif // ADMIN_FORM_H

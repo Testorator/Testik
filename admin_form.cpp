@@ -7,7 +7,6 @@
 #include <QDir>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
 
 admin_form::admin_form(QWidget *parent) :
@@ -15,13 +14,15 @@ admin_form::admin_form(QWidget *parent) :
     ui(new Ui::admin_form)
 {
     ui->setupUi(this);
-    ui->listWidget_DB->clear();
-
+    this->setWindowTitle(QApplication::applicationName()+": admin mode");
     getDataBases();
+    db = QSqlDatabase::addDatabase("QIBASE");
+    setAvailabilityOfItems(db.isOpen());
 }
 
 admin_form::~admin_form()
 {
+    if(db.isOpen()) db.close();
     delete ui;
 }
 //
@@ -29,6 +30,12 @@ void admin_form::on_actionChange_admin_password_triggered()
 {
     change_admin_pw_dialog chPW_dialog;
     chPW_dialog.exec();
+}
+//
+void admin_form::setAvailabilityOfItems(bool val)
+{
+    ui->groupBox_SendEMail->setEnabled(val);
+    ui->tabWidget->setEnabled(val);
 }
 //
 void admin_form::on_pushButton_clicked()
@@ -71,19 +78,31 @@ void admin_form::on_pushButton_AddDB_clicked()
             QMessageBox::critical(this,
                                   tr("Error"),
                                   tr("Error on create new database."));
-
         }
-        //        QSqlDatabase db = QSqlDatabase::addDatabase("QIBASE");
-        //        db.setDatabaseName("BLANK.QLT");
-        //        db.setUserName("user");
-        //        db.setPassword("user");
-        //        db.open();
-        //        if(!db.open()){
-        //            qDebug() << db.lastError().text();
-        //        }
-        //        else {
-        //            qDebug() << "success";
-        //        }
     }
 }
+//
+void admin_form::on_listWidget_DB_clicked()
+{
+    QString db_file = ui->listWidget_DB->currentItem()->text().trimmed();
+    if(db.isOpen()) db.close();
+    db.setDatabaseName(QApplication::applicationDirPath()+"/data/"+db_file);
+    db.setUserName("SYSDBA");
+    db.setPassword("XGn8#w!H");
+    db.open();
+    setAvailabilityOfItems(db.isOpen());
+    if(db.isOpen()){
+        qDebug() << "success";
+    }
+    else{
+        QMessageBox::critical(this,
+                              tr("Error"),
+                              "database: "+QApplication::applicationDirPath()+"/data/"+db_file+"\n"+db.lastError().text());
+    }
+}
+//
+void admin_form::createDBStruct(){
 
+//    CREATE TABLE EMAIL_ADDRESES (RECIPIENT_NAME VARCHAR(50),ADDRESS VARCHAR(50) NOT NULL)
+
+}
