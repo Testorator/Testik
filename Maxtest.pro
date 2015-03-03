@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     test_help.cpp \
     change_admin_pw_dialog.cpp \
     crypt.cpp \
-    question_mod_dialog.cpp
+    question_mod_dialog.cpp \
+    dbfunc.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \
@@ -36,7 +37,8 @@ HEADERS  += maxtest.h \
     test_help.h \
     change_admin_pw_dialog.h \
     crypt.h \
-    question_mod_dialog.h
+    question_mod_dialog.h \
+    dbfunc.h
 
 FORMS    += maxtest.ui \
     second.ui \

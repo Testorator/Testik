@@ -106,13 +106,13 @@ void admin_form::createDBStruct(){
 
 // ***** sequences
 //    CREATE SEQUENCE THEME_SEQ;
-//    ALTER SEQUENCE THEME_SEQ RESTART WITH 1;
+//    ALTER SEQUENCE THEME_SEQ RESTART WITH 0;
 /
 //    CREATE SEQUENCE QUESTION_SEQ;
-//    ALTER SEQUENCE QUESTION_SEQ RESTART WITH 1;
+//    ALTER SEQUENCE QUESTION_SEQ RESTART WITH 0;
 
 //    CREATE SEQUENCE ANSWER_SEQ;
-//    ALTER SEQUENCE ANSWER_SEQ RESTART WITH 1;
+//    ALTER SEQUENCE ANSWER_SEQ RESTART WITH 0;
 
 
 // ***** tables
@@ -121,6 +121,7 @@ void admin_form::createDBStruct(){
 
 //    CREATE TABLE QTHEMES (ID SMALLINT NOT NULL, PARENT_ID  SMALLINT, NAME VARCHAR(300) NOT NULL);
 //    ALTER TABLE QTHEMES ADD CONSTRAINT PK_QTHEMES PRIMARY KEY (ID);
+//    ALTER TABLE QTHEMES ADD CONSTRAINT FK_QTHEMES FOREIGN KEY (PARENT_ID) REFERENCES QTHEMES (ID) ON DELETE CASCADE ON UPDATE CASCADE;
 //    GRANT SELECT ON QTHEMES TO STUDENT;
 
 //    CREATE TABLE QUESTIONS (ID SMALLINT NOT NULL, THEME_ID SMALLINT,FOR_LEARN  BOOLEAN DEFAULT 0 NOT NULL, QUESTION VARCHAR(1000));
@@ -164,5 +165,30 @@ void admin_form::createDBStruct(){
 //          end
 //    end
 
+//    CREATE OR ALTER VIEW TQA_VIEW(
+//        THEME_ID,
+//        QUESTION_ID,
+//        ANSWER_ID,
+//        THEME_NAME,
+//        QUESTION_FOR_LEARN,
+//        QUESTION,
+//        ANSWER_IS_CORRECT,
+//        ANSWER_TEXT,
+//        ANSWER_DESC)
+//    AS
+//    select
+//        qthemes.id as theme_id,
+//        questions.id as question_id,
+//        answers.id as answer_id,
+//        qthemes.name as theme_name,
+//        questions.for_learn as question_for_learn,
+//        questions.question as question,
+//        answers.correct as answer_is_correct,
+//        answers.answer as answer_text,
+//        answers.descriprion as answer_desc
+//    from answers
+//       inner join questions on (answers.question_id = questions.id)
+//       inner join qthemes on (questions.theme_id = qthemes.id)
+//    ;
 
 }
