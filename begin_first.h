@@ -15,6 +15,11 @@ public:
     explicit Begin_first(QWidget *parent = 0);
     ~Begin_first();
 
+private slots:
+    void on_pushButton_clicked();
+
+    void on_pushButton_7_clicked();
+
 private:
     Ui::Begin_first *ui;
 };
