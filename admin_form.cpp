@@ -2,6 +2,7 @@
 #include "ui_admin_form.h"
 #include "change_admin_pw_dialog.h"
 #include "question_mod_dialog.h"
+#include "dbfunc.h"
 
 #include <QDebug>
 #include <QDir>
@@ -17,6 +18,15 @@ admin_form::admin_form(QWidget *parent) :
     this->setWindowTitle(QApplication::applicationName()+": admin mode");
     getDataBases();
     db = QSqlDatabase::addDatabase("QIBASE");
+
+    addGroup = new QAction(tr("Add Group"),ui->toolButton_Add_Stud->menu());
+    connect(addGroup,SIGNAL(triggered()),this,SLOT(on_actionAddGroup_triggered()));
+    ui->toolButton_Add_Stud->addAction(addGroup);
+
+    addStud = new QAction(tr("Add Student"),ui->toolButton_Add_Stud->menu());
+    connect(addStud,SIGNAL(triggered()),this,SLOT(on_actionAddStud_triggered()));
+    ui->toolButton_Add_Stud->addAction(addStud);
+
     setAvailabilityOfItems(db.isOpen());
 }
 
@@ -101,94 +111,13 @@ void admin_form::on_listWidget_DB_clicked()
     }
 }
 //
-void admin_form::createDBStruct(){
-//    CREATE DOMAIN BOOLEAN AS SMALLINT CHECK (value is null or value in (0, 1))
-
-// ***** sequences
-//    CREATE SEQUENCE THEME_SEQ;
-//    ALTER SEQUENCE THEME_SEQ RESTART WITH 0;
-/
-//    CREATE SEQUENCE QUESTION_SEQ;
-//    ALTER SEQUENCE QUESTION_SEQ RESTART WITH 0;
-
-//    CREATE SEQUENCE ANSWER_SEQ;
-//    ALTER SEQUENCE ANSWER_SEQ RESTART WITH 0;
-
-
-// ***** tables
-//    CREATE TABLE OPTIONS (SEND_REPORT_BY_EMAIL  BOOLEAN DEFAULT 0 NOT NULL);
-//    CREATE TABLE EMAIL_ADDRESES (RECIPIENT_NAME VARCHAR(50),ADDRESS VARCHAR(50) NOT NULL)
-
-//    CREATE TABLE QTHEMES (ID SMALLINT NOT NULL, PARENT_ID  SMALLINT, NAME VARCHAR(300) NOT NULL);
-//    ALTER TABLE QTHEMES ADD CONSTRAINT PK_QTHEMES PRIMARY KEY (ID);
-//    ALTER TABLE QTHEMES ADD CONSTRAINT FK_QTHEMES FOREIGN KEY (PARENT_ID) REFERENCES QTHEMES (ID) ON DELETE CASCADE ON UPDATE CASCADE;
-//    GRANT SELECT ON QTHEMES TO STUDENT;
-
-//    CREATE TABLE QUESTIONS (ID SMALLINT NOT NULL, THEME_ID SMALLINT,FOR_LEARN  BOOLEAN DEFAULT 0 NOT NULL, QUESTION VARCHAR(1000));
-//    ALTER TABLE QUESTIONS ADD CONSTRAINT PK_QUESTIONS PRIMARY KEY (ID);
-//    ALTER TABLE QUESTIONS ADD CONSTRAINT FK_QUESTIONS_THEME FOREIGN KEY (THEME_ID) REFERENCES QTHEMES (ID) ON DELETE CASCADE ON UPDATE CASCADE;
-//    GRANT SELECT ON QUESTIONS TO STUDENT;
-
-//    CREATE TABLE ANSWERS (ID SMALLINT NOT NULL, QUESTION_ID  SMALLINT NOT NULL, CORRECT BOOLEAN NOT NULL, ANSWER VARCHAR(1000), DESCRIPTION VARCHAR(1000 );
-//    ALTER TABLE ANSWERS ADD CONSTRAINT PK_ANSWERS PRIMARY KEY (ID);
-//    ALTER TABLE ANSWERS ADD CONSTRAINT FK_ANSWERS_QUESTION FOREIGN KEY (QUESTION_ID) REFERENCES QUESTIONS (ID) ON DELETE CASCADE ON UPDATE CASCADE;
-
-
-// ***** triggers
-//    CREATE OR ALTER TRIGGER QTHEMES_ID_GEN FOR QTHEMES
-//    ACTIVE BEFORE INSERT POSITION 0
-//    AS
-//    begin
-//       if ((new.id is null) or (new.id = 0)) then
-//      begin
-//        new.id = gen_id(theme_seq, 1);
-//      end
-//    end
-
-//    CREATE trigger questions_id_gen for questions
-//    active before insert position 0
-//    AS
-//    begin
-//         if ((new.id is null) or (new.id = 0)) then
-//          begin
-//            new.id = gen_id(question_seq, 1);
-//          end
-//    end
-
-//    CREATE OR ALTER TRIGGER ANSWERS_ID_GEN FOR ANSWERS
-//    ACTIVE BEFORE INSERT POSITION 0
-//    AS
-//    begin
-//        if ((new.id is null) or (new.id = 0)) then
-//          begin
-//            new.id = gen_id(answer_seq, 1);
-//          end
-//    end
-
-//    CREATE OR ALTER VIEW TQA_VIEW(
-//        THEME_ID,
-//        QUESTION_ID,
-//        ANSWER_ID,
-//        THEME_NAME,
-//        QUESTION_FOR_LEARN,
-//        QUESTION,
-//        ANSWER_IS_CORRECT,
-//        ANSWER_TEXT,
-//        ANSWER_DESC)
-//    AS
-//    select
-//        qthemes.id as theme_id,
-//        questions.id as question_id,
-//        answers.id as answer_id,
-//        qthemes.name as theme_name,
-//        questions.for_learn as question_for_learn,
-//        questions.question as question,
-//        answers.correct as answer_is_correct,
-//        answers.answer as answer_text,
-//        answers.descriprion as answer_desc
-//    from answers
-//       inner join questions on (answers.question_id = questions.id)
-//       inner join qthemes on (questions.theme_id = qthemes.id)
-//    ;
-
+void admin_form::on_actionAddGroup_triggered()
+{
+    qDebug() << "Add group clicked";
+    qDebug() << "Query result: " <<SendSimpleQueryStr(&db,"INSERT INTO GROUPS(CODE) VALUES('STS');");
+}
+//
+void admin_form::on_actionAddStud_triggered()
+{
+    qDebug() << "Add stud clicked";
 }

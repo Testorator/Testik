@@ -16,20 +16,23 @@ class admin_form : public QMainWindow
 
 public:
     explicit admin_form(QWidget *parent = 0);
-    ~admin_form();
+    ~admin_form();    
 
 private slots:
     void on_actionChange_admin_password_triggered();
     void on_pushButton_clicked();
     void on_pushButton_AddDB_clicked();
     void on_listWidget_DB_clicked();
+    void on_actionAddGroup_triggered();
+    void on_actionAddStud_triggered();
 
 private:
     Ui::admin_form *ui;
     QSqlDatabase db;
+    QAction *addGroup, *addStud;
     void getDataBases();
-    void createDBStruct();
     void setAvailabilityOfItems(bool val);
+
 
 };
 
