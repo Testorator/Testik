@@ -54,7 +54,9 @@ FORMS    += maxtest.ui \
 
 DISTFILES += \
     muse.zip \
-    maxtest.prp
+    maxtest.prp \
+    data/students.csv \
+    data/BLANK.QLT
 
 RESOURCES += \
     res.qrc
