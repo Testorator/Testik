@@ -1,19 +1,24 @@
 #include "dbfunc.h"
+#include <QDebug>
 #include <QSqlQuery>
 
 //**********************************************
-bool SendSimpleQueryStr(QSqlDatabase *db,const QString& q_str)
+qResult SendSimpleQueryStr(QSqlDatabase *db,const QString& q_str)
 {
-    bool result;
+    qResult result;
     QSqlQuery *query = new QSqlQuery(*db);
 
     db->transaction();
     if(!query->exec(q_str)){
-        result = false;
+        result.query_result = false;
+        result.text = "query: "+q_str+"\ndriver: "+query->lastError().driverText()+
+                "\ndatabase: "+query->lastError().databaseText();
         db->rollback();
+        qDebug() << query->lastError().databaseText();
+        qDebug() << query->lastError().driverText();
     }
     else{
-        result = true;
+        result.query_result = true;
         db->commit();
     }
     query->clear();
@@ -22,25 +27,33 @@ bool SendSimpleQueryStr(QSqlDatabase *db,const QString& q_str)
     return result;
 }
 //**********************************************
-//QList<st_svMAP> wwdb_cl::SendSimpleQueryStrWR(const QString& owner,const QString& q_str)
-//{
-//    QList<st_svMAP> result;
-//    st_svMAP col;
+qResult SendSimpleQueryStrWR(QSqlDatabase *db,const QString& q_str)
+{
+    qResult result;
+    st_svMAP col;
 
-//    genDebug(owner+" (wwdb - SendSimpleQueryWR)",q_str);
+//    QSqlQuery *query = new QSqlQuery(*db);
 
 //    if(!query->exec(q_str)){
-//        genErrReport(owner+" (wwdb - SendSimpleQueryWR)",q_str);
+//        result.query_result = false;
+//        result.text = "query: "+q_str+"\ndriver: "+query->lastError().driverText()+
+//                "\ndatabase: "+query->lastError().databaseText();
+//        db->rollback();
+//        qDebug() << query->lastError().databaseText();
+//        qDebug() << query->lastError().driverText();
 //    }
 //    else{
+
+//        result.selection_result.clear();
+//        st_svMAP col;
 //        while(query->next()){
-//            for(counter=0; counter < query->record().count() ;counter++){
+//            for(int counter=0; counter < query->record().count() ;counter++){
 //                col.map.insert(query->record().fieldName(counter),query->value(counter));
 //            }
-//            result << col;
+//            result.selection_result << col;
 //            col.map.clear();
 //        }
 //    }
 //    query->clear();
-//    return result;
-//}
+    return result;
+}

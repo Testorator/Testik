@@ -5,7 +5,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QDebug>
-#include <QSettings>
+
 #include <question_mod_dialog.h>
 int main(int argc, char *argv[])
 {
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 //                    QVariant(QCryptographicHash::hash(QVariant(QCryptographicHash::hash(in_pw.toByteArray(),
 //                             QCryptographicHash::Sha3_512).toHex()).toByteArray(),QCryptographicHash::Sha3_512).toHex()).toByteArray();
 
-        QSettings settings(app.applicationDirPath().append("/maxtest.prp"),QSettings::IniFormat);
+        QSettings settings(QApplication::applicationDirPath().append("/maxtest.prp"),QSettings::IniFormat);
 
 //        settings.setValue("crc", cryptStr(in_pw));
 

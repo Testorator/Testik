@@ -2,6 +2,7 @@
 #define ADMIN_FORM_H
 
 #include "change_admin_pw_dialog.h"
+
 #include <QMainWindow>
 #include <QtSql/QSqlDatabase>
 
@@ -32,6 +33,7 @@ private:
     QAction *addGroup, *addStud;
     void getDataBases();
     void setAvailabilityOfItems(bool val);
+    void getStudentsList();
 
 
 };

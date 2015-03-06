@@ -8,7 +8,7 @@
 #include <QDir>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QtSql/QSqlError>
+
 
 admin_form::admin_form(QWidget *parent) :
     QMainWindow(parent),
@@ -35,6 +35,12 @@ admin_form::~admin_form()
     if(db.isOpen()) db.close();
     delete ui;
 }
+//
+void admin_form::getStudentsList()
+{
+
+}
+
 //
 void admin_form::on_actionChange_admin_password_triggered()
 {
@@ -114,7 +120,15 @@ void admin_form::on_listWidget_DB_clicked()
 void admin_form::on_actionAddGroup_triggered()
 {
     qDebug() << "Add group clicked";
-    qDebug() << "Query result: " <<SendSimpleQueryStr(&db,"INSERT INTO GROUPS(CODE) VALUES('STS');");
+    QString in_grp = QInputDialog::getText(this,
+                                           QObject::tr("Input group name"),
+                                           QObject::tr("Please name of new group"));
+    if(in_grp.trimmed().length() > 0){
+        qResult q_res = SendSimpleQueryStr(&db,"INSERT INTO GROUPS(CODE) VALUES('"+in_grp.trimmed()+"');");
+        if(!q_res.query_result){
+            QMessageBox::critical(this,tr("Error"),q_res.text);
+        }
+    }
 }
 //
 void admin_form::on_actionAddStud_triggered()
