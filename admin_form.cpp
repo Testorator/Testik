@@ -16,6 +16,7 @@ admin_form::admin_form(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowTitle(QApplication::applicationName()+": admin mode");
+    ui->treeWidget_students->hideColumn(1);
     getDataBases();
     db = QSqlDatabase::addDatabase("QIBASE");
 
@@ -34,11 +35,6 @@ admin_form::~admin_form()
 {
     if(db.isOpen()) db.close();
     delete ui;
-}
-//
-void admin_form::getStudentsList()
-{
-
 }
 
 //
@@ -108,12 +104,33 @@ void admin_form::on_listWidget_DB_clicked()
     db.open();
     setAvailabilityOfItems(db.isOpen());
     if(db.isOpen()){
-        qDebug() << "success";
+        qDebug() << "DB openinig - success";
+        getStudentsList();
     }
     else{
         QMessageBox::critical(this,
                               tr("Error"),
                               "database: "+QApplication::applicationDirPath()+"/data/"+db_file+"\n"+db.lastError().text());
+    }
+}
+// --- tab students --- {{
+void admin_form::getStudentsList()
+{
+    qResult q_res = SendSimpleQueryStrWR(&db,"SELECT * FROM GROUPS");
+    if(q_res.query_result){
+        QList<QTreeWidgetItem *> items;
+        QList<QString> item;
+        ui->treeWidget_students->clear();
+        for(int i = 0;i < q_res.selection_result.count(); i++){
+            item.clear();
+            item.append(q_res.selection_result.at(i).map["CODE"].toString());
+            item.append(q_res.selection_result.at(i).map["ID"].toString());
+            items.append(new QTreeWidgetItem((QTreeWidget*)0,
+                                             QStringList(item)
+                                             ));
+
+        }
+        ui->treeWidget_students->insertTopLevelItems(0,items);
     }
 }
 //
@@ -124,9 +141,23 @@ void admin_form::on_actionAddGroup_triggered()
                                            QObject::tr("Input group name"),
                                            QObject::tr("Please name of new group"));
     if(in_grp.trimmed().length() > 0){
-        qResult q_res = SendSimpleQueryStr(&db,"INSERT INTO GROUPS(CODE) VALUES('"+in_grp.trimmed()+"');");
+        qResult q_res = SendSimpleQueryStrWR(&db,"SELECT CODE FROM GROUPS WHERE CODE='"+in_grp.trimmed()+"';");
         if(!q_res.query_result){
             QMessageBox::critical(this,tr("Error"),q_res.text);
+        }
+        else{
+            if(q_res.selection_result.count() > 0){
+                QMessageBox::critical(this,tr("Error"),tr("Group with name ")+""""+in_grp.trimmed()+""""+tr(" already exists!"));
+            }
+            else{
+                q_res = SendSimpleQueryStr(&db,"INSERT INTO GROUPS(CODE) VALUES('"+in_grp.trimmed()+"');");
+                if(!q_res.query_result){
+                    QMessageBox::critical(this,tr("Error"),q_res.text);
+                }
+                else{
+                    getStudentsList();
+                }
+            }
         }
     }
 }
@@ -135,3 +166,9 @@ void admin_form::on_actionAddStud_triggered()
 {
     qDebug() << "Add stud clicked";
 }
+
+void admin_form::on_pushButton_Edit_Stud_clicked()
+{
+    int x =0;
+}
+// --- tab students --- }}
