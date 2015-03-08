@@ -29,6 +29,8 @@ private slots:
 
     void on_pushButton_Edit_Stud_clicked();
 
+    void on_toolButton_Add_Stud_clicked();
+
 private:
     Ui::admin_form *ui;
     QSqlDatabase db;

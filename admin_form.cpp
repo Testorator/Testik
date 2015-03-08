@@ -134,8 +134,17 @@ void admin_form::getStudentsList()
     }
 }
 //
+void admin_form::on_toolButton_Add_Stud_clicked()
+{
+  if(ui->toolButton_Add_Stud->text() == tr("Add")) ui->toolButton_Add_Stud->showMenu();
+}
+//
 void admin_form::on_actionAddGroup_triggered()
 {
+    // save last selection for Add button as "group"
+    ui->toolButton_Add_Stud->setText(addGroup->text());
+    connect(ui->toolButton_Add_Stud,SIGNAL(clicked()),this,SLOT(on_actionAddGroup_triggered()));
+
     qDebug() << "Add group clicked";
     QString in_grp = QInputDialog::getText(this,
                                            QObject::tr("Input group name"),
@@ -164,11 +173,25 @@ void admin_form::on_actionAddGroup_triggered()
 //
 void admin_form::on_actionAddStud_triggered()
 {
+    // save last selection for Add button as "student"
+    ui->toolButton_Add_Stud->setText(addStud->text());
+    connect(ui->toolButton_Add_Stud,SIGNAL(clicked()),this,SLOT(on_actionAddStud_triggered()));
+
     qDebug() << "Add stud clicked";
 }
-
+//
 void admin_form::on_pushButton_Edit_Stud_clicked()
 {
-    int x =0;
+    QTreeWidgetItem *cur_item = ui->treeWidget_students->currentItem();
+    if(!cur_item){
+        QMessageBox::information(this,
+                                 tr("Information"),
+                                 tr("Please select group or student for modification"));
+    }
+    else{
+        qDebug() << "name: " << cur_item->text(0) << " id:" << cur_item->text(1);
+    }
 }
 // --- tab students --- }}
+
+
