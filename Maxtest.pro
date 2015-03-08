@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     change_admin_pw_dialog.cpp \
     crypt.cpp \
     question_mod_dialog.cpp \
-    dbfunc.cpp
+    dbfunc.cpp \
+    add_stud_dlg.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \
@@ -38,7 +39,8 @@ HEADERS  += maxtest.h \
     change_admin_pw_dialog.h \
     crypt.h \
     question_mod_dialog.h \
-    dbfunc.h
+    dbfunc.h \
+    add_stud_dlg.h
 
 FORMS    += maxtest.ui \
     second.ui \
@@ -50,7 +52,8 @@ FORMS    += maxtest.ui \
     admin_form.ui \
     test_help.ui \
     change_admin_pw_dialog.ui \
-    question_mod_dialog.ui
+    question_mod_dialog.ui \
+    add_stud_dlg.ui
 
 DISTFILES += \
     muse.zip \
