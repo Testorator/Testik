@@ -43,7 +43,7 @@ qResult SendSimpleQueryStrWR(QSqlDatabase *db,const QString& q_str)
         qDebug() << query->lastError().driverText();
     }
     else{
-
+        result.query_result = true;
         result.selection_result.clear();
         st_svMAP col;
         while(query->next()){

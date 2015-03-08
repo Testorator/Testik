@@ -3,6 +3,7 @@
 #include "change_admin_pw_dialog.h"
 #include "question_mod_dialog.h"
 #include "dbfunc.h"
+#include "add_stud_dlg.h"
 
 #include <QDebug>
 #include <QDir>
@@ -136,7 +137,7 @@ void admin_form::getStudentsList()
 //
 void admin_form::on_toolButton_Add_Stud_clicked()
 {
-  if(ui->toolButton_Add_Stud->text() == tr("Add")) ui->toolButton_Add_Stud->showMenu();
+    if(ui->toolButton_Add_Stud->text() == tr("Add")) ui->toolButton_Add_Stud->showMenu();
 }
 //
 void admin_form::on_actionAddGroup_triggered()
@@ -147,7 +148,7 @@ void admin_form::on_actionAddGroup_triggered()
 
     qDebug() << "Add group clicked";
     QString in_grp = QInputDialog::getText(this,
-                                           QObject::tr("Input group name"),
+                                           tr("Input group name"),
                                            QObject::tr("Please name of new group"));
     if(in_grp.trimmed().length() > 0){
         qResult q_res = SendSimpleQueryStrWR(&db,"SELECT CODE FROM GROUPS WHERE CODE='"+in_grp.trimmed()+"';");
@@ -156,7 +157,7 @@ void admin_form::on_actionAddGroup_triggered()
         }
         else{
             if(q_res.selection_result.count() > 0){
-                QMessageBox::critical(this,tr("Error"),tr("Group with name ")+""""+in_grp.trimmed()+""""+tr(" already exists!"));
+                QMessageBox::critical(this,tr("Error"),tr("Group with name ")+"\""+in_grp.trimmed()+"\""+tr(" already exists!"));
             }
             else{
                 q_res = SendSimpleQueryStr(&db,"INSERT INTO GROUPS(CODE) VALUES('"+in_grp.trimmed()+"');");
@@ -177,19 +178,86 @@ void admin_form::on_actionAddStud_triggered()
     ui->toolButton_Add_Stud->setText(addStud->text());
     connect(ui->toolButton_Add_Stud,SIGNAL(clicked()),this,SLOT(on_actionAddStud_triggered()));
 
-    qDebug() << "Add stud clicked";
+    //    QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
+    //    if(curItem){
+    //        if(curItem->childCount() > 0){ // edit group
+    //            studData.grp_code = curItem->text(0);
+    //            studData.grp_id = QVariant(curItem->text(1)).toInt();
+    //            QString in_grp = QInputDialog::getText(this,
+    //                                                   tr("Modification group name"),
+    //                                                   tr("Please enter new name for group")+" \""+studData.grp_code+"\"",
+    //                                                   QLineEdit::Normal,
+    //                                                   studData.grp_code);
+    //            qDebug() << "new name=" << in_grp;
+    //        }
+    //    }
+
+
 }
 //
 void admin_form::on_pushButton_Edit_Stud_clicked()
 {
-    QTreeWidgetItem *cur_item = ui->treeWidget_students->currentItem();
-    if(!cur_item){
+    QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
+    if(!curItem){
         QMessageBox::information(this,
                                  tr("Information"),
                                  tr("Please select group or student for modification"));
     }
     else{
-        qDebug() << "name: " << cur_item->text(0) << " id:" << cur_item->text(1);
+        stud_data studData;
+
+        if(!curItem->parent()){ // edit group
+            QString in_grp = QInputDialog::getText(this,
+                                                   tr("Modification group name"),
+                                                   tr("Please enter new name for group")+" \""+curItem->text(0)+"\"",
+                                                   QLineEdit::Normal,
+                                                   curItem->text(0)).trimmed();
+            if(in_grp.length() > 0){
+                // check for unique
+                qResult q_res = SendSimpleQueryStrWR(&db,"SELECT * FROM GROUPS WHERE CODE=\'"+in_grp+"\';");
+                if(!q_res.query_result){
+                    QMessageBox::critical(this,tr("Error"),q_res.text);
+                }
+                else{
+                    if(q_res.selection_result.count() > 0){
+                        QMessageBox::critical(this,
+                                              tr("Error"),
+                                              tr("Group with name")+" \""+in_grp+"\" "+tr("already exists!"));
+                    }
+                    else{
+                        qResult q_res = SendSimpleQueryStr(&db,
+                                                           "UPDATE GROUPS SET CODE=\'"+in_grp+"\' WHERE CODE=\'"
+                                                           +curItem->text(0)+"\' AND ID="+curItem->text(1)+";");
+                        if(!q_res.query_result){
+                            QMessageBox::critical(this,tr("Error"),q_res.text);
+                        }
+                        else{
+                            getStudentsList();
+                        }
+                    }
+                }
+            }
+        }
+        else{ // edit student
+            qResult q_res = SendSimpleQueryStrWR(&db,
+                                                 "SELECT * FROM GROUPS WHERE ID="+curItem->text(1)+
+                                                 " AND GROUP_ID="+curItem->parent()->text(1)+";");
+            if(!q_res.query_result){
+                QMessageBox::critical(this,tr("Error"),q_res.text);
+            }
+            else{
+                studData.grp_code = curItem->parent()->text(0);
+                studData.grp_id = QVariant(curItem->parent()->text(1)).toInt();
+                studData.stud_id = QVariant(curItem->text(1)).toInt();
+                studData.stud_name = q_res.selection_result.at(0).map["NAME"].toString();
+                studData.stud_patronymic = q_res.selection_result.at(0).map["PATRONIMYC"].toString();
+                studData.stud_surename = q_res.selection_result.at(0).map["SURENAME"].toString();
+                add_stud_dlg dlg(&studData,this);
+                if(dlg.exec() == 1){
+                    qDebug() << "grp_id: " << studData.grp_id << " grp_code: " << studData.grp_code;
+                }
+            }
+        }
     }
 }
 // --- tab students --- }}
