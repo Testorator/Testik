@@ -178,6 +178,33 @@ void admin_form::on_actionAddStud_triggered()
     ui->toolButton_Add_Stud->setText(addStud->text());
     connect(ui->toolButton_Add_Stud,SIGNAL(clicked()),this,SLOT(on_actionAddStud_triggered()));
 
+    qResult q_res = SendSimpleQueryStrWR(&db,
+                                         "SELECT * FROM GROUPS;");
+    if(!q_res.query_result){
+        QMessageBox::critical(this,tr("Error"),q_res.text);
+    }
+    else{
+        add_stud_dlg dlg(this);
+        dlg.setWindowTitle(tr("Add new student"));
+        dlg.comboBox_groups_clear();
+        for(int i = 0;i < q_res.selection_result.count(); i++){
+            dlg.comboBox_groups_addItem(q_res.selection_result.at(i).map["CODE"].toString(),
+                    q_res.selection_result.at(i).map["ID"]);
+        }
+
+        QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
+        if(!curItem->parent()){
+            dlg.comboBox_groups_set_curItem(curItem->text(0));
+        }
+        else {
+           dlg.comboBox_groups_set_curItem(curItem->parent()->text(0));
+        }
+
+        if(dlg.exec() == 1){
+            int x=0;
+
+        }
+    }
     //    QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
     //    if(curItem){
     //        if(curItem->childCount() > 0){ // edit group
@@ -204,7 +231,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                                  tr("Please select group or student for modification"));
     }
     else{
-        stud_data studData;
+        full_stud_data studData;
 
         if(!curItem->parent()){ // edit group
             QString in_grp = QInputDialog::getText(this,
@@ -246,15 +273,15 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                 QMessageBox::critical(this,tr("Error"),q_res.text);
             }
             else{
-                studData.grp_code = curItem->parent()->text(0);
-                studData.grp_id = QVariant(curItem->parent()->text(1)).toInt();
-                studData.stud_id = QVariant(curItem->text(1)).toInt();
-                studData.stud_name = q_res.selection_result.at(0).map["NAME"].toString();
-                studData.stud_patronymic = q_res.selection_result.at(0).map["PATRONIMYC"].toString();
-                studData.stud_surename = q_res.selection_result.at(0).map["SURENAME"].toString();
-                add_stud_dlg dlg(&studData,this);
+                studData.grp.grp_code = curItem->parent()->text(0);
+                studData.grp.grp_id = QVariant(curItem->parent()->text(1)).toInt();
+                studData.stud.stud_id = QVariant(curItem->text(1)).toInt();
+                studData.stud.stud_name = q_res.selection_result.at(0).map["NAME"].toString();
+                studData.stud.stud_patronymic = q_res.selection_result.at(0).map["PATRONIMYC"].toString();
+                studData.stud.stud_surename = q_res.selection_result.at(0).map["SURENAME"].toString();
+                add_stud_dlg dlg(this);
                 if(dlg.exec() == 1){
-                    qDebug() << "grp_id: " << studData.grp_id << " grp_code: " << studData.grp_code;
+                    qDebug() << "grp_id: " << studData.grp.grp_id << " grp_code: " << studData.grp.grp_code;
                 }
             }
         }
