@@ -77,6 +77,12 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>comboBox_Groups</tabstop>
+  <tabstop>lineEdit_Surename</tabstop>
+  <tabstop>lineEdit_Name</tabstop>
+  <tabstop>lineEdit_Patronymic</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

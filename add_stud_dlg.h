@@ -15,10 +15,6 @@ struct stud_data{
     QString stud_patronymic;
 };
 
-struct full_stud_data{
-    grp_data grp;
-    stud_data stud;
-};
 
 namespace Ui {
 class add_stud_dlg;
@@ -34,12 +30,16 @@ public:
     void comboBox_groups_clear();
     void comboBox_groups_addItem(QString item, QVariant itemID);
     void comboBox_groups_set_curItem(QString item);
-    stud_data get_stud_data();
-    grp_data get_group_data();
-    full_stud_data get_full_stud_data();
+    void lineEdit_Name_setText(QString value);
+    void lineEdit_Surename_setText(QString value);
+    void lineEdit_Patronymic_setText(QString value);
+    QVariant get_group_id();
+    QString get_group_code();
     QString get_lineEdit_Name();
     QString get_lineEdit_Surename();
     QString get_lineEdit_Patronymic();
+    stud_data get_stud_data();
+    grp_data get_group_data();
 
 private:
     Ui::add_stud_dlg *ui;

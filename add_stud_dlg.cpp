@@ -40,17 +40,8 @@ stud_data add_stud_dlg::get_stud_data()
 //
 grp_data add_stud_dlg::get_group_data(){
     grp_data result;
-    result.grp_id = ui->comboBox_Groups->currentData().toInt();
-    result.grp_code = ui->comboBox_Groups->currentText();
-
-    return result;
-}
-//
-full_stud_data add_stud_dlg::get_full_stud_data()
-{
-    full_stud_data result;
-    result.grp = get_group_data();
-    result.stud = get_stud_data();
+    result.grp_id = get_group_id().toInt();
+    result.grp_code = get_group_code();
 
     return result;
 }
@@ -59,14 +50,40 @@ QString add_stud_dlg::get_lineEdit_Name()
 {
     return ui->lineEdit_Name->text().trimmed();
 }
-
+//
+void add_stud_dlg::lineEdit_Name_setText(QString value)
+{
+    ui->lineEdit_Name->setText(value);
+}
+//
 QString add_stud_dlg::get_lineEdit_Surename()
 {
     return ui->lineEdit_Surename->text().trimmed();
 }
 //
+void add_stud_dlg::lineEdit_Surename_setText(QString value)
+{
+    ui->lineEdit_Surename->setText(value);
+}
+//
 QString add_stud_dlg::get_lineEdit_Patronymic()
 {
     return ui->lineEdit_Patronymic->text().trimmed();
+}
+//
+void add_stud_dlg::lineEdit_Patronymic_setText(QString value)
+{
+    ui->lineEdit_Patronymic->setText(value);
+}
+
+//
+QVariant add_stud_dlg::get_group_id()
+{
+    return ui->comboBox_Groups->currentData();
+}
+//
+QString add_stud_dlg::get_group_code()
+{
+    return ui->comboBox_Groups->currentText();
 }
 //

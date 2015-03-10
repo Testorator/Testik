@@ -3,12 +3,12 @@
 #include "change_admin_pw_dialog.h"
 #include "question_mod_dialog.h"
 #include "dbfunc.h"
-#include "add_stud_dlg.h"
 
 #include <QDebug>
 #include <QDir>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QMenu>
 
 
 admin_form::admin_form(QWidget *parent) :
@@ -117,21 +117,46 @@ void admin_form::on_listWidget_DB_clicked()
 // --- tab students --- {{
 void admin_form::getStudentsList()
 {
-    qResult q_res = SendSimpleQueryStrWR(&db,"SELECT * FROM GROUPS");
-    if(q_res.query_result){
-        QList<QTreeWidgetItem *> items;
-        QList<QString> item;
+    qResult q_groups_res = SendSimpleQueryStrWR(&db,"SELECT * FROM GROUPS");
+    qResult q_stud_res;
+    if(q_groups_res.query_result){
+        QList<QTreeWidgetItem *> groups, students;
+
+        QList<QString> group, student;
         ui->treeWidget_students->clear();
-        for(int i = 0;i < q_res.selection_result.count(); i++){
-            item.clear();
-            item.append(q_res.selection_result.at(i).map["CODE"].toString());
-            item.append(q_res.selection_result.at(i).map["ID"].toString());
-            items.append(new QTreeWidgetItem((QTreeWidget*)0,
-                                             QStringList(item)
-                                             ));
+        for(int i = 0;i < q_groups_res.selection_result.count(); i++){
+            group.clear();
+            students.clear();
+            q_stud_res.query_result = false;
+            group.append(q_groups_res.selection_result.at(i).map["CODE"].toString());
+            group.append(q_groups_res.selection_result.at(i).map["ID"].toString());
+
+            q_stud_res = SendSimpleQueryStrWR(&db,
+                                              "SELECT * FROM STUDENTS WHERE GROUP_ID="+
+                                              q_groups_res.selection_result.at(i).map["ID"].toString()+
+                    ";");
+            if(q_stud_res.query_result){
+                for(int s = 0;s < q_stud_res.selection_result.count(); s++){
+                    student.append(q_stud_res.selection_result.at(s).map["SURENAME"].toString()+" "+
+                            q_stud_res.selection_result.at(s).map["NAME"].toString()+" "+
+                            q_stud_res.selection_result.at(s).map["PATRONIMYC"].toString());
+                    student.append(q_stud_res.selection_result.at(s).map["ID"].toString());
+                    students.append(new QTreeWidgetItem((QTreeWidget*)0,
+                                                        QStringList(student)));
+                }
+            }
+            else{
+                QMessageBox::critical(this,tr("Error"),q_stud_res.text);
+            }
+            QTreeWidgetItem *item = new QTreeWidgetItem((QTreeWidget*)0,QStringList(group));
+            item->addChildren(students);
+            groups.append(item);
 
         }
-        ui->treeWidget_students->insertTopLevelItems(0,items);
+        ui->treeWidget_students->insertTopLevelItems(0,groups);
+    }
+    else{
+        QMessageBox::critical(this,tr("Error"),q_groups_res.text);
     }
 }
 //
@@ -172,54 +197,72 @@ void admin_form::on_actionAddGroup_triggered()
     }
 }
 //
+bool admin_form::prepareAddStudDlg(add_stud_dlg *dlg)
+{
+    qResult q_res = SendSimpleQueryStrWR(&db,"SELECT * FROM GROUPS;");
+    if(!q_res.query_result){
+        QMessageBox::critical(this,tr("Error"),q_res.text);
+    }
+    else{
+        dlg->comboBox_groups_clear();
+        for(int i = 0;i < q_res.selection_result.count(); i++){
+            dlg->comboBox_groups_addItem(q_res.selection_result.at(i).map["CODE"].toString(),
+                    q_res.selection_result.at(i).map["ID"]);
+        }
+
+        QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
+        if(!curItem->parent()){
+            dlg->comboBox_groups_set_curItem(curItem->text(0));
+        }
+        else {
+            dlg->comboBox_groups_set_curItem(curItem->parent()->text(0));
+        }
+    }
+    return q_res.query_result;
+}
+//
 void admin_form::on_actionAddStud_triggered()
 {
     // save last selection for Add button as "student"
     ui->toolButton_Add_Stud->setText(addStud->text());
     connect(ui->toolButton_Add_Stud,SIGNAL(clicked()),this,SLOT(on_actionAddStud_triggered()));
 
-    qResult q_res = SendSimpleQueryStrWR(&db,
-                                         "SELECT * FROM GROUPS;");
-    if(!q_res.query_result){
-        QMessageBox::critical(this,tr("Error"),q_res.text);
-    }
-    else{
-        add_stud_dlg dlg(this);
-        dlg.setWindowTitle(tr("Add new student"));
-        dlg.comboBox_groups_clear();
-        for(int i = 0;i < q_res.selection_result.count(); i++){
-            dlg.comboBox_groups_addItem(q_res.selection_result.at(i).map["CODE"].toString(),
-                    q_res.selection_result.at(i).map["ID"]);
-        }
+    add_stud_dlg dlg(this);
+    dlg.setWindowTitle(tr("Add new student"));
 
-        QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
-        if(!curItem->parent()){
-            dlg.comboBox_groups_set_curItem(curItem->text(0));
-        }
-        else {
-           dlg.comboBox_groups_set_curItem(curItem->parent()->text(0));
-        }
-
+    if(prepareAddStudDlg(&dlg)){
         if(dlg.exec() == 1){
-            int x=0;
-
+            qResult q_res = SendSimpleQueryStrWR(&db,
+                                                 "SELECT count(*) AS STUD_EXISTS FROM STUDENTS WHERE NAME=\'"+
+                                                 dlg.get_lineEdit_Name()+"\' AND SURENAME=\'"+
+                                                 dlg.get_lineEdit_Surename()+"\' AND PATRONIMYC=\'"+
+                                                 dlg.get_lineEdit_Patronymic()+"\' AND GROUP_ID="+
+                                                 dlg.get_group_id().toString()+";");
+            if(!q_res.query_result){
+                QMessageBox::critical(this,tr("Error"),q_res.text);
+            }
+            else{
+                if(q_res.selection_result.at(0).map["STUD_EXISTS"].toInt() > 0){
+                    QMessageBox::critical(this,tr("Error"),
+                                          tr("Student")+" \""+dlg.get_lineEdit_Surename()+" "+
+                                          dlg.get_lineEdit_Name()+" "+dlg.get_lineEdit_Patronymic()+
+                                          "\" "+tr("already exists in group")+" \""+dlg.get_group_code()+"\"");
+                }
+                else{
+                    q_res = SendSimpleQueryStr(&db,
+                                               "INSERT INTO STUDENTS(GROUP_ID,NAME,SURENAME,PATRONIMYC) VALUES("+
+                                               dlg.get_group_id().toString()+",\'"+dlg.get_lineEdit_Name()+"\',\'"+
+                                               dlg.get_lineEdit_Surename()+"\',\'"+dlg.get_lineEdit_Patronymic()+"\');");
+                    if(!q_res.query_result){
+                        QMessageBox::critical(this,tr("Error"),q_res.text);
+                    }
+                    else{
+                        getStudentsList();
+                    }
+                }
+            }
         }
     }
-    //    QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
-    //    if(curItem){
-    //        if(curItem->childCount() > 0){ // edit group
-    //            studData.grp_code = curItem->text(0);
-    //            studData.grp_id = QVariant(curItem->text(1)).toInt();
-    //            QString in_grp = QInputDialog::getText(this,
-    //                                                   tr("Modification group name"),
-    //                                                   tr("Please enter new name for group")+" \""+studData.grp_code+"\"",
-    //                                                   QLineEdit::Normal,
-    //                                                   studData.grp_code);
-    //            qDebug() << "new name=" << in_grp;
-    //        }
-    //    }
-
-
 }
 //
 void admin_form::on_pushButton_Edit_Stud_clicked()
@@ -231,8 +274,6 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                                  tr("Please select group or student for modification"));
     }
     else{
-        full_stud_data studData;
-
         if(!curItem->parent()){ // edit group
             QString in_grp = QInputDialog::getText(this,
                                                    tr("Modification group name"),
@@ -267,26 +308,88 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
         }
         else{ // edit student
             qResult q_res = SendSimpleQueryStrWR(&db,
-                                                 "SELECT * FROM GROUPS WHERE ID="+curItem->text(1)+
+                                                 "SELECT * FROM STUDENTS WHERE ID="+curItem->text(1)+
                                                  " AND GROUP_ID="+curItem->parent()->text(1)+";");
             if(!q_res.query_result){
                 QMessageBox::critical(this,tr("Error"),q_res.text);
             }
             else{
-                studData.grp.grp_code = curItem->parent()->text(0);
-                studData.grp.grp_id = QVariant(curItem->parent()->text(1)).toInt();
-                studData.stud.stud_id = QVariant(curItem->text(1)).toInt();
-                studData.stud.stud_name = q_res.selection_result.at(0).map["NAME"].toString();
-                studData.stud.stud_patronymic = q_res.selection_result.at(0).map["PATRONIMYC"].toString();
-                studData.stud.stud_surename = q_res.selection_result.at(0).map["SURENAME"].toString();
                 add_stud_dlg dlg(this);
-                if(dlg.exec() == 1){
-                    qDebug() << "grp_id: " << studData.grp.grp_id << " grp_code: " << studData.grp.grp_code;
+                dlg.setWindowTitle(tr("Edit student"));
+
+                if(prepareAddStudDlg(&dlg)){
+                    dlg.lineEdit_Name_setText(q_res.selection_result.at(0).map["NAME"].toString());
+                    dlg.lineEdit_Surename_setText(q_res.selection_result.at(0).map["SURENAME"].toString());
+                    dlg.lineEdit_Patronymic_setText(q_res.selection_result.at(0).map["PATRONIMYC"].toString());
+//                    studData.stud.stud_id = QVariant(curItem->text(1)).toInt();
+
+                    if(dlg.exec() == 1){
+                        QString updFields;
+                        updFields.clear();
+                        if(dlg.get_group_id() != q_res.selection_result.at(0).map["GROUP_ID"]){
+                            updFields.append("GROUP_ID="+dlg.get_group_id().toString());
+                        };
+
+                        if(dlg.get_lineEdit_Name() != q_res.selection_result.at(0).map["NAME"].toString()){
+                            if(updFields.length() > 0) updFields.append(",");
+                            updFields.append("NAME=\'"+dlg.get_lineEdit_Name()+"\'");
+                        }
+
+                        if(dlg.get_lineEdit_Surename() != q_res.selection_result.at(0).map["SURENAME"].toString()){
+                            if(updFields.length() > 0) updFields.append(",");
+                            updFields.append("SURENAME=\'"+dlg.get_lineEdit_Surename()+"\'");
+                        }
+
+                        if(dlg.get_lineEdit_Patronymic() != q_res.selection_result.at(0).map["PATRONIMYC"].toString()){
+                            if(updFields.length() > 0) updFields.append(",");
+                            updFields.append("PATRONIMYC=\'"+dlg.get_lineEdit_Patronymic()+"\'");
+                        }
+
+                        if(updFields.length() > 0){
+                            q_res = SendSimpleQueryStr(&db,"UPDATE STUDENTS SET "+updFields+" WHERE ID="+curItem->text(1)+
+                                                       " AND GROUP_ID="+curItem->parent()->text(1)+";");
+                            if(!q_res.query_result)QMessageBox::critical(this,tr("Error"),q_res.text);
+
+                        }
+                    }
                 }
             }
         }
     }
 }
+//
+void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint &pos)
+{
+    QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
+    if(curItem){
+        QMenu *menu=new QMenu(this);
+        if(!curItem->parent()){
+            QAction *act_EditGroup = new QAction(tr("Edit group"), this);
+            connect(act_EditGroup,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
+            QAction *act_ClearGroup = new QAction(tr("Clear group"),this);
+            QAction *act_DelGroup = new QAction(tr("Delete group"),this);
+            menu->addAction(addStud);
+            menu->addSeparator();
+            menu->addAction(addGroup);
+            menu->addAction(act_EditGroup);
+            menu->addSeparator();
+            menu->addAction(act_ClearGroup);
+            menu->addAction(act_DelGroup);
+        }
+        else{
+            QAction *act_EditStud = new QAction(tr("Edit student"), this);
+            connect(act_EditStud,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
+            QAction *act_DelStud = new QAction(tr("Delete student"),this);
+            menu->addAction(addStud);
+            menu->addAction(act_EditStud);
+            menu->addSeparator();
+            menu->addAction(act_DelStud);
+        }
+        menu->popup(ui->treeWidget_students->viewport()->mapToGlobal(pos));
+    }
+}
 // --- tab students --- }}
+
+
 
 

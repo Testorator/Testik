@@ -222,6 +222,9 @@
           </item>
           <item row="0" column="0" colspan="6">
            <widget class="QTreeWidget" name="treeWidget_students">
+            <property name="contextMenuPolicy">
+             <enum>Qt::CustomContextMenu</enum>
+            </property>
             <property name="rootIsDecorated">
              <bool>true</bool>
             </property>
