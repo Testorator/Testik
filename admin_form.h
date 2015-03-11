@@ -32,7 +32,7 @@ private slots:
     void on_pushButton_clicked();
     void on_pushButton_AddDB_clicked();
     void on_listWidget_DB_clicked();
-    void on_actionAddGroup_triggered();
+    void on_actionAddGroup_triggered(QString group_code = 0);
     void on_actionAddStud_triggered();
     void on_pushButton_Edit_Stud_clicked();
     void on_toolButton_Add_Stud_clicked();

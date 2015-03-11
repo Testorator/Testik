@@ -102,7 +102,8 @@ void admin_form::on_listWidget_DB_clicked()
     if(db.isOpen()) db.close();
     db.setDatabaseName(QApplication::applicationDirPath()+"/data/"+db_file);
     db.setUserName("SYSDBA");
-    db.setPassword("masterkey");
+    //    db.setPassword("masterkey");
+    db.setPassword("XGn8#w!H");
     db.open();
     setAvailabilityOfItems(db.isOpen());
     if(db.isOpen()){
@@ -119,46 +120,38 @@ void admin_form::on_listWidget_DB_clicked()
 // --- tab students --- {{
 void admin_form::getStudentsList()
 {
-    qResult q_groups_res = SendSimpleQueryStrWR(&db,"SELECT * FROM GROUPS");
-    qResult q_stud_res;
-    if(q_groups_res.query_result){
+    QList<st_svMAP> q_res_groups, q_res_stud;
+    q_res_groups.append(getGroups(&db));
+
+    if(q_res_groups.count() > 0){
         QList<QTreeWidgetItem *> groups, students;
 
         QList<QString> group, student;
         ui->treeWidget_students->clear();
-        for(int i = 0;i < q_groups_res.selection_result.count(); i++){
+        for(int i = 0;i < q_res_groups.count(); i++){
             group.clear();
             students.clear();
-            q_stud_res.query_result = false;
-            group.append(q_groups_res.selection_result.at(i).map["CODE"].toString());
-            group.append(q_groups_res.selection_result.at(i).map["ID"].toString());
 
-            q_stud_res = SendSimpleQueryStrWR(&db,
-                                              "SELECT * FROM STUDENTS WHERE GROUP_ID="+
-                                              q_groups_res.selection_result.at(i).map["ID"].toString()+
-                    ";");
-            if(q_stud_res.query_result){
-                for(int s = 0;s < q_stud_res.selection_result.count(); s++){
-                    student.append(q_stud_res.selection_result.at(s).map["SURENAME"].toString()+" "+
-                            q_stud_res.selection_result.at(s).map["NAME"].toString()+" "+
-                            q_stud_res.selection_result.at(s).map["PATRONIMYC"].toString());
-                    student.append(q_stud_res.selection_result.at(s).map["ID"].toString());
-                    students.append(new QTreeWidgetItem((QTreeWidget*)0,
-                                                        QStringList(student)));
-                }
-            }
-            else{
-                QMessageBox::critical(this,tr("Error"),q_stud_res.text);
+            group.append(q_res_groups.at(i).map["CODE"].toString());
+            group.append(q_res_groups.at(i).map["ID"].toString());
+
+            q_res_stud.clear();
+            q_res_stud = getStudents(&db,q_res_groups.at(i).map["ID"].toString());
+
+            for(int s = 0;s < q_res_stud.count(); s++){
+                student.clear();
+                student.append(q_res_stud.at(s).map["SURENAME"].toString()+" "+
+                        q_res_stud.at(s).map["NAME"].toString()+" "+
+                        q_res_stud.at(s).map["PATRONIMYC"].toString());
+                student.append(q_res_stud.at(s).map["ID"].toString());
+                students.append(new QTreeWidgetItem((QTreeWidget*)0,
+                                                    QStringList(student)));
             }
             QTreeWidgetItem *item = new QTreeWidgetItem((QTreeWidget*)0,QStringList(group));
             item->addChildren(students);
             groups.append(item);
-
         }
         ui->treeWidget_students->insertTopLevelItems(0,groups);
-    }
-    else{
-        QMessageBox::critical(this,tr("Error"),q_groups_res.text);
     }
 }
 //
@@ -167,49 +160,34 @@ void admin_form::on_toolButton_Add_Stud_clicked()
     if(ui->toolButton_Add_Stud->text() == tr("Add")) ui->toolButton_Add_Stud->showMenu();
 }
 //
-void admin_form::on_actionAddGroup_triggered()
+void admin_form::on_actionAddGroup_triggered(QString group_code)
 {
-    // save last selection for Add button as "group"
-    ui->toolButton_Add_Stud->setText(addGroup->text());
-    connect(ui->toolButton_Add_Stud,SIGNAL(clicked()),this,SLOT(on_actionAddGroup_triggered()));
+    QString in_grp;
+    if(group_code.isEmpty()){
+        // save last selection for Add button as "group"
+        ui->toolButton_Add_Stud->setText(addGroup->text());
+        connect(ui->toolButton_Add_Stud,SIGNAL(clicked()),this,SLOT(on_actionAddGroup_triggered()));
 
-    qDebug() << "Add group clicked";
-    QString in_grp = QInputDialog::getText(this,
-                                           tr("Input group name"),
-                                           QObject::tr("Please name of new group"));
+        in_grp = QInputDialog::getText(this,tr("Input group name"),QObject::tr("Please name of new group")).trimmed();
+    }
+    else{
+        in_grp = group_code.trimmed();
+    }
+
     if(in_grp.trimmed().length() > 0){
-        qResult q_res = SendSimpleQueryStrWR(&db,"SELECT CODE FROM GROUPS WHERE CODE='"+in_grp.trimmed()+"';");
-        if(!q_res.query_result){
-            QMessageBox::critical(this,tr("Error"),q_res.text);
-        }
-        else{
-            if(q_res.selection_result.count() > 0){
-                QMessageBox::critical(this,tr("Error"),tr("Group with name ")+"\""+in_grp.trimmed()+"\""+tr(" already exists!"));
-            }
-            else{
-                q_res = SendSimpleQueryStr(&db,"INSERT INTO GROUPS(CODE) VALUES('"+in_grp.trimmed()+"');");
-                if(!q_res.query_result){
-                    QMessageBox::critical(this,tr("Error"),q_res.text);
-                }
-                else{
-                    getStudentsList();
-                }
-            }
-        }
+        if(addNewGroup(&db,in_grp)) getStudentsList();
     }
 }
 //
 bool admin_form::prepareAddStudDlg(add_stud_dlg *dlg)
 {
-    qResult q_res = SendSimpleQueryStrWR(&db,"SELECT * FROM GROUPS;");
-    if(!q_res.query_result){
-        QMessageBox::critical(this,tr("Error"),q_res.text);
-    }
-    else{
+    QList<st_svMAP> q_res_groups = getGroups(&db);
+    bool result;
+    if(q_res_groups.count() > 0){
         dlg->comboBox_groups_clear();
-        for(int i = 0;i < q_res.selection_result.count(); i++){
-            dlg->comboBox_groups_addItem(q_res.selection_result.at(i).map["CODE"].toString(),
-                    q_res.selection_result.at(i).map["ID"]);
+        for(int i = 0;i < q_res_groups.count(); i++){
+            dlg->comboBox_groups_addItem(q_res_groups.at(i).map["CODE"].toString(),
+                    q_res_groups.at(i).map["ID"]);
         }
 
         QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
@@ -219,8 +197,12 @@ bool admin_form::prepareAddStudDlg(add_stud_dlg *dlg)
         else {
             dlg->comboBox_groups_set_curItem(curItem->parent()->text(0));
         }
+        result = true;
     }
-    return q_res.query_result;
+    else{
+        result = false;
+    }
+    return result;
 }
 //
 void admin_form::on_actionAddStud_triggered()
@@ -234,33 +216,21 @@ void admin_form::on_actionAddStud_triggered()
 
     if(prepareAddStudDlg(&dlg)){
         if(dlg.exec() == 1){
-            qResult q_res = SendSimpleQueryStrWR(&db,
-                                                 "SELECT count(*) AS STUD_EXISTS FROM STUDENTS WHERE NAME=\'"+
-                                                 dlg.get_lineEdit_Name()+"\' AND SURENAME=\'"+
-                                                 dlg.get_lineEdit_Surename()+"\' AND PATRONIMYC=\'"+
-                                                 dlg.get_lineEdit_Patronymic()+"\' AND GROUP_ID="+
-                                                 dlg.get_group_id().toString()+";");
-            if(!q_res.query_result){
-                QMessageBox::critical(this,tr("Error"),q_res.text);
-            }
-            else{
-                if(q_res.selection_result.at(0).map["STUD_EXISTS"].toInt() > 0){
-                    QMessageBox::critical(this,tr("Error"),
-                                          tr("Student")+" \""+dlg.get_lineEdit_Surename()+" "+
-                                          dlg.get_lineEdit_Name()+" "+dlg.get_lineEdit_Patronymic()+
-                                          "\" "+tr("already exists in group")+" \""+dlg.get_group_code()+"\"");
+            if(studUnique(&db,
+                          dlg.get_lineEdit_Surename().trimmed(),
+                          dlg.get_lineEdit_Surename().trimmed(),
+                          dlg.get_lineEdit_Patronymic().trimmed(),
+                          dlg.get_group_id().toString())){
+
+                bool q_res = SendSimpleQueryStr(&db,
+                                                "INSERT INTO STUDENTS(GROUP_ID,NAME,SURENAME,PATRONIMYC) VALUES("+
+                                                dlg.get_group_id().toString()+",\'"+dlg.get_lineEdit_Name()+"\',\'"+
+                                                dlg.get_lineEdit_Surename()+"\',\'"+dlg.get_lineEdit_Patronymic()+"\');");
+                if(!q_res){
+                    QMessageBox::critical(this,tr("Error"),"ERROR!!!");
                 }
                 else{
-                    q_res = SendSimpleQueryStr(&db,
-                                               "INSERT INTO STUDENTS(GROUP_ID,NAME,SURENAME,PATRONIMYC) VALUES("+
-                                               dlg.get_group_id().toString()+",\'"+dlg.get_lineEdit_Name()+"\',\'"+
-                                               dlg.get_lineEdit_Surename()+"\',\'"+dlg.get_lineEdit_Patronymic()+"\');");
-                    if(!q_res.query_result){
-                        QMessageBox::critical(this,tr("Error"),q_res.text);
-                    }
-                    else{
-                        getStudentsList();
-                    }
+                    getStudentsList();
                 }
             }
         }
@@ -283,79 +253,68 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                                                    QLineEdit::Normal,
                                                    curItem->text(0)).trimmed();
             if(in_grp.length() > 0){
-                // check for unique
-                qResult q_res = SendSimpleQueryStrWR(&db,"SELECT * FROM GROUPS WHERE CODE=\'"+in_grp+"\';");
-                if(!q_res.query_result){
-                    QMessageBox::critical(this,tr("Error"),q_res.text);
-                }
-                else{
-                    if(q_res.selection_result.count() > 0){
-                        QMessageBox::critical(this,
-                                              tr("Error"),
-                                              tr("Group with name")+" \""+in_grp+"\" "+tr("already exists!"));
-                    }
-                    else{
-                        qResult q_res = SendSimpleQueryStr(&db,
-                                                           "UPDATE GROUPS SET CODE=\'"+in_grp+"\' WHERE CODE=\'"
-                                                           +curItem->text(0)+"\' AND ID="+curItem->text(1)+";");
-                        if(!q_res.query_result){
-                            QMessageBox::critical(this,tr("Error"),q_res.text);
-                        }
-                        else{
-                            getStudentsList();
-                        }
+                if(grpUnique(&db,in_grp)){
+                    bool q_res = SendSimpleQueryStr(&db,
+                                                    "UPDATE GROUPS SET CODE=\'"+in_grp+"\' WHERE CODE=\'"
+                                                    +curItem->text(0)+"\' AND ID="+curItem->text(1)+";");
+                    if(q_res){
+
+                        getStudentsList();
                     }
                 }
             }
+
         }
         else{ // edit student
-            qResult q_res = SendSimpleQueryStrWR(&db,
-                                                 "SELECT * FROM STUDENTS WHERE ID="+curItem->text(1)+
-                                                 " AND GROUP_ID="+curItem->parent()->text(1)+";");
-            if(!q_res.query_result){
-                QMessageBox::critical(this,tr("Error"),q_res.text);
-            }
-            else{
-                add_stud_dlg dlg(this);
-                dlg.setWindowTitle(tr("Edit student"));
+            int x = 0;
 
-                if(prepareAddStudDlg(&dlg)){
-                    dlg.lineEdit_Name_setText(q_res.selection_result.at(0).map["NAME"].toString());
-                    dlg.lineEdit_Surename_setText(q_res.selection_result.at(0).map["SURENAME"].toString());
-                    dlg.lineEdit_Patronymic_setText(q_res.selection_result.at(0).map["PATRONIMYC"].toString());
-//                    studData.stud.stud_id = QVariant(curItem->text(1)).toInt();
+//            qResult q_res = SendSimpleQueryStrWR(&db,
+//                                                 "SELECT * FROM STUDENTS WHERE ID="+curItem->text(1)+
+//                                                 " AND GROUP_ID="+curItem->parent()->text(1)+";");
+//            if(!q_res.query_result){
+//                QMessageBox::critical(this,tr("Error"),q_res.text);
+//            }
+//            else{
+//                add_stud_dlg dlg(this);
+//                dlg.setWindowTitle(tr("Edit student"));
 
-                    if(dlg.exec() == 1){
-                        QString updFields;
-                        updFields.clear();
-                        if(dlg.get_group_id() != q_res.selection_result.at(0).map["GROUP_ID"]){
-                            updFields.append("GROUP_ID="+dlg.get_group_id().toString());
-                        };
+//                if(prepareAddStudDlg(&dlg)){
+//                    dlg.lineEdit_Name_setText(q_res.selection_result.at(0).map["NAME"].toString());
+//                    dlg.lineEdit_Surename_setText(q_res.selection_result.at(0).map["SURENAME"].toString());
+//                    dlg.lineEdit_Patronymic_setText(q_res.selection_result.at(0).map["PATRONIMYC"].toString());
+//                    //                    studData.stud.stud_id = QVariant(curItem->text(1)).toInt();
 
-                        if(dlg.get_lineEdit_Name() != q_res.selection_result.at(0).map["NAME"].toString()){
-                            if(updFields.length() > 0) updFields.append(",");
-                            updFields.append("NAME=\'"+dlg.get_lineEdit_Name()+"\'");
-                        }
+//                    if(dlg.exec() == 1){
+//                        QString updFields;
+//                        updFields.clear();
+//                        if(dlg.get_group_id() != q_res.selection_result.at(0).map["GROUP_ID"]){
+//                            updFields.append("GROUP_ID="+dlg.get_group_id().toString());
+//                        };
 
-                        if(dlg.get_lineEdit_Surename() != q_res.selection_result.at(0).map["SURENAME"].toString()){
-                            if(updFields.length() > 0) updFields.append(",");
-                            updFields.append("SURENAME=\'"+dlg.get_lineEdit_Surename()+"\'");
-                        }
+//                        if(dlg.get_lineEdit_Name() != q_res.selection_result.at(0).map["NAME"].toString()){
+//                            if(updFields.length() > 0) updFields.append(",");
+//                            updFields.append("NAME=\'"+dlg.get_lineEdit_Name()+"\'");
+//                        }
 
-                        if(dlg.get_lineEdit_Patronymic() != q_res.selection_result.at(0).map["PATRONIMYC"].toString()){
-                            if(updFields.length() > 0) updFields.append(",");
-                            updFields.append("PATRONIMYC=\'"+dlg.get_lineEdit_Patronymic()+"\'");
-                        }
+//                        if(dlg.get_lineEdit_Surename() != q_res.selection_result.at(0).map["SURENAME"].toString()){
+//                            if(updFields.length() > 0) updFields.append(",");
+//                            updFields.append("SURENAME=\'"+dlg.get_lineEdit_Surename()+"\'");
+//                        }
 
-                        if(updFields.length() > 0){
-                            q_res = SendSimpleQueryStr(&db,"UPDATE STUDENTS SET "+updFields+" WHERE ID="+curItem->text(1)+
-                                                       " AND GROUP_ID="+curItem->parent()->text(1)+";");
-                            if(!q_res.query_result)QMessageBox::critical(this,tr("Error"),q_res.text);
+//                        if(dlg.get_lineEdit_Patronymic() != q_res.selection_result.at(0).map["PATRONIMYC"].toString()){
+//                            if(updFields.length() > 0) updFields.append(",");
+//                            updFields.append("PATRONIMYC=\'"+dlg.get_lineEdit_Patronymic()+"\'");
+//                        }
 
-                        }
-                    }
-                }
-            }
+//                        if(updFields.length() > 0){
+//                            q_res = SendSimpleQueryStr(&db,"UPDATE STUDENTS SET "+updFields+" WHERE ID="+curItem->text(1)+
+//                                                       " AND GROUP_ID="+curItem->parent()->text(1)+";");
+//                            if(!q_res.query_result)QMessageBox::critical(this,tr("Error"),q_res.text);
+
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 }
@@ -389,48 +348,48 @@ void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint 
         }
         menu->popup(ui->treeWidget_students->viewport()->mapToGlobal(pos));
     }
- // --- tab students --- }}
+    // --- tab students --- }}
 }
 
 
 void admin_form::on_pushButton_Import_Stud_clicked()
 {
 
-QFile file(QFileDialog::getOpenFileName(this, tr("Open files"),
-                                        "/home/", tr("(*.csv)")));
-QStringList strings;
+    QFile file(QFileDialog::getOpenFileName(this, tr("Open files"),
+                                            "/home/", tr("(*.csv)")));
+    QStringList strings;
 
-if (file.open(QIODevice::ReadOnly | QIODevice::Text))
-{
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream in(&file);
+        while (!in.atEnd()) {
+            strings += in.readLine().split(";");
+        }
+    }
+    else
+    {
+        qDebug() << "Error open for read";
+        QMessageBox::critical(new QWidget,"Error open", "Don't open files!");
+    }
+
+    QList<imp_data> data;
     QTextStream in(&file);
     while (!in.atEnd()) {
-        strings += in.readLine().split(";");
+        strings.clear();
+        strings = in.readLine().split(";");
+        imp_data student;
+        student.group.grp_code = strings.at(0);
+        student.stud.stud_surename = strings.at(1);
+        student.stud.stud_name = strings.at(2);
+        student.stud.stud_patronymic = strings.at(3);
+        data.append(student);
     }
-}
-else
-{
-    qDebug() << "Error open for read";
-    QMessageBox::critical(new QWidget,"Error open", "Don't open files!");
-}
-
-QList<imp_data> data;
-QTextStream in(&file);
- while (!in.atEnd()) {
- strings.clear();
-    strings = in.readLine().split(";");
- imp_data student;
- student.group.grp_code = strings.at(0);
- student.stud.stud_surename = strings.at(1);
- student.stud.stud_name = strings.at(2);
- student.stud.stud_patronymic = strings.at(3);
- data.append(student);
- }
- QSqlQuery query;
- query.prepare("INSERT INTO GROUPS(code) VALUES(:code, :surename, :name, :patronymic)");
- query.bindValue(":code", strings.at(0));
- query.bindValue(":surename", strings.at(1));
- query.bindValue(":name", strings.at(2));
- query.bindValue(":patronymic", strings.at(3));
+    QSqlQuery query;
+    query.prepare("INSERT INTO GROUPS(code) VALUES(:code, :surename, :name, :patronymic)");
+    query.bindValue(":code", strings.at(0));
+    query.bindValue(":surename", strings.at(1));
+    query.bindValue(":name", strings.at(2));
+    query.bindValue(":patronymic", strings.at(3));
 
 
 }

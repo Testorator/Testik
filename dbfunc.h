@@ -12,13 +12,20 @@ struct st_svMAP{
     QMap<QString,QVariant> map;
 };
 
-struct qResult{
-    bool query_result;
-    QString text;
-    QList<st_svMAP> selection_result;
+struct st_qRes{
+    bool q_result;
+    QList<st_svMAP> sel_data;
 };
 
-qResult SendSimpleQueryStr(QSqlDatabase *db, const QString& q_str);
-qResult SendSimpleQueryStrWR(QSqlDatabase *db,const QString& q_str);
+bool SendSimpleQueryStr(QSqlDatabase *db, const QString& q_str);
+st_qRes SendSimpleQueryStrWR(QSqlDatabase *db,const QString& q_str);
+QString getGroupCodeById(QSqlDatabase *db,QString grpId);
+QList<st_svMAP> getGroups(QSqlDatabase *db);
+
+bool addNewGroup(QSqlDatabase *db, const QString grpCode);
+bool grpUnique(QSqlDatabase *db, const QString grpCode);
+//
+QList<st_svMAP> getStudents(QSqlDatabase *db,QString groupID = 0 );
+bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, const QString Patrinymic, QString grpId = 0);
 #endif // DBFUNC
 
