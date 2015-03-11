@@ -8,9 +8,16 @@
 #include <QtSql/QSqlDatabase>
 
 
+
 namespace Ui {
 class admin_form;
 }
+
+struct imp_data {
+    grp_data group;
+     stud_data stud;
+    };
+
 
 class admin_form : public QMainWindow
 {
@@ -31,6 +38,8 @@ private slots:
     void on_toolButton_Add_Stud_clicked();
     void on_treeWidget_students_customContextMenuRequested(const QPoint &pos);
 
+    void on_pushButton_Import_Stud_clicked();
+
 private:
     Ui::admin_form *ui;
     QSqlDatabase db;
@@ -39,6 +48,7 @@ private:
     void setAvailabilityOfItems(bool val);
     void getStudentsList();
     bool prepareAddStudDlg(add_stud_dlg *dlg);
+
 
 
 };

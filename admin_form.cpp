@@ -9,7 +9,8 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QMenu>
-
+#include <QFileDialog>
+#include <QFile>
 
 admin_form::admin_form(QWidget *parent) :
     QMainWindow(parent),
@@ -101,7 +102,7 @@ void admin_form::on_listWidget_DB_clicked()
     if(db.isOpen()) db.close();
     db.setDatabaseName(QApplication::applicationDirPath()+"/data/"+db_file);
     db.setUserName("SYSDBA");
-    db.setPassword("XGn8#w!H");
+    db.setPassword("masterkey");
     db.open();
     setAvailabilityOfItems(db.isOpen());
     if(db.isOpen()){
@@ -109,6 +110,7 @@ void admin_form::on_listWidget_DB_clicked()
         getStudentsList();
     }
     else{
+
         QMessageBox::critical(this,
                               tr("Error"),
                               "database: "+QApplication::applicationDirPath()+"/data/"+db_file+"\n"+db.lastError().text());
@@ -387,9 +389,50 @@ void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint 
         }
         menu->popup(ui->treeWidget_students->viewport()->mapToGlobal(pos));
     }
+ // --- tab students --- }}
 }
-// --- tab students --- }}
 
 
+void admin_form::on_pushButton_Import_Stud_clicked()
+{
+
+QFile file(QFileDialog::getOpenFileName(this, tr("Open files"),
+                                        "/home/", tr("(*.csv)")));
+QStringList strings;
+
+if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+{
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        strings += in.readLine().split(";");
+    }
+}
+else
+{
+    qDebug() << "Error open for read";
+    QMessageBox::critical(new QWidget,"Error open", "Don't open files!");
+}
+
+QList<imp_data> data;
+QTextStream in(&file);
+ while (!in.atEnd()) {
+ strings.clear();
+    strings = in.readLine().split(";");
+ imp_data student;
+ student.group.grp_code = strings.at(0);
+ student.stud.stud_surename = strings.at(1);
+ student.stud.stud_name = strings.at(2);
+ student.stud.stud_patronymic = strings.at(3);
+ data.append(student);
+ }
+ QSqlQuery query;
+ query.prepare("INSERT INTO GROUPS(code) VALUES(:code, :surename, :name, :patronymic)");
+ query.bindValue(":code", strings.at(0));
+ query.bindValue(":surename", strings.at(1));
+ query.bindValue(":name", strings.at(2));
+ query.bindValue(":patronymic", strings.at(3));
+
+
+}
 
 
