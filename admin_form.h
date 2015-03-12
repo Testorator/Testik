@@ -13,10 +13,6 @@ namespace Ui {
 class admin_form;
 }
 
-struct imp_data {
-    grp_data group;
-     stud_data stud;
-    };
 
 
 class admin_form : public QMainWindow
@@ -41,6 +37,14 @@ private slots:
     void on_pushButton_Import_Stud_clicked();
 
 private:
+
+    struct st_stud_data {
+        QString grp_code;
+        QString stud_surename;
+        QString stud_name;
+        QString stud_patronymic;
+    };
+
     Ui::admin_form *ui;
     QSqlDatabase db;
     QAction *addGroup, *addStud;

@@ -3,19 +3,6 @@
 
 #include <QDialog>
 
-struct grp_data{
-    int grp_id;
-    QString grp_code;
-};
-
-struct stud_data{
-    int stud_id;
-    QString stud_surename;
-    QString stud_name;
-    QString stud_patronymic;
-};
-
-
 namespace Ui {
 class add_stud_dlg;
 }
@@ -38,8 +25,6 @@ public:
     QString get_lineEdit_Name();
     QString get_lineEdit_Surename();
     QString get_lineEdit_Patronymic();
-    stud_data get_stud_data();
-    grp_data get_group_data();
 
 private:
     Ui::add_stud_dlg *ui;

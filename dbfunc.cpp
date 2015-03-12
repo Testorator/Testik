@@ -135,6 +135,13 @@ QList<st_svMAP> getStudents(QSqlDatabase *db,QString groupID)
     return result.sel_data;
 }
 //
+st_qRes getStudent(QSqlDatabase *db, QString studId, QString groupID)
+{
+    return SendSimpleQueryStrWR(db, "SELECT * FROM STUDENTS WHERE ID="+studId+
+                                  " AND GROUP_ID="+groupID+";");
+}
+
+//
 bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, const QString Patrinymic, QString grpId)
 {
     bool result = false;

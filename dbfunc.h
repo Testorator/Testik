@@ -26,6 +26,7 @@ bool addNewGroup(QSqlDatabase *db, const QString grpCode);
 bool grpUnique(QSqlDatabase *db, const QString grpCode);
 //
 QList<st_svMAP> getStudents(QSqlDatabase *db,QString groupID = 0 );
+st_qRes getStudent(QSqlDatabase *db, QString studId, QString groupID);
 bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, const QString Patrinymic, QString grpId = 0);
 #endif // DBFUNC
 

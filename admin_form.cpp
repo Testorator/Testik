@@ -258,7 +258,6 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                                                     "UPDATE GROUPS SET CODE=\'"+in_grp+"\' WHERE CODE=\'"
                                                     +curItem->text(0)+"\' AND ID="+curItem->text(1)+";");
                     if(q_res){
-
                         getStudentsList();
                     }
                 }
@@ -266,55 +265,49 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
 
         }
         else{ // edit student
-            int x = 0;
+            st_qRes q_res = getStudent(&db,curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed());
 
-//            qResult q_res = SendSimpleQueryStrWR(&db,
-//                                                 "SELECT * FROM STUDENTS WHERE ID="+curItem->text(1)+
-//                                                 " AND GROUP_ID="+curItem->parent()->text(1)+";");
-//            if(!q_res.query_result){
-//                QMessageBox::critical(this,tr("Error"),q_res.text);
-//            }
-//            else{
-//                add_stud_dlg dlg(this);
-//                dlg.setWindowTitle(tr("Edit student"));
+            if(q_res.q_result){
+                add_stud_dlg dlg(this);
+                dlg.setWindowTitle(tr("Edit student"));
 
-//                if(prepareAddStudDlg(&dlg)){
-//                    dlg.lineEdit_Name_setText(q_res.selection_result.at(0).map["NAME"].toString());
-//                    dlg.lineEdit_Surename_setText(q_res.selection_result.at(0).map["SURENAME"].toString());
-//                    dlg.lineEdit_Patronymic_setText(q_res.selection_result.at(0).map["PATRONIMYC"].toString());
-//                    //                    studData.stud.stud_id = QVariant(curItem->text(1)).toInt();
+                if(prepareAddStudDlg(&dlg)){
+                    dlg.lineEdit_Name_setText(q_res.sel_data.at(0).map["NAME"].toString());
+                    dlg.lineEdit_Surename_setText(q_res.sel_data.at(0).map["SURENAME"].toString());
+                    dlg.lineEdit_Patronymic_setText(q_res.sel_data.at(0).map["PATRONIMYC"].toString());
 
-//                    if(dlg.exec() == 1){
-//                        QString updFields;
-//                        updFields.clear();
-//                        if(dlg.get_group_id() != q_res.selection_result.at(0).map["GROUP_ID"]){
-//                            updFields.append("GROUP_ID="+dlg.get_group_id().toString());
-//                        };
+                    if(dlg.exec() == 1){
+                        QString updFields;
+                        updFields.clear();
+                        if(dlg.get_group_id() != q_res.sel_data.at(0).map["GROUP_ID"]){
+                            updFields.append("GROUP_ID="+dlg.get_group_id().toString());
+                        };
 
-//                        if(dlg.get_lineEdit_Name() != q_res.selection_result.at(0).map["NAME"].toString()){
-//                            if(updFields.length() > 0) updFields.append(",");
-//                            updFields.append("NAME=\'"+dlg.get_lineEdit_Name()+"\'");
-//                        }
+                        if(dlg.get_lineEdit_Name() != q_res.sel_data.at(0).map["NAME"].toString()){
+                            if(updFields.length() > 0) updFields.append(",");
+                            updFields.append("NAME=\'"+dlg.get_lineEdit_Name()+"\'");
+                        }
 
-//                        if(dlg.get_lineEdit_Surename() != q_res.selection_result.at(0).map["SURENAME"].toString()){
-//                            if(updFields.length() > 0) updFields.append(",");
-//                            updFields.append("SURENAME=\'"+dlg.get_lineEdit_Surename()+"\'");
-//                        }
+                        if(dlg.get_lineEdit_Surename() != q_res.sel_data.at(0).map["SURENAME"].toString()){
+                            if(updFields.length() > 0) updFields.append(",");
+                            updFields.append("SURENAME=\'"+dlg.get_lineEdit_Surename()+"\'");
+                        }
 
-//                        if(dlg.get_lineEdit_Patronymic() != q_res.selection_result.at(0).map["PATRONIMYC"].toString()){
-//                            if(updFields.length() > 0) updFields.append(",");
-//                            updFields.append("PATRONIMYC=\'"+dlg.get_lineEdit_Patronymic()+"\'");
-//                        }
+                        if(dlg.get_lineEdit_Patronymic() != q_res.sel_data.at(0).map["PATRONIMYC"].toString()){
+                            if(updFields.length() > 0) updFields.append(",");
+                            updFields.append("PATRONIMYC=\'"+dlg.get_lineEdit_Patronymic()+"\'");
+                        }
 
-//                        if(updFields.length() > 0){
-//                            q_res = SendSimpleQueryStr(&db,"UPDATE STUDENTS SET "+updFields+" WHERE ID="+curItem->text(1)+
-//                                                       " AND GROUP_ID="+curItem->parent()->text(1)+";");
-//                            if(!q_res.query_result)QMessageBox::critical(this,tr("Error"),q_res.text);
+                        if(updFields.length() > 0){
+                            if(SendSimpleQueryStr(&db,"UPDATE STUDENTS SET "+updFields+" WHERE ID="+curItem->text(1)+
+                                               " AND GROUP_ID="+curItem->parent()->text(1)+";")){
+                                getStudentsList();
+                            }
+                        }
 
-//                        }
-//                    }
-//                }
-//            }
+                    }
+                }
+            }
         }
     }
 }
@@ -350,48 +343,36 @@ void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint 
     }
     // --- tab students --- }}
 }
-
-
+//
 void admin_form::on_pushButton_Import_Stud_clicked()
 {
 
-    QFile file(QFileDialog::getOpenFileName(this, tr("Open files"),
-                                            "/home/", tr("(*.csv)")));
-    QStringList strings;
+    QList<st_stud_data> impData;
 
+    QFile file(QFileDialog::getOpenFileName(this, tr("Open files"),"/home/", "(*.csv)"));
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
+
+        QStringList strings;
         QTextStream in(&file);
         while (!in.atEnd()) {
-            strings += in.readLine().split(";");
+            st_stud_data new_stud;
+            strings = in.readLine().split(";");
+
+            new_stud.grp_code = strings.at(0).trimmed();
+            new_stud.stud_surename = strings.at(1).trimmed();
+            new_stud.stud_name = strings.at(2).trimmed();
+            new_stud.stud_patronymic = strings.at(3).trimmed();
+
+            impData.append(new_stud);
         }
+        file.close();
     }
     else
     {
         qDebug() << "Error open for read";
-        QMessageBox::critical(new QWidget,"Error open", "Don't open files!");
+        QMessageBox::critical(this,"Error open", "Don't open files!");
     }
-
-    QList<imp_data> data;
-    QTextStream in(&file);
-    while (!in.atEnd()) {
-        strings.clear();
-        strings = in.readLine().split(";");
-        imp_data student;
-        student.group.grp_code = strings.at(0);
-        student.stud.stud_surename = strings.at(1);
-        student.stud.stud_name = strings.at(2);
-        student.stud.stud_patronymic = strings.at(3);
-        data.append(student);
-    }
-    QSqlQuery query;
-    query.prepare("INSERT INTO GROUPS(code) VALUES(:code, :surename, :name, :patronymic)");
-    query.bindValue(":code", strings.at(0));
-    query.bindValue(":surename", strings.at(1));
-    query.bindValue(":name", strings.at(2));
-    query.bindValue(":patronymic", strings.at(3));
-
-
+    qDebug() << "Impdata.count: " << impData.count();
 }
-
 

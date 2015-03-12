@@ -28,24 +28,6 @@ void add_stud_dlg::comboBox_groups_set_curItem(QString item)
     ui->comboBox_Groups->setCurrentText(item);
 }
 //
-stud_data add_stud_dlg::get_stud_data()
-{
-    stud_data result;
-    result.stud_name = get_lineEdit_Name();
-    result.stud_surename = get_lineEdit_Surename();
-    result.stud_patronymic = get_lineEdit_Patronymic();
-
-    return result;
-}
-//
-grp_data add_stud_dlg::get_group_data(){
-    grp_data result;
-    result.grp_id = get_group_id().toInt();
-    result.grp_code = get_group_code();
-
-    return result;
-}
-//
 QString add_stud_dlg::get_lineEdit_Name()
 {
     return ui->lineEdit_Name->text().trimmed();
