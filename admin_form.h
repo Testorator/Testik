@@ -36,6 +36,8 @@ private slots:
 
     void on_pushButton_Import_Stud_clicked();
 
+    void on_pushButton_Delete_Stud_clicked();
+
 private:
 
     struct st_stud_data {

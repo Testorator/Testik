@@ -138,9 +138,20 @@ QList<st_svMAP> getStudents(QSqlDatabase *db,QString groupID)
 st_qRes getStudent(QSqlDatabase *db, QString studId, QString groupID)
 {
     return SendSimpleQueryStrWR(db, "SELECT * FROM STUDENTS WHERE ID="+studId+
-                                  " AND GROUP_ID="+groupID+";");
+                                " AND GROUP_ID="+groupID+";");
 }
-
+//
+bool delStudent(QSqlDatabase *db, QString studId, QString grpId)
+{
+    QString cond_grpId;
+    if(grpId.isEmpty() || grpId.isNull() || grpId.trimmed().length() < 1){
+        cond_grpId.clear();
+    }
+    else{
+        cond_grpId = " AND GROUP_ID="+grpId;
+    }
+    return SendSimpleQueryStr(db,"DELETE FROM STUDENTS WHERE ID="+studId+cond_grpId+";");
+}
 //
 bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, const QString Patrinymic, QString grpId)
 {

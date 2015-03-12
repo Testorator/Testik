@@ -155,6 +155,37 @@ void admin_form::getStudentsList()
     }
 }
 //
+void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint &pos)
+{
+    QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
+    if(curItem){
+        QMenu *menu=new QMenu(this);
+        if(!curItem->parent()){
+            QAction *act_EditGroup = new QAction(tr("Edit group"), this);
+            connect(act_EditGroup,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
+            QAction *act_ClearGroup = new QAction(tr("Clear group"),this);
+            QAction *act_DelGroup = new QAction(tr("Delete group"),this);
+            menu->addAction(addStud);
+            menu->addSeparator();
+            menu->addAction(addGroup);
+            menu->addAction(act_EditGroup);
+            menu->addSeparator();
+            menu->addAction(act_ClearGroup);
+            menu->addAction(act_DelGroup);
+        }
+        else{
+            QAction *act_EditStud = new QAction(tr("Edit student"), this);
+            connect(act_EditStud,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
+            QAction *act_DelStud = new QAction(tr("Delete student"),this);
+            menu->addAction(addStud);
+            menu->addAction(act_EditStud);
+            menu->addSeparator();
+            menu->addAction(act_DelStud);
+        }
+        menu->popup(ui->treeWidget_students->viewport()->mapToGlobal(pos));
+    }
+ }
+//
 void admin_form::on_toolButton_Add_Stud_clicked()
 {
     if(ui->toolButton_Add_Stud->text() == tr("Add")) ui->toolButton_Add_Stud->showMenu();
@@ -312,47 +343,35 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
     }
 }
 //
-void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint &pos)
+void admin_form::on_pushButton_Delete_Stud_clicked()
 {
-    QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
-    if(curItem){
-        QMenu *menu=new QMenu(this);
-        if(!curItem->parent()){
-            QAction *act_EditGroup = new QAction(tr("Edit group"), this);
-            connect(act_EditGroup,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
-            QAction *act_ClearGroup = new QAction(tr("Clear group"),this);
-            QAction *act_DelGroup = new QAction(tr("Delete group"),this);
-            menu->addAction(addStud);
-            menu->addSeparator();
-            menu->addAction(addGroup);
-            menu->addAction(act_EditGroup);
-            menu->addSeparator();
-            menu->addAction(act_ClearGroup);
-            menu->addAction(act_DelGroup);
-        }
-        else{
-            QAction *act_EditStud = new QAction(tr("Edit student"), this);
-            connect(act_EditStud,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
-            QAction *act_DelStud = new QAction(tr("Delete student"),this);
-            menu->addAction(addStud);
-            menu->addAction(act_EditStud);
-            menu->addSeparator();
-            menu->addAction(act_DelStud);
-        }
-        menu->popup(ui->treeWidget_students->viewport()->mapToGlobal(pos));
-    }
-    // --- tab students --- }}
+   QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
+   if(curItem->parent()){
+       // student
+       int ret = QMessageBox::question(this, tr("Removing student"),
+                                      tr("Are you shure want delete student")+" \n\""+
+                                         curItem->text(0).trimmed()+"\" \n"+
+                                      tr("from group")+" \""+curItem->parent()->text(0).trimmed()+"\" ?",
+                                      QMessageBox::Yes | QMessageBox::No,
+                                      QMessageBox::No);
+       if(ret == QMessageBox::Yes){
+            if(delStudent(&db,curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed())){
+                getStudentsList();
+            }
+       }
+   }
+   else{
+       //group
+   }
 }
 //
 void admin_form::on_pushButton_Import_Stud_clicked()
 {
-
     QList<st_stud_data> impData;
 
     QFile file(QFileDialog::getOpenFileName(this, tr("Open files"),"/home/", "(*.csv)"));
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-
         QStringList strings;
         QTextStream in(&file);
         while (!in.atEnd()) {
@@ -375,4 +394,4 @@ void admin_form::on_pushButton_Import_Stud_clicked()
     }
     qDebug() << "Impdata.count: " << impData.count();
 }
-
+// --- tab students --- }}
