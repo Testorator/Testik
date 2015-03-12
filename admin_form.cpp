@@ -165,6 +165,7 @@ void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint 
             connect(act_EditGroup,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
             QAction *act_ClearGroup = new QAction(tr("Clear group"),this);
             QAction *act_DelGroup = new QAction(tr("Delete group"),this);
+            connect(act_DelGroup,SIGNAL(triggered()),this,SLOT(on_pushButton_Delete_Stud_clicked()));
             menu->addAction(addStud);
             menu->addSeparator();
             menu->addAction(addGroup);
@@ -177,6 +178,7 @@ void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint 
             QAction *act_EditStud = new QAction(tr("Edit student"), this);
             connect(act_EditStud,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
             QAction *act_DelStud = new QAction(tr("Delete student"),this);
+            connect(act_DelStud,SIGNAL(triggered()),this,SLOT(on_pushButton_Delete_Stud_clicked()));
             menu->addAction(addStud);
             menu->addAction(act_EditStud);
             menu->addSeparator();
