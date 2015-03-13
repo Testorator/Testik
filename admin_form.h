@@ -3,6 +3,7 @@
 
 #include "change_admin_pw_dialog.h"
 #include "add_stud_dlg.h"
+#include "dbfunc.h"
 
 #include <QMainWindow>
 #include <QtSql/QSqlDatabase>
@@ -33,29 +34,19 @@ private slots:
     void on_pushButton_Edit_Stud_clicked();
     void on_toolButton_Add_Stud_clicked();
     void on_treeWidget_students_customContextMenuRequested(const QPoint &pos);
-
     void on_pushButton_Import_Stud_clicked();
-
     void on_pushButton_Delete_Stud_clicked();
+    void on_action_clearGroup_clicked();
 
 private:
-
-    struct st_stud_data {
-        QString grp_code;
-        QString stud_surename;
-        QString stud_name;
-        QString stud_patronymic;
-    };
-
     Ui::admin_form *ui;
     QSqlDatabase db;
-    QAction *addGroup, *addStud;
+    QAction *act_addGroup, *act_addStud;
     void getDataBases();
     void setAvailabilityOfItems(bool val);
     void getStudentsList();
     bool prepareAddStudDlg(add_stud_dlg *dlg);
-
-
+    bool sendStudData_toDB(QList<st_stud> *data);
 
 };
 

@@ -30,6 +30,10 @@
              <property name="text">
               <string>Delete</string>
              </property>
+             <property name="icon">
+              <iconset resource="res.qrc">
+               <normaloff>:/db/del</normaloff>:/db/del</iconset>
+             </property>
             </widget>
            </item>
            <item row="0" column="0" colspan="2">
@@ -39,6 +43,10 @@
             <widget class="QPushButton" name="pushButton_AddDB">
              <property name="text">
               <string>Add</string>
+             </property>
+             <property name="icon">
+              <iconset resource="res.qrc">
+               <normaloff>:/db/add</normaloff>:/db/add</iconset>
              </property>
             </widget>
            </item>
@@ -305,11 +313,17 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionChange_admin_password">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/resourse/settings</normaloff>:/resourse/settings</iconset>
+   </property>
    <property name="text">
     <string>Change admin password</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

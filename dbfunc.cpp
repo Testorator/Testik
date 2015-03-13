@@ -81,7 +81,20 @@ QString getGroupCodeById(QSqlDatabase *db,QString grpId)
     return result;
 }
 //
-bool addNewGroup(QSqlDatabase *db, QString grpCode)
+QVariant getGroupIdByCode(QSqlDatabase *db,QString grpCode)
+{
+    QVariant result;
+    st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT ID FROM GROUPS WHERE CODE=\'"+grpCode.trimmed()+"\';");
+    if(q_res.q_result){
+        result = q_res.sel_data.at(0).map["ID"];
+    }
+    else{
+        result.clear();
+    }
+    return result;
+}
+//
+bool addGroup(QSqlDatabase *db, QString grpCode)
 {
     bool result;
     if(grpUnique(db,grpCode)){
@@ -93,7 +106,18 @@ bool addNewGroup(QSqlDatabase *db, QString grpCode)
     return result;
 }
 //
-bool grpUnique(QSqlDatabase *db, const QString grpCode)
+bool clearGroup(QSqlDatabase *db, const QVariant grpId)
+{
+    return SendSimpleQueryStr(db,"DELETE FROM STUDENTS WHERE GROUP_ID="+grpId.toString());
+}
+//
+bool delGroup(QSqlDatabase *db, const QVariant grpId)
+{
+    return SendSimpleQueryStr(db,"DELETE FROM GROUPS WHERE ID="+grpId.toString());
+}
+
+//
+bool grpUnique(QSqlDatabase *db, const QString grpCode, bool silent)
 {
     bool result;
     if(grpCode.isEmpty() || grpCode.isNull() || grpCode.trimmed().length() < 1){
@@ -104,8 +128,10 @@ bool grpUnique(QSqlDatabase *db, const QString grpCode)
         if(q_res.q_result){
             if(q_res.sel_data.count() > 0){
                 result = false;
-                QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("Group with name ")+
-                                      "\""+grpCode+"\""+QObject::tr(" already exists!"));
+                if(!silent){
+                    QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("Group with name ")+
+                                          "\""+grpCode+"\""+QObject::tr(" already exists!"));
+                }
             }
             else{
                 result = true;
@@ -141,6 +167,14 @@ st_qRes getStudent(QSqlDatabase *db, QString studId, QString groupID)
                                 " AND GROUP_ID="+groupID+";");
 }
 //
+bool addStudent(QSqlDatabase *db,st_stud data)
+{
+    return SendSimpleQueryStr(db,"INSERT INTO STUDENTS(GROUP_ID,NAME,SURENAME,PATRONIMYC) VALUES("+
+                              getGroupIdByCode(db,data.grp_code).toString()+",\'"+data.name+"\',\'"+
+                              data.surename+"\',\'"+data.patronymic+"\');");
+}
+
+//
 bool delStudent(QSqlDatabase *db, QString studId, QString grpId)
 {
     QString cond_grpId;
@@ -153,7 +187,7 @@ bool delStudent(QSqlDatabase *db, QString studId, QString grpId)
     return SendSimpleQueryStr(db,"DELETE FROM STUDENTS WHERE ID="+studId+cond_grpId+";");
 }
 //
-bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, const QString Patrinymic, QString grpId)
+bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, const QString Patrinymic, QString grpId, bool silent)
 {
     bool result = false;
     QString cond_grpId, msg_grpId;
@@ -176,8 +210,10 @@ bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, co
         }
         else{
             result = false;
-            QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("Student")+" \""+Surename+" "+Name+" "+Patrinymic+
-                                  "\" "+QObject::tr("already exists")+msg_grpId+"!");
+            if(!silent){
+                QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("Student")+" \""+Surename+" "+Name+" "+Patrinymic+
+                                      "\" "+QObject::tr("already exists")+msg_grpId+"!");
+            }
         }
     }
     return result;

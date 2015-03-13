@@ -6,6 +6,7 @@ add_stud_dlg::add_stud_dlg(QWidget *parent) :
     ui(new Ui::add_stud_dlg)
 {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/stud/stud"));
 }
 
 add_stud_dlg::~add_stud_dlg()

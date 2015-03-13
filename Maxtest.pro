@@ -59,7 +59,8 @@ DISTFILES += \
     muse.zip \
     maxtest.prp \
     data/students.csv \
-    data/BLANK.QLT
+    data/BLANK.QLT \
+    buglist.txt
 
 RESOURCES += \
     res.qrc
