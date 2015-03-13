@@ -102,8 +102,8 @@ void admin_form::on_listWidget_DB_clicked()
     if(db.isOpen()) db.close();
     db.setDatabaseName(QApplication::applicationDirPath()+"/data/"+db_file);
     db.setUserName("SYSDBA");
-    //    db.setPassword("masterkey");
-    db.setPassword("XGn8#w!H");
+        db.setPassword("masterkey");
+   // db.setPassword("XGn8#w!H");
     db.open();
     setAvailabilityOfItems(db.isOpen());
     if(db.isOpen()){
@@ -394,6 +394,12 @@ void admin_form::on_pushButton_Import_Stud_clicked()
         qDebug() << "Error open for read";
         QMessageBox::critical(this,"Error open", "Don't open files!");
     }
-    qDebug() << "Impdata.count: " << impData.count();
+   qDebug() << "Impdata.count: " << impData.count();
+
+
+
+
+
 }
+
 // --- tab students --- }}
