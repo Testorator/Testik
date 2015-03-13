@@ -3,5 +3,18 @@
         <file alias="add">img/add.png</file>
         <file alias="del">img/delete.png</file>
         <file alias="save">img/disk.png</file>
+        <file alias="settings">img/setting_tools.png</file>
+    </qresource>
+    <qresource prefix="/stud">
+        <file alias="edit">img/user_edit.png</file>
+        <file alias="stud">img/user.png</file>
+        <file alias="add">img/user_add.png</file>
+        <file alias="del">img/user_delete.png</file>
+    </qresource>
+    <qresource prefix="/db">
+        <file alias="edit">img/database_edit.png</file>
+        <file alias="database">img/database.png</file>
+        <file alias="add">img/database_add.png</file>
+        <file alias="del">img/database_delete.png</file>
     </qresource>
 </RCC>
