@@ -39,14 +39,14 @@ void add_stud_dlg::lineEdit_Name_setText(QString value)
     ui->lineEdit_Name->setText(value);
 }
 //
-QString add_stud_dlg::get_lineEdit_Surename()
+QString add_stud_dlg::get_lineEdit_Surname()
 {
-    return ui->lineEdit_Surename->text().trimmed();
+    return ui->lineEdit_Surname->text().trimmed();
 }
 //
-void add_stud_dlg::lineEdit_Surename_setText(QString value)
+void add_stud_dlg::lineEdit_Surname_setText(QString value)
 {
-    ui->lineEdit_Surename->setText(value);
+    ui->lineEdit_Surname->setText(value);
 }
 //
 QString add_stud_dlg::get_lineEdit_Patronymic()

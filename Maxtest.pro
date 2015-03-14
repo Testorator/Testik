@@ -60,7 +60,9 @@ DISTFILES += \
     maxtest.prp \
     data/students.csv \
     data/BLANK.QLT \
-    buglist.txt
+    buglist.txt \
+    drivers/win32/qsqlibase.dll \
+    drivers/win32/qsqlibased.dll
 
 RESOURCES += \
     res.qrc

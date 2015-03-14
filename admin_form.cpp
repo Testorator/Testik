@@ -139,7 +139,7 @@ void admin_form::getStudentsList()
 
             for(int s = 0;s < q_res_stud.count(); s++){
                 student.clear();
-                student.append(q_res_stud.at(s).map["SURENAME"].toString()+" "+
+                student.append(q_res_stud.at(s).map["SURNAME"].toString()+" "+
                         q_res_stud.at(s).map["NAME"].toString()+" "+
                         q_res_stud.at(s).map["PATRONIMYC"].toString());
                 student.append(q_res_stud.at(s).map["ID"].toString());
@@ -253,15 +253,15 @@ void admin_form::on_actionAddStud_triggered()
     if(prepareAddStudDlg(&dlg)){
         if(dlg.exec() == 1){
             if(studUnique(&db,
-                          dlg.get_lineEdit_Surename().trimmed(),
-                          dlg.get_lineEdit_Surename().trimmed(),
+                          dlg.get_lineEdit_Surname().trimmed(),
+                          dlg.get_lineEdit_Name().trimmed(),
                           dlg.get_lineEdit_Patronymic().trimmed(),
                           dlg.get_group_id().toString())){
 
                 st_stud new_stud;
                 new_stud.grp_code = dlg.get_group_code();
                 new_stud.name = dlg.get_lineEdit_Name();
-                new_stud.surename = dlg.get_lineEdit_Surename();
+                new_stud.surname = dlg.get_lineEdit_Surname();
                 new_stud.patronymic = dlg.get_lineEdit_Patronymic();
 
                 if(addStudent(&db,new_stud)){
@@ -308,7 +308,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
 
                 if(prepareAddStudDlg(&dlg)){
                     dlg.lineEdit_Name_setText(q_res.sel_data.at(0).map["NAME"].toString());
-                    dlg.lineEdit_Surename_setText(q_res.sel_data.at(0).map["SURENAME"].toString());
+                    dlg.lineEdit_Surname_setText(q_res.sel_data.at(0).map["SURNAME"].toString());
                     dlg.lineEdit_Patronymic_setText(q_res.sel_data.at(0).map["PATRONIMYC"].toString());
 
                     if(dlg.exec() == 1){
@@ -323,9 +323,9 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                             updFields.append("NAME=\'"+dlg.get_lineEdit_Name()+"\'");
                         }
 
-                        if(dlg.get_lineEdit_Surename() != q_res.sel_data.at(0).map["SURENAME"].toString()){
+                        if(dlg.get_lineEdit_Surname() != q_res.sel_data.at(0).map["SURNAME"].toString()){
                             if(updFields.length() > 0) updFields.append(",");
-                            updFields.append("SURENAME=\'"+dlg.get_lineEdit_Surename()+"\'");
+                            updFields.append("SURNAME=\'"+dlg.get_lineEdit_Surname()+"\'");
                         }
 
                         if(dlg.get_lineEdit_Patronymic() != q_res.sel_data.at(0).map["PATRONIMYC"].toString()){
@@ -402,7 +402,7 @@ bool admin_form::sendStudData_toDB(QList<st_stud> *data)
             addGroup(&db,data->at(i).grp_code);
         }
         if(studUnique(&db,
-                      data->at(i).surename,
+                      data->at(i).surname,
                       data->at(i).name,
                       data->at(i).patronymic,
                       getGroupIdByCode(&db,data->at(i).grp_code).toString(),true)){
@@ -430,7 +430,7 @@ void admin_form::on_pushButton_Import_Stud_clicked()
             strings = in.readLine().split(";");
 
             new_stud.grp_code = strings.at(0).trimmed();
-            new_stud.surename = strings.at(1).trimmed();
+            new_stud.surname = strings.at(1).trimmed();
             new_stud.name = strings.at(2).trimmed();
             new_stud.patronymic = strings.at(3).trimmed();
 

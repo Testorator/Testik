@@ -19,7 +19,7 @@ struct st_qRes{
 
 struct st_stud {
     QString grp_code;
-    QString surename;
+    QString surname;
     QString name;
     QString patronymic;
 };
@@ -39,7 +39,7 @@ QList<st_svMAP> getStudents(QSqlDatabase *db,QString groupID = 0 );
 st_qRes getStudent(QSqlDatabase *db, QString studId, QString groupID);
 bool addStudent(QSqlDatabase *db,st_stud data);
 bool delStudent(QSqlDatabase *db, QString studId, QString grpId = 0);
-bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, const QString Patrinymic, QString grpId = 0, bool silent = 0);
+bool studUnique(QSqlDatabase *db, const QString Surname, const QString Name, const QString Patrinymic, QString grpId = 0, bool silent = 0);
 
 #endif // DBFUNC
 

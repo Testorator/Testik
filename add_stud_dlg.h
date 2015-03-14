@@ -18,12 +18,12 @@ public:
     void comboBox_groups_addItem(QString item, QVariant itemID);
     void comboBox_groups_set_curItem(QString item);
     void lineEdit_Name_setText(QString value);
-    void lineEdit_Surename_setText(QString value);
+    void lineEdit_Surname_setText(QString value);
     void lineEdit_Patronymic_setText(QString value);
     QVariant get_group_id();
     QString get_group_code();
     QString get_lineEdit_Name();
-    QString get_lineEdit_Surename();
+    QString get_lineEdit_Surname();
     QString get_lineEdit_Patronymic();
 
 private:

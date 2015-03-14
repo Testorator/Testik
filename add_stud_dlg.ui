@@ -52,7 +52,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Surename:</string>
+         <string>Surname:</string>
         </property>
        </widget>
       </item>
@@ -67,7 +67,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit_Surename"/>
+       <widget class="QLineEdit" name="lineEdit_Surname"/>
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="lineEdit_Name"/>
@@ -79,7 +79,7 @@
  </widget>
  <tabstops>
   <tabstop>comboBox_Groups</tabstop>
-  <tabstop>lineEdit_Surename</tabstop>
+  <tabstop>lineEdit_Surname</tabstop>
   <tabstop>lineEdit_Name</tabstop>
   <tabstop>lineEdit_Patronymic</tabstop>
  </tabstops>

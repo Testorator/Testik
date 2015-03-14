@@ -169,9 +169,9 @@ st_qRes getStudent(QSqlDatabase *db, QString studId, QString groupID)
 //
 bool addStudent(QSqlDatabase *db,st_stud data)
 {
-    return SendSimpleQueryStr(db,"INSERT INTO STUDENTS(GROUP_ID,NAME,SURENAME,PATRONIMYC) VALUES("+
+    return SendSimpleQueryStr(db,"INSERT INTO STUDENTS(GROUP_ID,NAME,SURNAME,PATRONIMYC) VALUES("+
                               getGroupIdByCode(db,data.grp_code).toString()+",\'"+data.name+"\',\'"+
-                              data.surename+"\',\'"+data.patronymic+"\');");
+                              data.surname+"\',\'"+data.patronymic+"\');");
 }
 
 //
@@ -187,7 +187,7 @@ bool delStudent(QSqlDatabase *db, QString studId, QString grpId)
     return SendSimpleQueryStr(db,"DELETE FROM STUDENTS WHERE ID="+studId+cond_grpId+";");
 }
 //
-bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, const QString Patrinymic, QString grpId, bool silent)
+bool studUnique(QSqlDatabase *db, const QString Surname, const QString Name, const QString Patrinymic, QString grpId, bool silent)
 {
     bool result = false;
     QString cond_grpId, msg_grpId;
@@ -202,7 +202,7 @@ bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, co
 
     st_qRes q_res = SendSimpleQueryStrWR(db,
                                          "SELECT count(*) AS STUD_EXISTS FROM STUDENTS WHERE NAME=\'"+Name+
-                                         "\' AND SURENAME=\'"+Surename+"\' AND PATRONIMYC=\'"+Patrinymic+"\'"+
+                                         "\' AND SURNAME=\'"+Surname+"\' AND PATRONIMYC=\'"+Patrinymic+"\'"+
                                          cond_grpId+";");
     if(q_res.q_result){
         if(q_res.sel_data.at(0).map["STUD_EXISTS"].toInt() == 0){
@@ -211,7 +211,7 @@ bool studUnique(QSqlDatabase *db, const QString Surename, const QString Name, co
         else{
             result = false;
             if(!silent){
-                QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("Student")+" \""+Surename+" "+Name+" "+Patrinymic+
+                QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("Student")+" \""+Surname+" "+Name+" "+Patrinymic+
                                       "\" "+QObject::tr("already exists")+msg_grpId+"!");
             }
         }
