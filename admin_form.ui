@@ -60,56 +60,13 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="tab_Opt">
-       <attribute name="title">
-        <string>Options</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="0">
-           <widget class="QGroupBox" name="groupBox_SendEMail">
-            <property name="title">
-             <string>Send results of testing by email</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_11">
-             <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_10">
-               <item row="1" column="0">
-                <widget class="QListWidget" name="listWidget_EMail_Recipients"/>
-               </item>
-               <item row="0" column="0">
-                <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>Recipients:</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="0">
-         <widget class="QDialogButtonBox" name="buttonBox">
-          <property name="standardButtons">
-           <set>QDialogButtonBox::Save</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
       <widget class="QWidget" name="tab_Questions">
+       <attribute name="icon">
+        <iconset resource="res.qrc">
+         <normaloff>:/questions/question</normaloff>:/questions/question</iconset>
+       </attribute>
        <attribute name="title">
         <string>Questions</string>
        </attribute>
@@ -195,6 +152,10 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tab_Students">
+       <attribute name="icon">
+        <iconset resource="res.qrc">
+         <normaloff>:/stud/stud</normaloff>:/stud/stud</iconset>
+       </attribute>
        <attribute name="title">
         <string>Students</string>
        </attribute>
@@ -287,6 +248,57 @@
            </widget>
           </item>
          </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_Opt">
+       <attribute name="icon">
+        <iconset resource="res.qrc">
+         <normaloff>:/resourse/options</normaloff>:/resourse/options</iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Options</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QGroupBox" name="groupBox_SendEMail">
+            <property name="title">
+             <string>Send results of testing by email</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_11">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="gridLayout_10">
+               <item row="1" column="0">
+                <widget class="QListWidget" name="listWidget_EMail_Recipients"/>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Recipients:</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0">
+         <widget class="QDialogButtonBox" name="buttonBox">
+          <property name="standardButtons">
+           <set>QDialogButtonBox::Save</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

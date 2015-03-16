@@ -4,6 +4,7 @@
         <file alias="del">img/delete.png</file>
         <file alias="save">img/disk.png</file>
         <file alias="settings">img/setting_tools.png</file>
+        <file alias="options">img/cog.png</file>
     </qresource>
     <qresource prefix="/stud">
         <file alias="edit">img/user_edit.png</file>
@@ -16,5 +17,8 @@
         <file alias="database">img/database.png</file>
         <file alias="add">img/database_add.png</file>
         <file alias="del">img/database_delete.png</file>
+    </qresource>
+    <qresource prefix="/questions">
+        <file alias="question">img/help.png</file>
     </qresource>
 </RCC>
