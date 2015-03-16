@@ -149,6 +149,8 @@ void admin_form::getStudentsList()
             groups.append(item);
         }
         ui->treeWidget_students->insertTopLevelItems(0,groups);
+        ui->treeWidget_students->setSortingEnabled(true);
+        ui->treeWidget_students->sortByColumn(0,Qt::AscendingOrder);
     }
 }
 //
