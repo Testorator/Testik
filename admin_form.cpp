@@ -18,8 +18,9 @@ admin_form::admin_form(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowTitle(QApplication::applicationName()+": admin mode");
     ui->treeWidget_students->hideColumn(1);
-    getDataBases();
+
     db = QSqlDatabase::addDatabase("QIBASE");
+    getDataBases();
 
     act_addGroup = new QAction(tr("Add Group"),ui->toolButton_Add_Stud->menu());
     connect(act_addGroup,SIGNAL(triggered()),this,SLOT(on_actionAddGroup_triggered()));
@@ -59,16 +60,21 @@ void admin_form::on_pushButton_clicked()
 //
 void admin_form::getDataBases()
 {
+    this->setCursor(Qt::BusyCursor);
     QDir db_dir(QApplication::applicationDirPath()+"/data/",
                 "*.qlt",
                 QDir::Name,
                 QDir::Files|QDir::Readable|QDir::Writable|QDir::NoSymLinks);
 
-    QStringList db_files = db_dir.entryList();
-    db_files.removeAt(db_files.indexOf("BLANK.QLT"));
-
+    QStringList db_files =db_dir.entryList();
     ui->listWidget_DB->clear();
-    ui->listWidget_DB->addItems(db_files);
+
+    for(int i=0; i < db_files.count(); i++){
+        if(!isBlankDB(&db,QApplication::applicationDirPath()+"/data/"+db_files.at(i))){
+            ui->listWidget_DB->addItem(db_files.at(i));
+        }
+    }
+    this->setCursor(Qt::ArrowCursor);
 }
 //
 void admin_form::on_pushButton_AddDB_clicked()
@@ -98,22 +104,13 @@ void admin_form::on_pushButton_AddDB_clicked()
 void admin_form::on_listWidget_DB_clicked()
 {
     QString db_file = ui->listWidget_DB->currentItem()->text().trimmed();
-    if(db.isOpen()) db.close();
-    db.setDatabaseName(QApplication::applicationDirPath()+"/data/"+db_file);
-    db.setUserName("SYSDBA");
-    db.setPassword("masterkey");
-    // db.setPassword("XGn8#w!H");
-    db.open();
-    setAvailabilityOfItems(db.isOpen());
-    if(db.isOpen()){
-        qDebug() << "DB openinig - success";
+    bool db_is_open = openDB(&db,QApplication::applicationDirPath()+"/data/"+db_file);
+    setAvailabilityOfItems(db_is_open);
+    if(db_is_open){
         getStudentsList();
     }
     else{
 
-        QMessageBox::critical(this,
-                              tr("Error"),
-                              "database: "+QApplication::applicationDirPath()+"/data/"+db_file+"\n"+db.lastError().text());
     }
 }
 // --- tab students --- {{

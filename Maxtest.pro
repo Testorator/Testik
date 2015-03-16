@@ -59,10 +59,10 @@ DISTFILES += \
     muse.zip \
     maxtest.prp \
     data/students.csv \
-    data/BLANK.QLT \
     buglist.txt \
     drivers/win32/qsqlibase.dll \
-    drivers/win32/qsqlibased.dll
+    drivers/win32/qsqlibased.dll \
+    data/BLANK.QLT
 
 RESOURCES += \
     res.qrc

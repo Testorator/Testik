@@ -3,6 +3,31 @@
 #include <QMessageBox>
 #include <QSqlQuery>
 #include <QSqlRecord>
+
+//**********************************************
+bool openDB(QSqlDatabase *db,QString db_file)
+{
+    bool result;
+    if(db->isOpen()) db->close();
+    db->setDatabaseName(db_file);
+    db->setUserName("SYSDBA");
+    db.setPassword("masterkey");
+//    db->setPassword("XGn8#w!H");
+    db->open();
+    result = db->isOpen();
+
+    if(!result){
+        QMessageBox msgBox;
+        msgBox.setText("DB file serror: "+db_file);
+        msgBox.setDetailedText("Driver: "+db->lastError().driverText()+
+                       "\nDatabase: "+db->lastError().databaseText());
+        msgBox.exec();
+    }
+    else{
+        qDebug() << "DB openinig - success";
+    }
+    return result;
+}
 //**********************************************
 bool SendSimpleQueryStr(QSqlDatabase *db,const QString& q_str)
 {
@@ -59,6 +84,25 @@ st_qRes SendSimpleQueryStrWR(QSqlDatabase *db,const QString& q_str)
         }
     }
     query->clear();
+    return result;
+}
+//**********************************************
+bool isBlankDB(QSqlDatabase *db, QString db_file)
+{
+    bool result = false;
+    if(!db_file.isEmpty() && !db_file.isNull() && db_file.trimmed().length()>0){
+        openDB(db,db_file);
+    }
+
+    st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT BLANK FROM DB_PROPS;");
+    if(q_res.q_result){
+        result = q_res.sel_data.at(0).map["BLANK"].toBool();
+    }
+
+    if(!db_file.isEmpty() && !db_file.isNull() && db_file.trimmed().length()>0){
+        db->close();
+    }
+
     return result;
 }
 //**********************************************
