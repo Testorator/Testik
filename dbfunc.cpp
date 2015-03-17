@@ -105,6 +105,18 @@ bool isBlankDB(QSqlDatabase *db, QString db_file)
 
     return result;
 }
+//
+bool setDB_NoBlank(QSqlDatabase *db,QString db_file)
+{
+    bool result = false;
+
+    result = openDB(db,db_file);
+    if(result){
+        result = SendSimpleQueryStr(db,"UPDATE DB_PROPS SET BLANK=0;");
+    }
+
+    return result;
+}
 //**********************************************
 // **** GROUPS **** {{
 QList<st_svMAP> getGroups(QSqlDatabase *db){

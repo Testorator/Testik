@@ -26,6 +26,7 @@ struct st_stud {
 
 bool openDB(QSqlDatabase *db,QString db_file);
 bool isBlankDB(QSqlDatabase *db, QString db_file = 0);
+bool setDB_NoBlank(QSqlDatabase *db,QString db_file);
 //
 bool SendSimpleQueryStr(QSqlDatabase *db, const QString& q_str);
 st_qRes SendSimpleQueryStrWR(QSqlDatabase *db,const QString& q_str);

@@ -91,6 +91,7 @@ void admin_form::on_pushButton_AddDB_clicked()
     else{
         if(QFile::copy(QApplication::applicationDirPath()+"/data/BLANK.QLT",
                        QApplication::applicationDirPath()+"/data/"+new_db_name+".QLT")){
+            setDB_NoBlank(&db,QApplication::applicationDirPath()+"/data/"+new_db_name+".QLT");
             getDataBases();
         }
         else{
