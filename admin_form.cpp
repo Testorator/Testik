@@ -62,7 +62,7 @@ void admin_form::on_pushButton_clicked()
 void admin_form::getDataBases()
 {
     this->setCursor(Qt::BusyCursor);
-    QDir db_dir(QApplication::applicationDirPath()+"/data/",
+    QDir db_dir(DBPath,
                 "*.qlt",
                 QDir::Name,
                 QDir::Files|QDir::Readable|QDir::Writable|QDir::NoSymLinks);
@@ -71,8 +71,9 @@ void admin_form::getDataBases()
     ui->listWidget_DB->clear();
 
     for(int i=0; i < db_files.count(); i++){
-        if(!isBlankDB(&db,QApplication::applicationDirPath()+"/data/"+db_files.at(i))){
-            ui->listWidget_DB->addItem(db_files.at(i));
+        QString curFile = db_files.at(i);
+        if(!isBlankDB(&db,DBPath+curFile)){
+            ui->listWidget_DB->addItem(curFile.replace(".QLT","",Qt::CaseInsensitive));
         }
     }
     this->setCursor(Qt::ArrowCursor);
@@ -114,7 +115,7 @@ void admin_form::on_pushButton_DelDB_clicked()
         if(ret == QMessageBox::Yes){
             if(db.isOpen()) db.close();
             setAvailabilityOfItems(db.isOpen());
-            QFile file_for_del(DBPath+curDB_item->text());
+            QFile file_for_del(DBPath+curDB_item->text()+".QLT");
 
             if(file_for_del.remove()){
                 getDataBases();
@@ -132,7 +133,7 @@ void admin_form::on_pushButton_DelDB_clicked()
 void admin_form::on_listWidget_DB_clicked()
 {
     QString db_file = ui->listWidget_DB->currentItem()->text().trimmed();
-    bool db_is_open = openDB(&db,QApplication::applicationDirPath()+"/data/"+db_file);
+    bool db_is_open = openDB(&db,QApplication::applicationDirPath()+"/data/"+db_file+".QLT");
     setAvailabilityOfItems(db_is_open);
     if(db_is_open){
         getStudentsList();

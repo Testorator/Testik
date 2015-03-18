@@ -94,7 +94,7 @@ bool isBlankDB(QSqlDatabase *db, QString db_file)
         openDB(db,db_file);
     }
 
-    st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT BLANK FROM DB_PROPS;");
+    st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT BLANK FROM OPTIONS;");
     if(q_res.q_result){
         result = q_res.sel_data.at(0).map["BLANK"].toBool();
     }
@@ -112,7 +112,7 @@ bool setDB_NoBlank(QSqlDatabase *db,QString db_file)
 
     result = openDB(db,db_file);
     if(result){
-        result = SendSimpleQueryStr(db,"UPDATE DB_PROPS SET BLANK=0;");
+        result = SendSimpleQueryStr(db,"UPDATE OPTIONS SET BLANK=0;");
     }
 
     return result;
@@ -225,7 +225,7 @@ st_qRes getStudent(QSqlDatabase *db, QString studId, QString groupID)
 //
 bool addStudent(QSqlDatabase *db,st_stud data)
 {
-    return SendSimpleQueryStr(db,"INSERT INTO STUDENTS(GROUP_ID,NAME,SURNAME,PATRONIMYC) VALUES("+
+    return SendSimpleQueryStr(db,"INSERT INTO STUDENTS(GROUP_ID,NAME,SURNAME,PATRONYMIC) VALUES("+
                               getGroupIdByCode(db,data.grp_code).toString()+",\'"+data.name+"\',\'"+
                               data.surname+"\',\'"+data.patronymic+"\');");
 }
@@ -258,7 +258,7 @@ bool studUnique(QSqlDatabase *db, const QString Surname, const QString Name, con
 
     st_qRes q_res = SendSimpleQueryStrWR(db,
                                          "SELECT count(*) AS STUD_EXISTS FROM STUDENTS WHERE NAME=\'"+Name+
-                                         "\' AND SURNAME=\'"+Surname+"\' AND PATRONIMYC=\'"+Patrinymic+"\'"+
+                                         "\' AND SURNAME=\'"+Surname+"\' AND PATRONYMIC=\'"+Patrinymic+"\'"+
                                          cond_grpId+";");
     if(q_res.q_result){
         if(q_res.sel_data.at(0).map["STUD_EXISTS"].toInt() == 0){
