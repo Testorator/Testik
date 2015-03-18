@@ -82,13 +82,16 @@
           <property name="currentIndex">
            <number>0</number>
           </property>
-          <widget class="QWidget" name="tab_Test">
+          <widget class="QWidget" name="tab_test">
            <attribute name="title">
             <string>Test</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_12">
             <item row="0" column="0">
              <widget class="QTreeWidget" name="treeWidget_test_questions">
+              <attribute name="headerVisible">
+               <bool>false</bool>
+              </attribute>
               <column>
                <property name="text">
                 <string notr="true">1</string>
@@ -98,13 +101,13 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_Learn">
+          <widget class="QWidget" name="tab_learn">
            <attribute name="title">
             <string>Learn</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_13">
             <item row="0" column="0">
-             <widget class="QTableWidget" name="tableWidget_2"/>
+             <widget class="QTableWidget" name="treeWidget_learn_questions"/>
             </item>
            </layout>
           </widget>

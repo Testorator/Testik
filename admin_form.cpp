@@ -136,12 +136,28 @@ void admin_form::on_listWidget_DB_clicked()
     bool db_is_open = openDB(&db,QApplication::applicationDirPath()+"/data/"+db_file+".QLT");
     setAvailabilityOfItems(db_is_open);
     if(db_is_open){
+        getQuestionList("test");
+//        getQuestionList("learn");
         getStudentsList();
     }
     else{
 
     }
 }
+// --- tab questions --- {{
+void admin_form::getQuestionList(QString question_Type)
+{
+    QTreeWidget *curQTW;
+//    if(question_Type == "test"){
+//        curQTW = ui->treeWidget_test_questions;
+//    }
+//    else if(question_Type == "learn"){
+//        curQTW = ui->treeWidget_learn_questions;
+//    }
+//    curQTW->clear();
+//    QList<st_svMAP> res =
+}
+// --- tab questions --- }}
 // --- tab students --- {{
 void admin_form::getStudentsList()
 {

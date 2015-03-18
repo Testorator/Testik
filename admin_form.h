@@ -46,8 +46,9 @@ private:
     QSqlDatabase db;
     QAction *act_addGroup, *act_addStud;
     void getDataBases();
-    void setAvailabilityOfItems(bool val);
     void getStudentsList();
+    void getQuestionList(QString question_Type);
+    void setAvailabilityOfItems(bool val);
     bool prepareAddStudDlg(add_stud_dlg *dlg);
     bool sendStudData_toDB(QList<st_stud> *data);
 
