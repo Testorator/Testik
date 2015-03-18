@@ -16,6 +16,7 @@ admin_form::admin_form(QWidget *parent) :
     ui(new Ui::admin_form)
 {
     ui->setupUi(this);
+
     this->setWindowTitle(QApplication::applicationName()+": admin mode");
     ui->treeWidget_students->hideColumn(1);
 
@@ -77,6 +78,7 @@ void admin_form::getDataBases()
     this->setCursor(Qt::ArrowCursor);
 }
 //
+// --- Add/Del Database --- {{
 void admin_form::on_pushButton_AddDB_clicked()
 {
     QString new_db_name = QInputDialog::getText(this,
@@ -89,9 +91,8 @@ void admin_form::on_pushButton_AddDB_clicked()
                               tr("The name of the new database is empty!\nOperaion cancelled."));
     }
     else{
-        if(QFile::copy(QApplication::applicationDirPath()+"/data/BLANK.QLT",
-                       QApplication::applicationDirPath()+"/data/"+new_db_name+".QLT")){
-            setDB_NoBlank(&db,QApplication::applicationDirPath()+"/data/"+new_db_name+".QLT");
+        if(QFile::copy(DBPath+"BLANK.QLT",DBPath+new_db_name+".QLT")){
+            setDB_NoBlank(&db,DBPath+new_db_name+".QLT");
             getDataBases();
         }
         else{
@@ -101,6 +102,32 @@ void admin_form::on_pushButton_AddDB_clicked()
         }
     }
 }
+//
+void admin_form::on_pushButton_DelDB_clicked()
+{
+    QListWidgetItem *curDB_item = ui->listWidget_DB->currentItem();
+    if(curDB_item){
+        int ret = QMessageBox::question(this, tr("Removing database"),
+                                        tr("Are you shure want delete database")+" \""+curDB_item->text()+"\" ?",
+                                        QMessageBox::Yes | QMessageBox::No,
+                                        QMessageBox::No);
+        if(ret == QMessageBox::Yes){
+            if(db.isOpen()) db.close();
+            setAvailabilityOfItems(db.isOpen());
+            QFile file_for_del(DBPath+curDB_item->text());
+
+            if(file_for_del.remove()){
+                getDataBases();
+            }
+            else{
+                QMessageBox::critical(this,
+                                      tr("Error"),
+                                      file_for_del.errorString());
+            }
+        }
+    }
+}
+// --- Add/Del Database --- }}
 //
 void admin_form::on_listWidget_DB_clicked()
 {
@@ -374,7 +401,6 @@ void admin_form::on_pushButton_Delete_Stud_clicked()
             if(delStudent(&db,curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed())){
                 getStudentsList();
             }
-
         }
     }
     else{
@@ -412,6 +438,7 @@ bool admin_form::sendStudData_toDB(QList<st_stud> *data)
         if(!result) break;
     }
     data->clear();
+    return result;
 }
 
 //
@@ -455,3 +482,5 @@ void admin_form::on_pushButton_Import_Stud_clicked()
 }
 
 // --- tab students --- }}
+
+

@@ -5,6 +5,7 @@
 #include "add_stud_dlg.h"
 #include "dbfunc.h"
 
+#include <QApplication>
 #include <QMainWindow>
 #include <QtSql/QSqlDatabase>
 
@@ -37,9 +38,11 @@ private slots:
     void on_pushButton_Import_Stud_clicked();
     void on_pushButton_Delete_Stud_clicked();
     void on_action_clearGroup_clicked();
+    void on_pushButton_DelDB_clicked();
 
 private:
     Ui::admin_form *ui;
+    QString DBPath = QApplication::applicationDirPath()+"/data/";
     QSqlDatabase db;
     QAction *act_addGroup, *act_addStud;
     void getDataBases();
