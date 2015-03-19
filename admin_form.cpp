@@ -31,6 +31,12 @@ admin_form::admin_form(QWidget *parent) :
     connect(act_addStud,SIGNAL(triggered()),this,SLOT(on_actionAddStud_triggered()));
     ui->toolButton_Add_Stud->addAction(act_addStud);
 
+    act_addTheme = new QAction(tr("Add theme"),ui->toolButton_Add_Quest->menu());
+    ui->toolButton_Add_Quest->addAction(act_addTheme);
+
+    act_addQuest = new QAction(tr("Add question"),ui->toolButton_Add_Quest->menu());
+    ui->toolButton_Add_Quest->addAction(act_addQuest);
+
     setAvailabilityOfItems(db.isOpen());
 }
 
@@ -137,7 +143,7 @@ void admin_form::on_listWidget_DB_clicked()
     setAvailabilityOfItems(db_is_open);
     if(db_is_open){
         getQuestionList("test");
-//        getQuestionList("learn");
+        //        getQuestionList("learn");
         getStudentsList();
     }
     else{
@@ -148,14 +154,51 @@ void admin_form::on_listWidget_DB_clicked()
 void admin_form::getQuestionList(QString question_Type)
 {
     QTreeWidget *curQTW;
-//    if(question_Type == "test"){
-//        curQTW = ui->treeWidget_test_questions;
+    //    if(question_Type == "test"){
+    //        curQTW = ui->treeWidget_test_questions;
+    //    }
+    //    else if(question_Type == "learn"){
+    //        curQTW = ui->treeWidget_learn_questions;
+    //    }
+    //    curQTW->clear();
+    //    QList<st_svMAP> res =
+}
+//
+
+void admin_form::show_customContextMenuRequested(const QPoint &pos)
+{
+//    QTreeWidget *curTW;
+//    if(ui->tabWidget_Questions->currentIndex() == 0){
+//        curTW = ui->treeWidget_test_questions;
 //    }
-//    else if(question_Type == "learn"){
-//        curQTW = ui->treeWidget_learn_questions;
+//    else if(ui->tabWidget_Questions->currentIndex() == 1){
+//        curTW = ui->treeWidget_learn_questions;
 //    }
-//    curQTW->clear();
-//    QList<st_svMAP> res =
+
+//    if(curTW->currentItem()){
+//        QMenu *menu =new QMenu(this);
+//        QAction *act_AddTheme = new QAction(tr("Add theme"), this);
+//        QAction *act_EditTheme = new QAction(tr("Edit theme"),this);
+//        QAction *act_DelTheme = new QAction(tr("Delete theme"),this);
+//        QAction *act_AddQuestion = new QAction(tr("Add question"), this);
+//        QAction *act_EditQuestion = new QAction(tr("Edit question"),this);
+//        QAction *act_DelQuestion = new QAction(tr("Delete question"),this);
+
+//        menu->addAction(act_AddTheme);
+//        menu->addAction(act_EditTheme);
+//        menu->addAction(act_DelTheme);
+//        menu->addSeparator();
+//        menu->addAction(act_AddQuestion);
+//        menu->addAction(act_EditQuestion);
+//        menu->addAction(act_DelQuestion);
+
+//        menu->popup(curTW->viewport()->mapToGlobal(pos));
+//    }
+}
+//
+void admin_form::on_toolButton_Add_Quest_clicked()
+{
+      if(ui->toolButton_Add_Quest->text() == tr("Add")) ui->toolButton_Add_Quest->showMenu();
 }
 // --- tab questions --- }}
 // --- tab students --- {{
@@ -499,5 +542,4 @@ void admin_form::on_pushButton_Import_Stud_clicked()
 }
 
 // --- tab students --- }}
-
 

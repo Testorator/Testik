@@ -39,12 +39,14 @@ private slots:
     void on_pushButton_Delete_Stud_clicked();
     void on_action_clearGroup_clicked();
     void on_pushButton_DelDB_clicked();
+    void show_customContextMenuRequested_customContextMenuRequested(const QPoint &pos);
+    void on_toolButton_Add_Quest_clicked();
 
 private:
     Ui::admin_form *ui;
     QString DBPath = QApplication::applicationDirPath()+"/data/";
     QSqlDatabase db;
-    QAction *act_addGroup, *act_addStud;
+    QAction *act_addGroup, *act_addStud, *act_addTheme, *act_addQuest;
     void getDataBases();
     void getStudentsList();
     void getQuestionList(QString question_Type);
