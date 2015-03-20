@@ -32,6 +32,7 @@ admin_form::admin_form(QWidget *parent) :
     ui->toolButton_Add_Stud->addAction(act_addStud);
 
     act_addTheme = new QAction(tr("Add theme"),ui->toolButton_Add_Quest->menu());
+    connect(act_addTheme,SIGNAL(triggered()),this,SLOT(on_action_addTheme_triggered()));
     ui->toolButton_Add_Quest->addAction(act_addTheme);
 
     act_addQuest = new QAction(tr("Add question"),ui->toolButton_Add_Quest->menu());
@@ -45,7 +46,6 @@ admin_form::~admin_form()
     if(db.isOpen()) db.close();
     delete ui;
 }
-
 //
 void admin_form::on_actionChange_admin_password_triggered()
 {
@@ -57,12 +57,6 @@ void admin_form::setAvailabilityOfItems(bool val)
 {
     ui->groupBox_SendEMail->setEnabled(val);
     ui->tabWidget->setEnabled(val);
-}
-//
-void admin_form::on_pushButton_clicked()
-{
-    question_mod_dialog qmd;
-    qmd.exec();
 }
 //
 void admin_form::getDataBases()
@@ -85,7 +79,7 @@ void admin_form::getDataBases()
     this->setCursor(Qt::ArrowCursor);
 }
 //
-// --- Add/Del Database --- {{
+// --- Database --- {{
 void admin_form::on_pushButton_AddDB_clicked()
 {
     QString new_db_name = QInputDialog::getText(this,
@@ -134,7 +128,6 @@ void admin_form::on_pushButton_DelDB_clicked()
         }
     }
 }
-// --- Add/Del Database --- }}
 //
 void admin_form::on_listWidget_DB_clicked()
 {
@@ -142,7 +135,7 @@ void admin_form::on_listWidget_DB_clicked()
     bool db_is_open = openDB(&db,QApplication::applicationDirPath()+"/data/"+db_file+".QLT");
     setAvailabilityOfItems(db_is_open);
     if(db_is_open){
-        getQuestionList("test");
+        //        getQuestionList("test");
         //        getQuestionList("learn");
         getStudentsList();
     }
@@ -150,8 +143,9 @@ void admin_form::on_listWidget_DB_clicked()
 
     }
 }
+// --- Database --- }}
 // --- tab questions --- {{
-void admin_form::getQuestionList(QString question_Type)
+void admin_form::getQuestionList(int question_Type)
 {
     QTreeWidget *curQTW;
     //    if(question_Type == "test"){
@@ -164,41 +158,82 @@ void admin_form::getQuestionList(QString question_Type)
     //    QList<st_svMAP> res =
 }
 //
-
-void admin_form::show_customContextMenuRequested(const QPoint &pos)
+bool admin_form::prepareAddThemeDlg(theme_dlg *dlg)
 {
-//    QTreeWidget *curTW;
-//    if(ui->tabWidget_Questions->currentIndex() == 0){
-//        curTW = ui->treeWidget_test_questions;
-//    }
-//    else if(ui->tabWidget_Questions->currentIndex() == 1){
-//        curTW = ui->treeWidget_learn_questions;
-//    }
+    //    QList<st_svMAP> q_res_groups = getGroups(&db);
+    bool result;
+    //    if(q_res_groups.count() > 0){
+    //        dlg->comboBox_groups_clear();
+    //        for(int i = 0;i < q_res_groups.count(); i++){
+    //            dlg->comboBox_groups_addItem(q_res_groups.at(i).map["CODE"].toString(),
+    //                    q_res_groups.at(i).map["ID"]);
+    //        }
 
-//    if(curTW->currentItem()){
-//        QMenu *menu =new QMenu(this);
-//        QAction *act_AddTheme = new QAction(tr("Add theme"), this);
-//        QAction *act_EditTheme = new QAction(tr("Edit theme"),this);
-//        QAction *act_DelTheme = new QAction(tr("Delete theme"),this);
-//        QAction *act_AddQuestion = new QAction(tr("Add question"), this);
-//        QAction *act_EditQuestion = new QAction(tr("Edit question"),this);
-//        QAction *act_DelQuestion = new QAction(tr("Delete question"),this);
+    //        QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
+    //        if(!curItem->parent()){
+    //            dlg->comboBox_groups_set_curItem(curItem->text(0));
+    //        }
+    //        else {
+    //            dlg->comboBox_groups_set_curItem(curItem->parent()->text(0));
+    //        }
+    //        result = true;
+    //    }
+    //    else{
+    //        result = false;
+    //    }
+    return result;
+}
+//
+void admin_form::on_action_addTheme_triggered()
+{
+    QTreeWidget *curQTW;
+    int question_type = ui->tabWidget_Questions->currentIndex();
+    if(question_type == 0){ // test
+        curQTW = ui->treeWidget_test_questions;
+    }
+    else if(question_type == 0){ // learn
+        curQTW = ui->treeWidget_learn_questions;
+    }
 
-//        menu->addAction(act_AddTheme);
-//        menu->addAction(act_EditTheme);
-//        menu->addAction(act_DelTheme);
-//        menu->addSeparator();
-//        menu->addAction(act_AddQuestion);
-//        menu->addAction(act_EditQuestion);
-//        menu->addAction(act_DelQuestion);
+    // save last selection for Add button as "group"
+    ui->toolButton_Add_Quest->setText(tr("Add theme"));
+    connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addTheme_triggered()));
 
-//        menu->popup(curTW->viewport()->mapToGlobal(pos));
-//    }
+    theme_dlg th_dlg(this);
+    th_dlg.setWindowTitle(tr("Add new theme"));
+
+    if(prepareAddThemeDlg(&th_dlg)){
+        if(curQTW->currentItem()->parent()){
+            th_dlg.set_current_PTheme(curQTW->currentItem()->parent()->text(1).trimmed());
+        }
+
+        QString new_themeName, PThemeID;
+        if(th_dlg.exec() == 1){
+            new_themeName = th_dlg.get_ThemeName();
+            PThemeID = th_dlg.get_PThemeID();
+
+            if(new_themeName.trimmed().length() > 0){
+                bool q_result;
+                if(PThemeID.trimmed().length() > 0 && !PThemeID.isEmpty() && PThemeID.isNull()){
+                    q_result = sql_addTheme(&db,new_themeName,PThemeID);
+                }
+                else{
+                    q_result = sql_addTheme(&db,new_themeName);
+                }
+
+                if(q_result) {
+                    getQuestionList(0);
+                    getQuestionList(1);
+                }
+            }
+
+        }
+    }
 }
 //
 void admin_form::on_toolButton_Add_Quest_clicked()
 {
-      if(ui->toolButton_Add_Quest->text() == tr("Add")) ui->toolButton_Add_Quest->showMenu();
+    if(ui->toolButton_Add_Quest->text() == tr("Add")) ui->toolButton_Add_Quest->showMenu();
 }
 // --- tab questions --- }}
 // --- tab students --- {{
@@ -297,7 +332,7 @@ void admin_form::on_actionAddGroup_triggered(QString group_code)
     }
 
     if(new_grpName.trimmed().length() > 0){
-        bool res = addGroup(&db,new_grpName);
+        bool res = sql_addGroup(&db,new_grpName);
         if(res) getStudentsList();
     }
 }
@@ -339,11 +374,11 @@ void admin_form::on_actionAddStud_triggered()
 
     if(prepareAddStudDlg(&dlg)){
         if(dlg.exec() == 1){
-            if(studUnique(&db,
-                          dlg.get_lineEdit_Surname().trimmed(),
-                          dlg.get_lineEdit_Name().trimmed(),
-                          dlg.get_lineEdit_Patronymic().trimmed(),
-                          dlg.get_group_id().toString())){
+            if(sql_studUnique(&db,
+                              dlg.get_lineEdit_Surname().trimmed(),
+                              dlg.get_lineEdit_Name().trimmed(),
+                              dlg.get_lineEdit_Patronymic().trimmed(),
+                              dlg.get_group_id().toString())){
 
                 st_stud new_stud;
                 new_stud.grp_code = dlg.get_group_code();
@@ -351,7 +386,7 @@ void admin_form::on_actionAddStud_triggered()
                 new_stud.surname = dlg.get_lineEdit_Surname();
                 new_stud.patronymic = dlg.get_lineEdit_Patronymic();
 
-                if(addStudent(&db,new_stud)){
+                if(sql_addStudent(&db,new_stud)){
                     getStudentsList();
                 }
             }
@@ -375,7 +410,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                                                    QLineEdit::Normal,
                                                    curItem->text(0)).trimmed();
             if(in_grp.length() > 0){
-                if(grpUnique(&db,in_grp)){
+                if(sql_grpUnique(&db,in_grp)){
                     bool q_res = SendSimpleQueryStr(&db,
                                                     "UPDATE GROUPS SET CODE=\'"+in_grp+"\' WHERE CODE=\'"
                                                     +curItem->text(0)+"\' AND ID="+curItem->text(1)+";");
@@ -440,7 +475,7 @@ void admin_form::on_action_clearGroup_clicked()
         QMessageBox::warning(this,tr("Error"),tr("Please select group for clean."));
     }
     else{
-        clearGroup(&db,curItem->text(1));
+        sql_clearGroup(&db,curItem->text(1));
         getStudentsList();
     }
 }
@@ -458,7 +493,7 @@ void admin_form::on_pushButton_Delete_Stud_clicked()
                                         QMessageBox::Yes | QMessageBox::No,
                                         QMessageBox::No);
         if(ret == QMessageBox::Yes){
-            if(delStudent(&db,curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed())){
+            if(sql_delStudent(&db,curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed())){
                 getStudentsList();
             }
         }
@@ -472,8 +507,8 @@ void admin_form::on_pushButton_Delete_Stud_clicked()
                                         QMessageBox::Yes | QMessageBox::No,
                                         QMessageBox::No);
         if(ret == QMessageBox::Yes){
-            if(clearGroup(&db,curItem->text(1))){
-                delGroup(&db,curItem->text(1));
+            if(sql_clearGroup(&db,curItem->text(1))){
+                sql_delGroup(&db,curItem->text(1));
             }
             getStudentsList();
         }
@@ -484,15 +519,15 @@ bool admin_form::sendStudData_toDB(QList<st_stud> *data)
 {
     bool result = true;
     for(int i=0; i<data->count();i++){
-        if(grpUnique(&db,data->at(i).grp_code,true)){
-            addGroup(&db,data->at(i).grp_code);
+        if(sql_grpUnique(&db,data->at(i).grp_code,true)){
+            sql_addGroup(&db,data->at(i).grp_code);
         }
-        if(studUnique(&db,
-                      data->at(i).surname,
-                      data->at(i).name,
-                      data->at(i).patronymic,
-                      getGroupIdByCode(&db,data->at(i).grp_code).toString(),true)){
-            result = addStudent(&db,data->at(i));
+        if(sql_studUnique(&db,
+                          data->at(i).surname,
+                          data->at(i).name,
+                          data->at(i).patronymic,
+                          getGroupIdByCode(&db,data->at(i).grp_code).toString(),true)){
+            result = sql_addStudent(&db,data->at(i));
         }
 
         if(!result) break;

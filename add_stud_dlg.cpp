@@ -58,7 +58,6 @@ void add_stud_dlg::lineEdit_Patronymic_setText(QString value)
 {
     ui->lineEdit_Patronymic->setText(value);
 }
-
 //
 QVariant add_stud_dlg::get_group_id()
 {

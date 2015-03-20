@@ -14,6 +14,11 @@ class theme_dlg : public QDialog
 public:
     explicit theme_dlg(QWidget *parent = 0);
     ~theme_dlg();
+    void clear_PThemes();
+    void add_PTheme(QString item, QVariant itemID);
+    void set_current_PTheme(QString PThemeName);
+    QString get_PThemeID();
+    QString get_ThemeName();
 
 private:
     Ui::theme_dlg *ui;

@@ -34,16 +34,18 @@ st_qRes SendSimpleQueryStrWR(QSqlDatabase *db,const QString& q_str);
 QString getGroupCodeById(QSqlDatabase *db,QString grpId);
 QVariant getGroupIdByCode(QSqlDatabase *db,QString grpCode);
 QList<st_svMAP> getGroups(QSqlDatabase *db);
-bool addGroup(QSqlDatabase *db, const QString grpCode);
-bool clearGroup(QSqlDatabase *db, const QVariant grpId);
-bool delGroup(QSqlDatabase *db, const QVariant grpId);
-bool grpUnique(QSqlDatabase *db, const QString grpCode, bool silent = 0);
+bool sql_addGroup(QSqlDatabase *db, const QString grpCode);
+bool sql_clearGroup(QSqlDatabase *db, const QVariant grpId);
+bool sql_delGroup(QSqlDatabase *db, const QVariant grpId);
+bool sql_grpUnique(QSqlDatabase *db, const QString grpCode, bool silent = 0);
 //
 QList<st_svMAP> getStudents(QSqlDatabase *db,QString groupID = 0 );
 st_qRes getStudent(QSqlDatabase *db, QString studId, QString groupID);
-bool addStudent(QSqlDatabase *db,st_stud data);
-bool delStudent(QSqlDatabase *db, QString studId, QString grpId = 0);
-bool studUnique(QSqlDatabase *db, const QString Surname, const QString Name, const QString Patrinymic, QString grpId = 0, bool silent = 0);
-
+bool sql_addStudent(QSqlDatabase *db,st_stud data);
+bool sql_delStudent(QSqlDatabase *db, QString studId, QString grpId = 0);
+bool sql_studUnique(QSqlDatabase *db, const QString Surname, const QString Name, const QString Patrinymic, QString grpId = 0, bool silent = 0);
+//
+bool sql_ThemeUnique(QSqlDatabase *db, const QString themeName, bool silent = 0);
+bool sql_addTheme(QSqlDatabase *db, const QString themeName, QString parent_id = 0);
 #endif // DBFUNC
 
