@@ -147,6 +147,15 @@ bool sql_ThemeUnique(QSqlDatabase *db, const QString themeName, bool silent)
     return result;
 }
 //
+QList<st_svMAP> getThemes(QSqlDatabase *db)
+{
+    st_qRes result = SendSimpleQueryStrWR(db,"SELECT qthemes.id, qthemes.parent_id, qthemes.name \
+                                              FROM qthemes \
+                                              ORDER BY qthemes.id");
+    return result.sel_data;
+}
+
+//
 bool sql_addTheme(QSqlDatabase *db, const QString themeName, QString parent_id)
 {
     bool result = false;

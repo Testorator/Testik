@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>add_stud_dlg</class>
- <widget class="QDialog" name="add_stud_dlg">
+ <class>stud_dlg</class>
+ <widget class="QDialog" name="stud_dlg">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -88,7 +88,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>add_stud_dlg</receiver>
+   <receiver>stud_dlg</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -104,7 +104,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>add_stud_dlg</receiver>
+   <receiver>stud_dlg</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

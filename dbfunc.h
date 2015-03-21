@@ -45,6 +45,7 @@ bool sql_addStudent(QSqlDatabase *db,st_stud data);
 bool sql_delStudent(QSqlDatabase *db, QString studId, QString grpId = 0);
 bool sql_studUnique(QSqlDatabase *db, const QString Surname, const QString Name, const QString Patrinymic, QString grpId = 0, bool silent = 0);
 //
+QList<st_svMAP> getThemes(QSqlDatabase *db);
 bool sql_ThemeUnique(QSqlDatabase *db, const QString themeName, bool silent = 0);
 bool sql_addTheme(QSqlDatabase *db, const QString themeName, QString parent_id = 0);
 #endif // DBFUNC

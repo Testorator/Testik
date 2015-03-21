@@ -19,6 +19,10 @@ admin_form::admin_form(QWidget *parent) :
 
     this->setWindowTitle(QApplication::applicationName()+": admin mode");
     ui->treeWidget_students->hideColumn(1);
+    ui->treeWidget_test_questions->hideColumn(1);
+    ui->treeWidget_test_questions->hideColumn(2);
+    ui->treeWidget_learn_questions->hideColumn(1);
+    ui->treeWidget_learn_questions->hideColumn(2);
 
     db = QSqlDatabase::addDatabase("QIBASE");
     getDataBases();
@@ -31,11 +35,11 @@ admin_form::admin_form(QWidget *parent) :
     connect(act_addStud,SIGNAL(triggered()),this,SLOT(on_actionAddStud_triggered()));
     ui->toolButton_Add_Stud->addAction(act_addStud);
 
-    act_addTheme = new QAction(tr("Add theme"),ui->toolButton_Add_Quest->menu());
+    act_addTheme = new QAction(tr("Add Theme"),ui->toolButton_Add_Quest->menu());
     connect(act_addTheme,SIGNAL(triggered()),this,SLOT(on_action_addTheme_triggered()));
     ui->toolButton_Add_Quest->addAction(act_addTheme);
 
-    act_addQuest = new QAction(tr("Add question"),ui->toolButton_Add_Quest->menu());
+    act_addQuest = new QAction(tr("Add Question"),ui->toolButton_Add_Quest->menu());
     ui->toolButton_Add_Quest->addAction(act_addQuest);
 
     setAvailabilityOfItems(db.isOpen());
@@ -158,29 +162,22 @@ void admin_form::getQuestionList(int question_Type)
     //    QList<st_svMAP> res =
 }
 //
-bool admin_form::prepareAddThemeDlg(theme_dlg *dlg)
+bool admin_form::prepareThemesDlg(theme_dlg *dlg)
 {
-    //    QList<st_svMAP> q_res_groups = getGroups(&db);
+    QList<st_svMAP> q_res_themes = getThemes(&db);
     bool result;
-    //    if(q_res_groups.count() > 0){
-    //        dlg->comboBox_groups_clear();
-    //        for(int i = 0;i < q_res_groups.count(); i++){
-    //            dlg->comboBox_groups_addItem(q_res_groups.at(i).map["CODE"].toString(),
-    //                    q_res_groups.at(i).map["ID"]);
-    //        }
-
-    //        QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
-    //        if(!curItem->parent()){
-    //            dlg->comboBox_groups_set_curItem(curItem->text(0));
-    //        }
-    //        else {
-    //            dlg->comboBox_groups_set_curItem(curItem->parent()->text(0));
-    //        }
-    //        result = true;
-    //    }
-    //    else{
-    //        result = false;
-    //    }
+    if(q_res_themes.count() > 0){
+        dlg->clear_PThemes();
+        for(int i = 0;i < q_res_themes.count(); i++){
+            dlg->add_PTheme(q_res_themes.at(i).map["NAME"].toString(),
+                    q_res_themes.at(i).map["ID"].toString(),
+                    q_res_themes.at(i).map["PARENT_ID"].toString());
+        }
+        result = true;
+    }
+    else{
+        result = false;
+    }
     return result;
 }
 //
@@ -191,7 +188,7 @@ void admin_form::on_action_addTheme_triggered()
     if(question_type == 0){ // test
         curQTW = ui->treeWidget_test_questions;
     }
-    else if(question_type == 0){ // learn
+    else if(question_type == 1){ // learn
         curQTW = ui->treeWidget_learn_questions;
     }
 
@@ -202,11 +199,7 @@ void admin_form::on_action_addTheme_triggered()
     theme_dlg th_dlg(this);
     th_dlg.setWindowTitle(tr("Add new theme"));
 
-    if(prepareAddThemeDlg(&th_dlg)){
-        if(curQTW->currentItem()->parent()){
-            th_dlg.set_current_PTheme(curQTW->currentItem()->parent()->text(1).trimmed());
-        }
-
+    if(prepareThemesDlg(&th_dlg)){
         QString new_themeName, PThemeID;
         if(th_dlg.exec() == 1){
             new_themeName = th_dlg.get_ThemeName();
@@ -337,7 +330,7 @@ void admin_form::on_actionAddGroup_triggered(QString group_code)
     }
 }
 //
-bool admin_form::prepareAddStudDlg(add_stud_dlg *dlg)
+bool admin_form::prepareAddStudDlg(stud_dlg *dlg)
 {
     QList<st_svMAP> q_res_groups = getGroups(&db);
     bool result;
@@ -369,7 +362,7 @@ void admin_form::on_actionAddStud_triggered()
     ui->toolButton_Add_Stud->setText(act_addStud->text());
     connect(ui->toolButton_Add_Stud,SIGNAL(clicked()),this,SLOT(on_actionAddStud_triggered()));
 
-    add_stud_dlg dlg(this);
+    stud_dlg dlg(this);
     dlg.setWindowTitle(tr("Add new student"));
 
     if(prepareAddStudDlg(&dlg)){
@@ -425,7 +418,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
             st_qRes q_res = getStudent(&db,curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed());
 
             if(q_res.q_result){
-                add_stud_dlg dlg(this);
+                stud_dlg dlg(this);
                 dlg.setWindowTitle(tr("Edit student"));
 
                 if(prepareAddStudDlg(&dlg)){

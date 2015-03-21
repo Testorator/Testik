@@ -2,7 +2,7 @@
 #define ADMIN_FORM_H
 
 #include "change_admin_pw_dialog.h"
-#include "add_stud_dlg.h"
+#include "stud_dlg.h"
 #include "theme_dlg.h"
 #include "dbfunc.h"
 
@@ -54,11 +54,11 @@ private:
     // students
     void getStudentsList();
     void setAvailabilityOfItems(bool val);
-    bool prepareAddStudDlg(add_stud_dlg *dlg);
+    bool prepareAddStudDlg(stud_dlg *dlg);
     bool sendStudData_toDB(QList<st_stud> *data);
     // questions
     void getQuestionList(int question_Type); // 0 - test; 1 - learn
-    bool prepareAddThemeDlg(theme_dlg *dlg);
+    bool prepareThemesDlg(theme_dlg *dlg);
 
 };
 

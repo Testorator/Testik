@@ -2,6 +2,7 @@
 #define THEME_DLG_H
 
 #include <QDialog>
+#include <QTreeWidgetItem>
 
 namespace Ui {
 class theme_dlg;
@@ -15,13 +16,16 @@ public:
     explicit theme_dlg(QWidget *parent = 0);
     ~theme_dlg();
     void clear_PThemes();
-    void add_PTheme(QString item, QVariant itemID);
-    void set_current_PTheme(QString PThemeName);
+    void add_PTheme(QString item, QString itemID, QString parent_ID = 0);
+    void set_current_PTheme(QString id);
     QString get_PThemeID();
     QString get_ThemeName();
 
+private slots:
+
 private:
     Ui::theme_dlg *ui;
+    QTreeWidgetItem* getQTWItemByID(QString id);
 };
 
 #endif // THEME_DLG_H

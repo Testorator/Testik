@@ -1,19 +1,19 @@
-#ifndef ADD_STUD_DLG_H
-#define ADD_STUD_DLG_H
+#ifndef STUD_DLG_H
+#define STUD_DLG_H
 
 #include <QDialog>
 
 namespace Ui {
-class add_stud_dlg;
+class stud_dlg;
 }
 
-class add_stud_dlg : public QDialog
+class stud_dlg : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit add_stud_dlg(QWidget *parent = 0);
-    ~add_stud_dlg();
+    explicit stud_dlg(QWidget *parent = 0);
+    ~stud_dlg();
     void comboBox_groups_clear();
     void comboBox_groups_addItem(QString item, QVariant itemID);
     void comboBox_groups_set_curItem(QString item);
@@ -27,7 +27,7 @@ public:
     QString get_lineEdit_Patronymic();
 
 private:
-    Ui::add_stud_dlg *ui;
+    Ui::stud_dlg *ui;
 
 };
 
