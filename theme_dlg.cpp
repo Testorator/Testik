@@ -7,6 +7,8 @@ theme_dlg::theme_dlg(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->treeWidget_Themes->hideColumn(1);
+    ui->treeWidget_Themes->setSortingEnabled(true);
+    ui->treeWidget_Themes->sortByColumn(0,Qt::AscendingOrder);
 }
 //
 theme_dlg::~theme_dlg()
@@ -17,6 +19,7 @@ theme_dlg::~theme_dlg()
 void theme_dlg::clear_PThemes()
 {
     ui->treeWidget_Themes->clear();
+    add_PTheme(tr("No parent"),"0");
 }
 //
 QTreeWidgetItem* theme_dlg::getQTWItemByID(QString id)

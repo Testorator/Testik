@@ -147,6 +147,16 @@ bool sql_ThemeUnique(QSqlDatabase *db, const QString themeName, bool silent)
     return result;
 }
 //
+QList<st_svMAP> getThemeByID(QSqlDatabase *db, QVariant theme_id)
+{
+    st_qRes result = SendSimpleQueryStrWR(db,"SELECT qthemes.id, qthemes.parent_id, qthemes.name \
+                                              FROM qthemes \
+                                              WHERE ID="+theme_id.toString()+
+                                              " ORDER BY qthemes.id");
+    return result.sel_data;
+
+}
+//
 QList<st_svMAP> getThemes(QSqlDatabase *db)
 {
     st_qRes result = SendSimpleQueryStrWR(db,"SELECT qthemes.id, qthemes.parent_id, qthemes.name \
@@ -170,6 +180,30 @@ bool sql_addTheme(QSqlDatabase *db, const QString themeName, QString parent_id)
     }
     return result;
 }
+//
+QList<st_svMAP> sql_getQuestionsWithThemes(QSqlDatabase *db, int questions_type)
+{
+    QString _questions_type;
+    if(questions_type == 0){
+        _questions_type = "TEST";
+    }
+    else{
+        _questions_type = "LEARN";
+    }
+    st_qRes result = SendSimpleQueryStrWR(db,"SELECT * \
+                                              FROM VW_"+_questions_type+"_QUESTIONS_WITH_THEMES;");
+    return result.sel_data;
+}
+
+//
+QList<st_svMAP> sql_getQuestions(QSqlDatabase *db,QString theme_id)
+{
+    st_qRes result = SendSimpleQueryStrWR(db,"SELECT qthemes.id, qthemes.parent_id, qthemes.name \
+                                              FROM qthemes \
+                                              ORDER BY qthemes.id");
+    return result.sel_data;
+}
+
 // **** QUESTIONS **** }}
 //**********************************************
 // **** GROUPS **** {{

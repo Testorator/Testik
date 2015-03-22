@@ -149,17 +149,48 @@ void admin_form::on_listWidget_DB_clicked()
 }
 // --- Database --- }}
 // --- tab questions --- {{
+QTreeWidgetItem* admin_form::findQParentByID(QTreeWidget *curQTW, int parent_id)
+{
+    QTreeWidgetItem *result;
+
+    QList<QTreeWidgetItem *> parent_QTWI = curQTW->findItems(QVariant(parent_id).toString(),
+                                                             Qt::MatchExactly,
+                                                             1);
+    if(parent_QTWI.count() > 0){
+        result = parent_QTWI.at(0);
+    }
+    else{
+        QList<st_svMAP> _parent_data = getThemeByID(&db,parent_id);
+        if(_parent_data.count() > 0){
+            if(_parent_data.at(0).map["PARENT_ID"].toInt() > 0){
+                // find_parent
+            }
+            else{
+                // add this parent to QTreeWidget and return his pointer
+            }
+        }
+    }
+
+    return result;
+}
+//
 void admin_form::getQuestionList(int question_Type)
 {
     QTreeWidget *curQTW;
-    //    if(question_Type == "test"){
-    //        curQTW = ui->treeWidget_test_questions;
-    //    }
-    //    else if(question_Type == "learn"){
-    //        curQTW = ui->treeWidget_learn_questions;
-    //    }
-    //    curQTW->clear();
-    //    QList<st_svMAP> res =
+    if(question_Type == 0){
+        curQTW = ui->treeWidget_test_questions;
+    }
+    else if(question_Type == 1){
+        curQTW = ui->treeWidget_learn_questions;
+    }
+    curQTW->clear();
+    QList<st_svMAP> q_res = sql_getQuestionsWithThemes(&db,question_Type);
+    if(q_res.count() > 0){
+        for(int i = 0; i < q_res.count(); i++){
+            QTreeWidgetItem *q_parent = findQParentByID(curQTW,
+                                                        q_res.at(i).map["PARENT_ID"].toInt());
+        }
+    }
 }
 //
 bool admin_form::prepareThemesDlg(theme_dlg *dlg)
