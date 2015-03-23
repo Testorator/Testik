@@ -59,12 +59,16 @@ void theme_dlg::set_current_PTheme(QString id)
 //
 QString theme_dlg::get_ThemeName()
 {
-   return  ui->treeWidget_Themes->currentItem()->text(0).trimmed();
+   return  ui->lineEdit_ThemeName->text().trimmed();
 }
 //
 QString theme_dlg::get_PThemeID()
 {
-    return ui->treeWidget_Themes->currentItem()->text(1);
+    QString result = 0;
+    QTreeWidgetItem *curItem = ui->treeWidget_Themes->currentItem();
+    if(curItem) result = curItem->text(1).trimmed();
+
+    return result;
 }
 //
 

@@ -238,7 +238,7 @@ void admin_form::on_action_addTheme_triggered()
 
             if(new_themeName.trimmed().length() > 0){
                 bool q_result;
-                if(PThemeID.trimmed().length() > 0 && !PThemeID.isEmpty() && PThemeID.isNull()){
+                if(PThemeID.trimmed().length() > 0 && QVariant(PThemeID).toInt() > 0){
                     q_result = sql_addTheme(&db,new_themeName,PThemeID);
                 }
                 else{
@@ -250,7 +250,6 @@ void admin_form::on_action_addTheme_triggered()
                     getQuestionList(1);
                 }
             }
-
         }
     }
 }

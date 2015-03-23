@@ -119,7 +119,7 @@ bool setDB_NoBlank(QSqlDatabase *db,QString db_file)
 }
 //**********************************************
 // **** QUESTIONS **** {{
-bool sql_ThemeUnique(QSqlDatabase *db, const QString themeName, bool silent)
+bool sql_themeUnique(QSqlDatabase *db, const QString themeName, bool silent)
 {
     bool result;
     if(themeName.isEmpty() || themeName.isNull() || themeName.trimmed().length() < 1){
@@ -169,7 +169,7 @@ QList<st_svMAP> getThemes(QSqlDatabase *db)
 bool sql_addTheme(QSqlDatabase *db, const QString themeName, QString parent_id)
 {
     bool result = false;
-    result = sql_ThemeUnique(db,themeName.trimmed());
+    result = sql_themeUnique(db,themeName.trimmed());
     if(result){
         QString q_str = "INSERT INTO QTHEMES(";
         if(parent_id > 0) q_str.append("PARENT_ID,");
