@@ -149,9 +149,9 @@ void admin_form::on_listWidget_DB_clicked()
 }
 // --- Database --- }}
 // --- tab questions --- {{
-QTreeWidgetItem* admin_form::findQParentByID(QTreeWidget *curQTW, int parent_id)
+QTreeWidgetItem* admin_form::getQParentByID(QTreeWidget *curQTW, int parent_id)
 {
-    QTreeWidgetItem *result;
+    QTreeWidgetItem *result, *_parent_QTWI;
 
     QList<QTreeWidgetItem *> parent_QTWI = curQTW->findItems(QVariant(parent_id).toString(),
                                                              Qt::MatchExactly,
@@ -160,14 +160,41 @@ QTreeWidgetItem* admin_form::findQParentByID(QTreeWidget *curQTW, int parent_id)
         result = parent_QTWI.at(0);
     }
     else{
-        QList<st_svMAP> _parent_data = getThemeByID(&db,parent_id);
-        if(_parent_data.count() > 0){
-            if(_parent_data.at(0).map["PARENT_ID"].toInt() > 0){
-                // find_parent
+
+        QList<st_theme> _not_exists_themes;
+        _not_exists_themes.clear();
+
+        int _tmp_parent_id = parent_id;
+
+        do{
+            QList<st_svMAP> _parent_data = sql_getThemeByID(&db,_tmp_parent_id);
+            if(_parent_data.count() > 0){
+                QString _parent_id = _parent_data.at(0).map["PARENT_ID"].toString();
+                if(QVariant(_parent_id).toInt() > 0){
+                    parent_QTWI = curQTW->findItems(_parent_id,
+                                                    Qt::MatchExactly,
+                                                    1);
+                    if(parent_QTWI.count() > 0){
+                       _parent_QTWI = parent_QTWI.at(0);
+                       _tmp_parent_id = 0;
+                    }
+                }
+                else{
+                    st_theme _theme_data;
+                    _theme_data.theme_parent_id = _parent_data.at(0).map["PARENT_ID"].toString();
+                    _theme_data.theme_id = _parent_data.at(0).map["ID"].toString();
+                    _theme_data.theme_name = _parent_data.at(0).map["NAME"].toString();
+                    _not_exists_themes.append(_theme_data);
+                    _tmp_parent_id = _parent_data.at(0).map["PARENT_ID"].toInt();
+                }
             }
             else{
-                // add this parent to QTreeWidget and return his pointer
+                _tmp_parent_id = 0;
             }
+        }while(_tmp_parent_id != 0);
+
+        if(_not_exists_themes.count() > 0){
+            // add not exists parents
         }
     }
 
@@ -187,7 +214,7 @@ void admin_form::getQuestionList(int question_Type)
     QList<st_svMAP> q_res = sql_getQuestionsWithThemes(&db,question_Type);
     if(q_res.count() > 0){
         for(int i = 0; i < q_res.count(); i++){
-            QTreeWidgetItem *q_parent = findQParentByID(curQTW,
+            QTreeWidgetItem *q_parent = getQParentByID(curQTW,
                                                         q_res.at(i).map["PARENT_ID"].toInt());
         }
     }
@@ -195,7 +222,7 @@ void admin_form::getQuestionList(int question_Type)
 //
 bool admin_form::prepareThemesDlg(theme_dlg *dlg)
 {
-    QList<st_svMAP> q_res_themes = getThemes(&db);
+    QList<st_svMAP> q_res_themes = sql_getThemes(&db);
     bool result;
     if(q_res_themes.count() > 0){
         dlg->clear_PThemes();

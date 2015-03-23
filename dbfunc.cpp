@@ -147,7 +147,7 @@ bool sql_themeUnique(QSqlDatabase *db, const QString themeName, bool silent)
     return result;
 }
 //
-QList<st_svMAP> getThemeByID(QSqlDatabase *db, QVariant theme_id)
+QList<st_svMAP> sql_getThemeByID(QSqlDatabase *db, QVariant theme_id)
 {
     st_qRes result = SendSimpleQueryStrWR(db,"SELECT qthemes.id, qthemes.parent_id, qthemes.name \
                                               FROM qthemes \
@@ -157,7 +157,7 @@ QList<st_svMAP> getThemeByID(QSqlDatabase *db, QVariant theme_id)
 
 }
 //
-QList<st_svMAP> getThemes(QSqlDatabase *db)
+QList<st_svMAP> sql_getThemes(QSqlDatabase *db)
 {
     st_qRes result = SendSimpleQueryStrWR(db,"SELECT qthemes.id, qthemes.parent_id, qthemes.name \
                                               FROM qthemes \
