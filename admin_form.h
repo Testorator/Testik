@@ -62,7 +62,6 @@ private:
     bool prepareAddStudDlg(stud_dlg *dlg);
     bool sendStudData_toDB(QList<st_stud> *data);
     // questions
-    QTreeWidgetItem* getQParentByID(QTreeWidget *curQTW, int parent_id);
     void getQuestionList(int question_Type); // 0 - test; 1 - learn
     bool prepareThemesDlg(theme_dlg *dlg);
 

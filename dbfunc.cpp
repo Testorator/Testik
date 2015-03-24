@@ -181,6 +181,18 @@ bool sql_addTheme(QSqlDatabase *db, const QString themeName, QString parent_id)
     return result;
 }
 //
+QList<st_svMAP> sql_getRootThemes(QSqlDatabase *db)
+{
+    st_qRes result = SendSimpleQueryStrWR(db,"SELECT * FROM QTHEMES WHERE PARENT_ID IS NULL;");
+    return result.sel_data;
+}
+//
+QList<st_svMAP> sql_getThemeChild(QSqlDatabase *db, QVariant parent_id)
+{
+    st_qRes result = SendSimpleQueryStrWR(db,"SELECT * FROM QTHEMES WHERE PARENT_ID="+parent_id.toString()+";");
+    return result.sel_data;
+}
+//
 QList<st_svMAP> sql_getQuestionsWithThemes(QSqlDatabase *db, int questions_type)
 {
     QString _questions_type;

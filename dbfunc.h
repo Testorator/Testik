@@ -46,6 +46,8 @@ bool sql_delStudent(QSqlDatabase *db, QString studId, QString grpId = 0);
 bool sql_studUnique(QSqlDatabase *db, const QString Surname, const QString Name, const QString Patrinymic, QString grpId = 0, bool silent = 0);
 //
 QList<st_svMAP> sql_getThemes(QSqlDatabase *db);
+QList<st_svMAP> sql_getRootThemes(QSqlDatabase *db);
+QList<st_svMAP> sql_getThemeChild(QSqlDatabase *db, QVariant parent_id);
 QList<st_svMAP> sql_getThemeByID(QSqlDatabase *db, QVariant theme_id);
 bool sql_themeUnique(QSqlDatabase *db, const QString themeName, bool silent = 0);
 bool sql_addTheme(QSqlDatabase *db, const QString themeName, QString parent_id = 0);
