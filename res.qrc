@@ -12,12 +12,16 @@
         <file alias="add_stud">img/user_add.png</file>
         <file alias="del">img/user_delete.png</file>
         <file alias="add_group">img/group_add.png</file>
+        <file alias="del_group">img/group_delete.png</file>
+        <file alias="edit_group">img/group_edit.png</file>
+        <file alias="group">img/group.png</file>
     </qresource>
     <qresource prefix="/db">
         <file alias="edit">img/database_edit.png</file>
         <file alias="database">img/database.png</file>
         <file alias="add">img/database_add.png</file>
         <file alias="del">img/database_delete.png</file>
+        <file alias="import">img/folder_database.png</file>
     </qresource>
     <qresource prefix="/questions">
         <file alias="question">img/help.png</file>
