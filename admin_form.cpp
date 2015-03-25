@@ -27,7 +27,7 @@ admin_form::admin_form(QWidget *parent) :
     db = QSqlDatabase::addDatabase("QIBASE");
     getDataBases();
 
-    act_addGroup = new QAction(tr("Add Group"),ui->toolButton_Add_Stud->menu());
+    act_addGroup = new QAction(QIcon(":/stud/group"),tr("Add Group"),ui->toolButton_Add_Stud->menu());
     connect(act_addGroup,SIGNAL(triggered()),this,SLOT(on_actionAddGroup_triggered()));
     ui->toolButton_Add_Stud->addAction(act_addGroup);
 

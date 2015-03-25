@@ -11,8 +11,8 @@ bool openDB(QSqlDatabase *db,QString db_file)
     if(db->isOpen()) db->close();
     db->setDatabaseName(db_file);
     db->setUserName("SYSDBA");
-    //    db->setPassword("masterkey");
-    db->setPassword("XGn8#w!H");
+        db->setPassword("masterkey");
+   // db->setPassword("XGn8#w!H");
     db->open();
     result = db->isOpen();
 
