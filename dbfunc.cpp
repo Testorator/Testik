@@ -11,8 +11,8 @@ bool openDB(QSqlDatabase *db,QString db_file)
     if(db->isOpen()) db->close();
     db->setDatabaseName(db_file);
     db->setUserName("SYSDBA");
-//        db->setPassword("masterkey");
-    db->setPassword("XGn8#w!H");
+       db->setPassword("masterkey");
+//    db->setPassword("XGn8#w!H");
     db->open();
     result = db->isOpen();
 
@@ -334,7 +334,7 @@ st_qRes sql_getStudent(QSqlDatabase *db, QString studId, QString groupID)
 //
 bool sql_addStudent(QSqlDatabase *db,st_stud data)
 {
-    return SendSimpleQueryStr(db,"INSERT INTO students(group_id,name,surename,patronymic) VALUES("+
+    return SendSimpleQueryStr(db,"INSERT INTO students(group_id,name,surname,patronymic) VALUES("+
                               getGroupIdByCode(db,data.grp_code).toString()+",\'"+data.name+"\',\'"+
                               data.surname+"\',\'"+data.patronymic+"\');");
 }
@@ -367,7 +367,7 @@ bool sql_studUnique(QSqlDatabase *db, const QString Surname, const QString Name,
 
     st_qRes q_res = SendSimpleQueryStrWR(db,
                                          "SELECT count(*) AS stud_exists FROM students WHERE name=\'"+Name+
-                                         "\' AND surename=\'"+Surname+"\' AND patronymic=\'"+Patrinymic+"\'"+
+                                         "\' AND surname=\'"+Surname+"\' AND patronymic=\'"+Patrinymic+"\'"+
                                          cond_grpId+";");
     if(q_res.q_result){
         if(q_res.sel_data.at(0).map["STUD_EXISTS"].toInt() == 0){
