@@ -52,6 +52,11 @@ private:
         QString theme_id;
         QString theme_name;
     };
+    struct st_QTWI{
+        QString parent_id;
+        QTreeWidgetItem *qtwi;
+    };
+
     QString DBPath = QApplication::applicationDirPath()+"/data/";
     QSqlDatabase db;
     QAction *act_addGroup, *act_addStud, *act_addTheme, *act_addQuest;

@@ -27,11 +27,11 @@ admin_form::admin_form(QWidget *parent) :
     db = QSqlDatabase::addDatabase("QIBASE");
     getDataBases();
 
-    act_addGroup = new QAction(QIcon(":/stud/group"),tr("Add Group"),ui->toolButton_Add_Stud->menu());
+    act_addGroup = new QAction(QIcon(":/stud/add_group"),tr("Add Group"),ui->toolButton_Add_Stud->menu());
     connect(act_addGroup,SIGNAL(triggered()),this,SLOT(on_actionAddGroup_triggered()));
     ui->toolButton_Add_Stud->addAction(act_addGroup);
 
-    act_addStud = new QAction(QIcon(":/stud/add"),tr("Add Student"),ui->toolButton_Add_Stud->menu());
+    act_addStud = new QAction(QIcon(":/stud/add_stud"),tr("Add Student"),ui->toolButton_Add_Stud->menu());
     connect(act_addStud,SIGNAL(triggered()),this,SLOT(on_actionAddStud_triggered()));
     ui->toolButton_Add_Stud->addAction(act_addStud);
 
@@ -140,7 +140,7 @@ void admin_form::on_listWidget_DB_clicked()
     setAvailabilityOfItems(db_is_open);
     if(db_is_open){
         getQuestionList(0);
-    //    getQuestionList(1)
+        //    getQuestionList(1)
         getStudentsList();
     }
     else{
@@ -153,6 +153,7 @@ void admin_form::on_listWidget_DB_clicked()
 
 void admin_form::getQuestionList(int question_Type)
 {
+    this->setCursor(Qt::BusyCursor);
     QTreeWidget *curQTW;
     if(question_Type == 0){
         curQTW = ui->treeWidget_test_questions;
@@ -161,20 +162,59 @@ void admin_form::getQuestionList(int question_Type)
         curQTW = ui->treeWidget_learn_questions;
     }
     curQTW->clear();
-    QList<st_svMAP> rootThemes = sql_getRootThemes(&db);
-    if(rootThemes.count() > 0){
-        for(int i = 0; i < rootThemes.count(); i++){
-            QStringList newItem;
-            newItem.append(rootThemes.at(i).map["NAME"].toString());
-            newItem.append(rootThemes.at(i).map["ID"].toString());
-            newItem.append("g");
-            curQTW->insertTopLevelItem(0,new QTreeWidgetItem(newItem));
-//            QList<st_svMAP> themeChild = sql_getThemeChild(&db,rootThemes.at(i).map["ID"],question_Type);
-//            QList<st_svMAP> themeQuestions = sql_getQuestions(&db,rootThemes.at(i).map["ID"].toString());
+    QList<st_svMAP> q_res = sql_getThemes(&db); // select themes from database
+    QList<st_QTWI> tmp_ThemeList;
+    if(q_res.count() > 0){
+        st_QTWI newitem_data; // create struct for saving theme data
+        for(int i = 0; i < q_res.count(); i++){
+            QStringList newItem_sl;
+            newItem_sl.append(q_res.at(i).map["NAME"].toString());
+            newItem_sl.append(q_res.at(i).map["ID"].toString());
+            newItem_sl.append("t"); // set mark
+
+            newitem_data.parent_id = q_res.at(i).map["PARENT_ID"].toString().trimmed(); // save theme parent id
+            newitem_data.qtwi = new QTreeWidgetItem(newItem_sl); // create theme item
+
+            // add questions to theme
+            QList<st_svMAP> themeQuestions = sql_getQuestions(&db,q_res.at(i).map["ID"].toInt());
+            if(themeQuestions.count()>0){ // if questions is found, then add founded questions to theme item
+                for(int q=0;q<themeQuestions.count();q++){
+                    QStringList newQuestion;
+                    newQuestion.append(themeQuestions.at(q).map["QUESTION"].toString());
+                    newQuestion.append(themeQuestions.at(q).map["ID"].toString());
+                    newQuestion.append("q"); // set mark
+                    newitem_data.qtwi->addChild(new QTreeWidgetItem(newQuestion));
+                }
+            }
+
+            if(newitem_data.parent_id.trimmed().length() > 0){ // check for having parent for current theme
+                QList<QTreeWidgetItem *> parentItems = curQTW->findItems(newitem_data.parent_id,Qt::MatchExactly,1); // if parent exists, find him in tree
+                if(parentItems.count() > 0){
+                    parentItems.at(0)->addChild(newitem_data.qtwi); // if parent found, add current theme item to parent
+                }
+                else{
+                    tmp_ThemeList.append(newitem_data); // if parent not found, save current theme item to the temporery list
+                }
+            }
+            else{
+                curQTW->insertTopLevelItem(0,newitem_data.qtwi); // if theme without parent, add current theme item to the root of the tree
+            }
+        }
+        if(tmp_ThemeList.count() > 0){ // if temporary list is not empty then
+            for(int i=0;i<tmp_ThemeList.count();i++){
+                QList<QTreeWidgetItem *> parentItems = curQTW->findItems(tmp_ThemeList.at(i).parent_id,Qt::MatchExactly,1); // find parent for theme item from list
+                if(parentItems.count() > 0){
+                    parentItems.at(0)->addChild(newitem_data.qtwi); // if found parent for theme item from list, then add this theme item to parent
+                }
+                else{
+                    curQTW->insertTopLevelItem(0,newitem_data.qtwi); // if not found, then add theme item to the root of the tree
+                }
+            }
         }
     }
     curQTW->setSortingEnabled(true);
     curQTW->sortItems(0,Qt::AscendingOrder);
+    this->setCursor(Qt::ArrowCursor);
 }
 //
 bool admin_form::prepareThemesDlg(theme_dlg *dlg)
@@ -463,8 +503,8 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                         }
 
                         if(updFields.length() > 0){
-                            if(SendSimpleQueryStr(&db,"UPDATE STUDENTS SET "+updFields+" WHERE ID="+curItem->text(1)+
-                                                  " AND GROUP_ID="+curItem->parent()->text(1)+";")){
+                            if(SendSimpleQueryStr(&db,"UPDATE students SET "+updFields+" WHERE id="+curItem->text(1)+
+                                                  " AND group_id="+curItem->parent()->text(1)+";")){
                                 getStudentsList();
                             }
                         }

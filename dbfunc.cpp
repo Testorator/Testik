@@ -54,6 +54,19 @@ bool SendSimpleQueryStr(QSqlDatabase *db,const QString& q_str)
     return result;
 }
 //**********************************************
+QString convrtTypeOfQuestions(int type)
+{
+    QString result;
+    if(type == 0){
+        result = "test";
+    }
+    else{
+        result = "learn";
+    }
+    return result;
+}
+
+//**********************************************
 st_qRes SendSimpleQueryStrWR(QSqlDatabase *db,const QString& q_str)
 {
     st_qRes result;
@@ -94,7 +107,7 @@ bool isBlankDB(QSqlDatabase *db, QString db_file)
         openDB(db,db_file);
     }
 
-    st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT BLANK FROM OPTIONS;");
+    st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT blank FROM options;");
     if(q_res.q_result){
         result = q_res.sel_data.at(0).map["BLANK"].toBool();
     }
@@ -112,7 +125,7 @@ bool setDB_NoBlank(QSqlDatabase *db,QString db_file)
 
     result = openDB(db,db_file);
     if(result){
-        result = SendSimpleQueryStr(db,"UPDATE OPTIONS SET BLANK=0;");
+        result = SendSimpleQueryStr(db,"UPDATE options SET blank=0;");
     }
 
     return result;
@@ -126,7 +139,7 @@ bool sql_themeUnique(QSqlDatabase *db, const QString themeName, bool silent)
         result =false;
     }
     else{
-        st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT ID FROM QTHEMES WHERE NAME='"+themeName+"';");
+        st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT id FROM qthemes WHERE name='"+themeName+"';");
         if(q_res.q_result){
             if(q_res.sel_data.count() > 0){
                 result = false;
@@ -160,8 +173,7 @@ QList<st_svMAP> sql_getThemeByID(QSqlDatabase *db, QVariant theme_id)
 QList<st_svMAP> sql_getThemes(QSqlDatabase *db)
 {
     st_qRes result = SendSimpleQueryStrWR(db,"SELECT qthemes.id, qthemes.parent_id, qthemes.name \
-                                              FROM qthemes \
-                                              ORDER BY qthemes.id");
+                                              FROM qthemes ORDER BY qthemes.id");
     return result.sel_data;
 }
 
@@ -171,9 +183,9 @@ bool sql_addTheme(QSqlDatabase *db, const QString themeName, QString parent_id)
     bool result = false;
     result = sql_themeUnique(db,themeName.trimmed());
     if(result){
-        QString q_str = "INSERT INTO QTHEMES(";
-        if(parent_id > 0) q_str.append("PARENT_ID,");
-        q_str.append("NAME) VALUES(");
+        QString q_str = "INSERT INTO qthemes(";
+        if(parent_id > 0) q_str.append("parent_id,");
+        q_str.append("name) VALUES(");
         if(parent_id > 0) q_str.append(parent_id+",");
         q_str.append("\'"+themeName.trimmed()+"\');");
         result = SendSimpleQueryStr(db,q_str);
@@ -181,38 +193,35 @@ bool sql_addTheme(QSqlDatabase *db, const QString themeName, QString parent_id)
     return result;
 }
 //
-QList<st_svMAP> sql_getRootThemes(QSqlDatabase *db)
-{
-    st_qRes result = SendSimpleQueryStrWR(db,"SELECT * FROM QTHEMES WHERE PARENT_ID IS NULL;");
-    return result.sel_data;
-}
-//
 QList<st_svMAP> sql_getThemeChild(QSqlDatabase *db, QVariant parent_id)
 {
-    st_qRes result = SendSimpleQueryStrWR(db,"SELECT * FROM QTHEMES WHERE PARENT_ID="+parent_id.toString()+";");
+    st_qRes result = SendSimpleQueryStrWR(db,"SELECT * FROM qthemes WHERE parent_id="+parent_id.toString()+";");
     return result.sel_data;
 }
 //
 QList<st_svMAP> sql_getQuestionsWithThemes(QSqlDatabase *db, int questions_type)
 {
-    QString _questions_type;
-    if(questions_type == 0){
-        _questions_type = "TEST";
-    }
-    else{
-        _questions_type = "LEARN";
-    }
+    QString _questions_type = convrtTypeOfQuestions(questions_type);
+
     st_qRes result = SendSimpleQueryStrWR(db,"SELECT * \
-                                              FROM VW_"+_questions_type+"_QUESTIONS_WITH_THEMES;");
+                                              FROM vw_"+_questions_type+"_questions_with_themes;");
     return result.sel_data;
 }
 
 //
-QList<st_svMAP> sql_getQuestions(QSqlDatabase *db,QString theme_id)
+QList<st_svMAP> sql_getQuestions(QSqlDatabase *db, int questions_type, QString theme_id)
 {
-    st_qRes result = SendSimpleQueryStrWR(db,"SELECT qthemes.id, qthemes.parent_id, qthemes.name \
-                                              FROM qthemes \
-                                              ORDER BY qthemes.id");
+    QString _questions_type = convrtTypeOfQuestions(questions_type);
+    QString condition = "";
+    if(theme_id.trimmed().length()>0){
+        condition = "WHERE theme_id = "+theme_id.trimmed()+" ";
+    }
+
+    st_qRes result = SendSimpleQueryStrWR(db,"SELECT vw_"+_questions_type+"_questions.id,vw_"+_questions_type+
+                                          "_questions.theme_id, vw_"+_questions_type+"_questions.question \
+                                          FROM vw_"+_questions_type+"_questions "+condition+
+                                          "order by vw_"+_questions_type+"_questions.id, \
+                                          vw_"+_questions_type+"_questions.question ");
     return result.sel_data;
 }
 
@@ -220,14 +229,14 @@ QList<st_svMAP> sql_getQuestions(QSqlDatabase *db,QString theme_id)
 //**********************************************
 // **** GROUPS **** {{
 QList<st_svMAP> getGroups(QSqlDatabase *db){
-    st_qRes result = SendSimpleQueryStrWR(db,"SELECT * FROM GROUPS");
+    st_qRes result = SendSimpleQueryStrWR(db,"SELECT * FROM groups");
     return result.sel_data;
 }
 //
 QString getGroupCodeById(QSqlDatabase *db,QString grpId)
 {
     QString result;
-    st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT CODE FROM GROUPS WHERE ID="+grpId.trimmed());
+    st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT code FROM groups WHERE id="+grpId.trimmed());
     if(q_res.q_result){
         result = q_res.sel_data.at(0).map["CODE"].toString();
     }
@@ -240,7 +249,7 @@ QString getGroupCodeById(QSqlDatabase *db,QString grpId)
 QVariant getGroupIdByCode(QSqlDatabase *db,QString grpCode)
 {
     QVariant result;
-    st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT ID FROM GROUPS WHERE CODE=\'"+grpCode.trimmed()+"\';");
+    st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT id FROM groups WHERE code=\'"+grpCode.trimmed()+"\';");
     if(q_res.q_result){
         result = q_res.sel_data.at(0).map["ID"];
     }
@@ -254,7 +263,7 @@ bool sql_addGroup(QSqlDatabase *db, QString grpCode)
 {
     bool result;
     if(sql_grpUnique(db,grpCode)){
-        result = SendSimpleQueryStr(db,"INSERT INTO GROUPS(CODE) VALUES('"+grpCode+"');");
+        result = SendSimpleQueryStr(db,"INSERT INTO groups(code) VALUES('"+grpCode+"');");
     }
     else{
         result = false;
@@ -264,12 +273,12 @@ bool sql_addGroup(QSqlDatabase *db, QString grpCode)
 //
 bool sql_clearGroup(QSqlDatabase *db, const QVariant grpId)
 {
-    return SendSimpleQueryStr(db,"DELETE FROM STUDENTS WHERE GROUP_ID="+grpId.toString());
+    return SendSimpleQueryStr(db,"DELETE FROM students WHERE group_id="+grpId.toString());
 }
 //
 bool sql_delGroup(QSqlDatabase *db, const QVariant grpId)
 {
-    return SendSimpleQueryStr(db,"DELETE FROM GROUPS WHERE ID="+grpId.toString());
+    return SendSimpleQueryStr(db,"DELETE FROM groups WHERE id="+grpId.toString());
 }
 
 //
@@ -280,7 +289,7 @@ bool sql_grpUnique(QSqlDatabase *db, const QString grpCode, bool silent)
         result =false;
     }
     else{
-        st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT CODE FROM GROUPS WHERE CODE='"+grpCode+"';");
+        st_qRes q_res = SendSimpleQueryStrWR(db,"SELECT code FROM groups WHERE code='"+grpCode+"';");
         if(q_res.q_result){
             if(q_res.sel_data.count() > 0){
                 result = false;
@@ -312,20 +321,20 @@ QList<st_svMAP> getStudents(QSqlDatabase *db,QString groupID)
     else{
         condition = " WHERE GROUP_ID="+groupID.trimmed()+" ";
     }
-    result = SendSimpleQueryStrWR(db, "SELECT * FROM STUDENTS"+condition+";");
+    result = SendSimpleQueryStrWR(db, "SELECT * FROM students"+condition+";");
 
     return result.sel_data;
 }
 //
 st_qRes sql_getStudent(QSqlDatabase *db, QString studId, QString groupID)
 {
-    return SendSimpleQueryStrWR(db, "SELECT * FROM STUDENTS WHERE ID="+studId+
-                                " AND GROUP_ID="+groupID+";");
+    return SendSimpleQueryStrWR(db, "SELECT * FROM students WHERE id="+studId+
+                                " AND group_id="+groupID+";");
 }
 //
 bool sql_addStudent(QSqlDatabase *db,st_stud data)
 {
-    return SendSimpleQueryStr(db,"INSERT INTO STUDENTS(GROUP_ID,NAME,SURNAME,PATRONYMIC) VALUES("+
+    return SendSimpleQueryStr(db,"INSERT INTO students(group_id,name,surename,patronymic) VALUES("+
                               getGroupIdByCode(db,data.grp_code).toString()+",\'"+data.name+"\',\'"+
                               data.surname+"\',\'"+data.patronymic+"\');");
 }
@@ -338,9 +347,9 @@ bool sql_delStudent(QSqlDatabase *db, QString studId, QString grpId)
         cond_grpId.clear();
     }
     else{
-        cond_grpId = " AND GROUP_ID="+grpId;
+        cond_grpId = " AND group_id="+grpId;
     }
-    return SendSimpleQueryStr(db,"DELETE FROM STUDENTS WHERE ID="+studId+cond_grpId+";");
+    return SendSimpleQueryStr(db,"DELETE FROM students WHERE id="+studId+cond_grpId+";");
 }
 //
 bool sql_studUnique(QSqlDatabase *db, const QString Surname, const QString Name, const QString Patrinymic, QString grpId, bool silent)
@@ -352,13 +361,13 @@ bool sql_studUnique(QSqlDatabase *db, const QString Surname, const QString Name,
         msg_grpId.clear();
     }
     else{
-        cond_grpId = " AND GROUP_ID="+grpId;
+        cond_grpId = " AND group_id="+grpId;
         msg_grpId =  QObject::tr(" in group")+" \""+getGroupCodeById(db,grpId)+"\"";
     }
 
     st_qRes q_res = SendSimpleQueryStrWR(db,
-                                         "SELECT count(*) AS STUD_EXISTS FROM STUDENTS WHERE NAME=\'"+Name+
-                                         "\' AND SURNAME=\'"+Surname+"\' AND PATRONYMIC=\'"+Patrinymic+"\'"+
+                                         "SELECT count(*) AS stud_exists FROM students WHERE name=\'"+Name+
+                                         "\' AND surename=\'"+Surname+"\' AND patronymic=\'"+Patrinymic+"\'"+
                                          cond_grpId+";");
     if(q_res.q_result){
         if(q_res.sel_data.at(0).map["STUD_EXISTS"].toInt() == 0){
