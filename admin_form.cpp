@@ -268,7 +268,7 @@ void admin_form::getStudentsList()
                 student.clear();
                 student.append(q_res_stud.at(s).map["SURNAME"].toString()+" "+
                         q_res_stud.at(s).map["NAME"].toString()+" "+
-                        q_res_stud.at(s).map["PATRONIMYC"].toString());
+                        q_res_stud.at(s).map["PATRONYMIC"].toString());
                 student.append(q_res_stud.at(s).map["ID"].toString());
                 QTreeWidgetItem *stud_item = new QTreeWidgetItem((QTreeWidget*)0,QStringList(student));
                 stud_item->setIcon(0,QIcon(":/stud/stud"));
@@ -429,7 +429,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
 
         }
         else{ // edit student
-            st_qRes q_res = getStudent(&db,curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed());
+            st_qRes q_res = sql_getStudent(&db,curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed());
 
             if(q_res.q_result){
                 stud_dlg dlg(this);
@@ -438,7 +438,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                 if(prepareAddStudDlg(&dlg)){
                     dlg.lineEdit_Name_setText(q_res.sel_data.at(0).map["NAME"].toString());
                     dlg.lineEdit_Surname_setText(q_res.sel_data.at(0).map["SURNAME"].toString());
-                    dlg.lineEdit_Patronymic_setText(q_res.sel_data.at(0).map["PATRONIMYC"].toString());
+                    dlg.lineEdit_Patronymic_setText(q_res.sel_data.at(0).map["PATRONYMIC"].toString());
 
                     if(dlg.exec() == 1){
                         QString updFields;
@@ -457,9 +457,9 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                             updFields.append("SURNAME=\'"+dlg.get_lineEdit_Surname()+"\'");
                         }
 
-                        if(dlg.get_lineEdit_Patronymic() != q_res.sel_data.at(0).map["PATRONIMYC"].toString()){
+                        if(dlg.get_lineEdit_Patronymic() != q_res.sel_data.at(0).map["PATRONYMIC"].toString()){
                             if(updFields.length() > 0) updFields.append(",");
-                            updFields.append("PATRONIMYC=\'"+dlg.get_lineEdit_Patronymic()+"\'");
+                            updFields.append("PATRONYMIC=\'"+dlg.get_lineEdit_Patronymic()+"\'");
                         }
 
                         if(updFields.length() > 0){

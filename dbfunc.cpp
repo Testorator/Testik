@@ -11,8 +11,8 @@ bool openDB(QSqlDatabase *db,QString db_file)
     if(db->isOpen()) db->close();
     db->setDatabaseName(db_file);
     db->setUserName("SYSDBA");
-        db->setPassword("masterkey");
-   // db->setPassword("XGn8#w!H");
+//        db->setPassword("masterkey");
+    db->setPassword("XGn8#w!H");
     db->open();
     result = db->isOpen();
 
@@ -317,7 +317,7 @@ QList<st_svMAP> getStudents(QSqlDatabase *db,QString groupID)
     return result.sel_data;
 }
 //
-st_qRes getStudent(QSqlDatabase *db, QString studId, QString groupID)
+st_qRes sql_getStudent(QSqlDatabase *db, QString studId, QString groupID)
 {
     return SendSimpleQueryStrWR(db, "SELECT * FROM STUDENTS WHERE ID="+studId+
                                 " AND GROUP_ID="+groupID+";");

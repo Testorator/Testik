@@ -40,7 +40,7 @@ bool sql_delGroup(QSqlDatabase *db, const QVariant grpId);
 bool sql_grpUnique(QSqlDatabase *db, const QString grpCode, bool silent = 0);
 //
 QList<st_svMAP> getStudents(QSqlDatabase *db,QString groupID = 0 );
-st_qRes getStudent(QSqlDatabase *db, QString studId, QString groupID);
+st_qRes sql_getStudent(QSqlDatabase *db, QString studId, QString groupID);
 bool sql_addStudent(QSqlDatabase *db,st_stud data);
 bool sql_delStudent(QSqlDatabase *db, QString studId, QString grpId = 0);
 bool sql_studUnique(QSqlDatabase *db, const QString Surname, const QString Name, const QString Patrinymic, QString grpId = 0, bool silent = 0);
