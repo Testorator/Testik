@@ -11,6 +11,7 @@
         <file alias="stud">img/user.png</file>
         <file alias="add">img/user_add.png</file>
         <file alias="del">img/user_delete.png</file>
+        <file alias="group">img/group_add.png</file>
     </qresource>
     <qresource prefix="/db">
         <file alias="edit">img/database_edit.png</file>
