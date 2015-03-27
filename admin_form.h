@@ -45,6 +45,10 @@ private slots:
     void on_toolButton_Add_Quest_clicked();
     void on_action_addTheme_triggered();
 
+    void on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int column);
+
+    void on_pushButton_Edit_Quest_clicked();
+
 private:
     Ui::admin_form *ui;
     struct st_theme{
@@ -67,8 +71,9 @@ private:
     bool prepareAddStudDlg(stud_dlg *dlg);
     bool sendStudData_toDB(QList<st_stud> *data);
     // questions
+    QTreeWidget* get_curQTW();
     void getQuestionList(int question_Type); // 0 - test; 1 - learn
-    bool prepareThemesDlg(theme_dlg *dlg);
+    void prepareThemesDlg(theme_dlg *dlg);
 
 };
 

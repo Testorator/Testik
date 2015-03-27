@@ -149,18 +149,24 @@ void admin_form::on_listWidget_DB_clicked()
 }
 // --- Database --- }}
 // --- tab questions --- {{
-
-
+QTreeWidget* admin_form::get_curQTW()
+{
+    QTreeWidget *result;
+    int question_Type = ui->tabWidget_Questions->currentIndex();
+    if(question_Type == 0){
+        result = ui->treeWidget_test_questions;
+    }
+    else if(question_Type == 1){
+        result = ui->treeWidget_learn_questions;
+    }
+    return result;
+}
+//
 void admin_form::getQuestionList(int question_Type)
 {
     this->setCursor(Qt::BusyCursor);
-    QTreeWidget *curQTW;
-    if(question_Type == 0){
-        curQTW = ui->treeWidget_test_questions;
-    }
-    else if(question_Type == 1){
-        curQTW = ui->treeWidget_learn_questions;
-    }
+    QTreeWidget *curQTW = get_curQTW();
+
     curQTW->clear();
     QList<st_svMAP> q_res = sql_getThemes(&db); // select themes from database
     QList<st_QTWI> tmp_ThemeList;
@@ -217,70 +223,77 @@ void admin_form::getQuestionList(int question_Type)
     this->setCursor(Qt::ArrowCursor);
 }
 //
-bool admin_form::prepareThemesDlg(theme_dlg *dlg)
+void admin_form::prepareThemesDlg(theme_dlg *dlg)
 {
     QList<st_svMAP> q_res_themes = sql_getThemes(&db);
-    bool result;
+    dlg->clear_PThemes();
+    dlg->add_PTheme(tr("No parent"),"0");
+
     if(q_res_themes.count() > 0){
-        dlg->clear_PThemes();
+
         for(int i = 0;i < q_res_themes.count(); i++){
             dlg->add_PTheme(q_res_themes.at(i).map["NAME"].toString(),
                     q_res_themes.at(i).map["ID"].toString(),
                     q_res_themes.at(i).map["PARENT_ID"].toString());
         }
-        result = true;
     }
-    else{
-        result = false;
-    }
-    return result;
 }
 //
 void admin_form::on_action_addTheme_triggered()
 {
-    QTreeWidget *curQTW;
-    int question_type = ui->tabWidget_Questions->currentIndex();
-    if(question_type == 0){ // test
-        curQTW = ui->treeWidget_test_questions;
-    }
-    else if(question_type == 1){ // learn
-        curQTW = ui->treeWidget_learn_questions;
-    }
+    QTreeWidget *curQTW = get_curQTW();
 
-    // save last selection for Add button as "group"
+    // save last selection for Add button as "theme"
     ui->toolButton_Add_Quest->setText(tr("Add theme"));
     connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addTheme_triggered()));
 
     theme_dlg th_dlg(this);
     th_dlg.setWindowTitle(tr("Add new theme"));
 
-    if(prepareThemesDlg(&th_dlg)){
-        QString new_themeName, PThemeID;
-        if(th_dlg.exec() == 1){
-            new_themeName = th_dlg.get_ThemeName();
-            PThemeID = th_dlg.get_PThemeID();
+    prepareThemesDlg(&th_dlg);
+    if(curQTW->currentItem()){
+        if(curQTW->currentItem()->text(2) == "t"){
+            th_dlg.set_current_PTheme(curQTW->currentItem()->text(1));
+        }
+        else{
+            th_dlg.set_current_PTheme(curQTW->currentItem()->parent()->text(1));
+        }
+    }
+    else{
+        th_dlg.set_current_PTheme("0");
+    }
 
-            if(new_themeName.trimmed().length() > 0){
-                bool q_result;
-                if(PThemeID.trimmed().length() > 0 && QVariant(PThemeID).toInt() > 0){
-                    q_result = sql_addTheme(&db,new_themeName,PThemeID);
-                }
-                else{
-                    q_result = sql_addTheme(&db,new_themeName);
-                }
+    QString new_themeName, PThemeID;
+    if(th_dlg.exec() == 1){
+        new_themeName = th_dlg.get_ThemeName();
+        PThemeID = th_dlg.get_PThemeID();
 
-                if(q_result) {
-                    getQuestionList(0);
-                    getQuestionList(1);
-                }
+        if(new_themeName.trimmed().length() > 0){
+            bool q_result;
+            if(PThemeID.trimmed().length() > 0 && QVariant(PThemeID).toInt() > 0){
+                q_result = sql_addTheme(&db,new_themeName,PThemeID);
+            }
+            else{
+                q_result = sql_addTheme(&db,new_themeName);
+            }
+
+            if(q_result) {
+                getQuestionList(0);
+                getQuestionList(1);
             }
         }
     }
+
 }
 //
 void admin_form::on_toolButton_Add_Quest_clicked()
 {
     if(ui->toolButton_Add_Quest->text() == tr("Add")) ui->toolButton_Add_Quest->showMenu();
+}
+//
+void admin_form::on_pushButton_Edit_Quest_clicked()
+{
+    QTreeWidget *curQTW = get_curQTW();
 }
 // --- tab questions --- }}
 // --- tab students --- {{
@@ -315,6 +328,7 @@ void admin_form::getStudentsList()
                 students.append(stud_item);
             }
             QTreeWidgetItem *item = new QTreeWidgetItem((QTreeWidget*)0,QStringList(group));
+            item->setIcon(0,QIcon(":/stud/group"));
             item->addChildren(students);
             groups.append(item);
         }
@@ -330,9 +344,9 @@ void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint 
     if(curItem){
         QMenu *menu=new QMenu(this);
         if(curItem->parent()){
-            QAction *act_EditStud = new QAction(QIcon(":/stud/edit"),tr("Edit student"), this);
+            QAction *act_EditStud = new QAction(QIcon(":/stud/edit_stud"),tr("Edit student"), this);
             connect(act_EditStud,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
-            QAction *act_DelStud = new QAction(QIcon(":/stud/del"),tr("Delete student"),this);
+            QAction *act_DelStud = new QAction(QIcon(":/stud/del_stud"),tr("Delete student"),this);
             connect(act_DelStud,SIGNAL(triggered()),this,SLOT(on_pushButton_Delete_Stud_clicked()));
             menu->addAction(act_addStud);
             menu->addAction(act_EditStud);
@@ -340,11 +354,11 @@ void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint 
             menu->addAction(act_DelStud);
         }
         else{
-            QAction *act_EditGroup = new QAction(tr("Edit group"), this);
+            QAction *act_EditGroup = new QAction(QIcon(":/stud/edit_group"),tr("Edit group"), this);
             connect(act_EditGroup,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
-            QAction *act_ClearGroup = new QAction(tr("Clear group"),this);
+            QAction *act_ClearGroup = new QAction(QIcon(":/resourse/erase"),tr("Clear group"),this);
             connect(act_ClearGroup,SIGNAL(triggered()),this,SLOT(on_action_clearGroup_clicked()));
-            QAction *act_DelGroup = new QAction(tr("Delete group"),this);
+            QAction *act_DelGroup = new QAction(QIcon(":/stud/del_group"),tr("Delete group"),this);
             connect(act_DelGroup,SIGNAL(triggered()),this,SLOT(on_pushButton_Delete_Stud_clicked()));
             menu->addAction(act_addStud);
             menu->addSeparator();
@@ -370,6 +384,7 @@ void admin_form::on_actionAddGroup_triggered(QString group_code)
     if(group_code.isEmpty()){
         // save last selection for Add button as "group"
         ui->toolButton_Add_Stud->setText(act_addGroup->text());
+        ui->toolButton_Add_Stud->setIcon(QIcon(":/stud/add_group"));
         connect(ui->toolButton_Add_Stud,SIGNAL(clicked()),this,SLOT(on_actionAddGroup_triggered()));
 
         new_grpName = QInputDialog::getText(this,tr("Input group name"),QObject::tr("Please name of new group")).trimmed();
@@ -414,7 +429,9 @@ void admin_form::on_actionAddStud_triggered()
 {
     // save last selection for Add button as "student"
     ui->toolButton_Add_Stud->setText(act_addStud->text());
+    ui->toolButton_Add_Stud->setIcon(QIcon(":/stud/add_stud"));
     connect(ui->toolButton_Add_Stud,SIGNAL(clicked()),this,SLOT(on_actionAddStud_triggered()));
+
 
     stud_dlg dlg(this);
     dlg.setWindowTitle(tr("Add new student"));
@@ -622,6 +639,20 @@ void admin_form::on_pushButton_Import_Stud_clicked()
     qDebug() << "Impdata.count: " << impData.count();
 
 }
-
+//
+void admin_form::on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int column)
+{
+    if(item->parent()){
+        ui->pushButton_Edit_Stud->setIcon(QIcon(":/stud/edit_stud"));
+        ui->pushButton_Delete_Stud->setIcon(QIcon(":/stud/del_stud"));
+    }
+    else{
+        ui->pushButton_Edit_Stud->setIcon(QIcon(":/stud/edit_group"));
+        ui->pushButton_Delete_Stud->setIcon(QIcon(":/stud/del_group"));
+    }
+}
 // --- tab students --- }}
+
+
+
 

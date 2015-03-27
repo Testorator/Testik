@@ -19,7 +19,6 @@ theme_dlg::~theme_dlg()
 void theme_dlg::clear_PThemes()
 {
     ui->treeWidget_Themes->clear();
-    add_PTheme(tr("No parent"),"0");
 }
 //
 QTreeWidgetItem* theme_dlg::getQTWItemByID(QString id)

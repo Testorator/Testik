@@ -11,8 +11,9 @@ bool openDB(QSqlDatabase *db,QString db_file)
     if(db->isOpen()) db->close();
     db->setDatabaseName(db_file);
     db->setUserName("SYSDBA");
-       db->setPassword("masterkey");
-//    db->setPassword("XGn8#w!H");
+    //       db->setPassword("masterkey");
+        db->setPassword("XGn8#w!H");
+//    db->setPassword("XGn83w1H");
     db->open();
     result = db->isOpen();
 
@@ -163,9 +164,9 @@ bool sql_themeUnique(QSqlDatabase *db, const QString themeName, bool silent)
 QList<st_svMAP> sql_getThemeByID(QSqlDatabase *db, QVariant theme_id)
 {
     st_qRes result = SendSimpleQueryStrWR(db,"SELECT qthemes.id, qthemes.parent_id, qthemes.name \
-                                              FROM qthemes \
-                                              WHERE ID="+theme_id.toString()+
-                                              " ORDER BY qthemes.id");
+                                          FROM qthemes \
+                                          WHERE ID="+theme_id.toString()+
+                                                   " ORDER BY qthemes.id");
     return result.sel_data;
 
 }
@@ -173,8 +174,8 @@ QList<st_svMAP> sql_getThemeByID(QSqlDatabase *db, QVariant theme_id)
 QList<st_svMAP> sql_getThemes(QSqlDatabase *db)
 {
     st_qRes result = SendSimpleQueryStrWR(db,"SELECT qthemes.id, qthemes.parent_id, qthemes.name \
-                                              FROM qthemes ORDER BY qthemes.id");
-    return result.sel_data;
+                                          FROM qthemes ORDER BY qthemes.id");
+                                          return result.sel_data;
 }
 
 //
@@ -204,8 +205,8 @@ QList<st_svMAP> sql_getQuestionsWithThemes(QSqlDatabase *db, int questions_type)
     QString _questions_type = convrtTypeOfQuestions(questions_type);
 
     st_qRes result = SendSimpleQueryStrWR(db,"SELECT * \
-                                              FROM vw_"+_questions_type+"_questions_with_themes;");
-    return result.sel_data;
+                                          FROM vw_"+_questions_type+"_questions_with_themes;");
+            return result.sel_data;
 }
 
 //
@@ -220,9 +221,9 @@ QList<st_svMAP> sql_getQuestions(QSqlDatabase *db, int questions_type, QString t
     st_qRes result = SendSimpleQueryStrWR(db,"SELECT vw_"+_questions_type+"_questions.id,vw_"+_questions_type+
                                           "_questions.theme_id, vw_"+_questions_type+"_questions.question \
                                           FROM vw_"+_questions_type+"_questions "+condition+
-                                          "order by vw_"+_questions_type+"_questions.id, \
+                                                                                "order by vw_"+_questions_type+"_questions.id, \
                                           vw_"+_questions_type+"_questions.question ");
-    return result.sel_data;
+                                          return result.sel_data;
 }
 
 // **** QUESTIONS **** }}

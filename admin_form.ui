@@ -189,7 +189,7 @@
       <widget class="QWidget" name="tab_Students">
        <attribute name="icon">
         <iconset resource="res.qrc">
-         <normaloff>:/stud/stud</normaloff>:/stud/stud</iconset>
+         <normaloff>:/stud/group</normaloff>:/stud/group</iconset>
        </attribute>
        <attribute name="title">
         <string>Students</string>
@@ -208,6 +208,10 @@
            <widget class="QPushButton" name="pushButton_Import_Stud">
             <property name="text">
              <string>Import</string>
+            </property>
+            <property name="icon">
+             <iconset resource="res.qrc">
+              <normaloff>:/db/import</normaloff>:/db/import</iconset>
             </property>
            </widget>
           </item>

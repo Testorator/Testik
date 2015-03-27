@@ -1,16 +1,16 @@
 <RCC>
     <qresource prefix="/resourse">
         <file alias="add">img/add.png</file>
-        <file alias="del">img/delete.png</file>
+        <file alias="erase">img/delete.png</file>
         <file alias="save">img/disk.png</file>
         <file alias="settings">img/setting_tools.png</file>
         <file alias="options">img/cog.png</file>
     </qresource>
     <qresource prefix="/stud">
-        <file alias="edit">img/user_edit.png</file>
+        <file alias="edit_stud">img/user_edit.png</file>
         <file alias="stud">img/user.png</file>
         <file alias="add_stud">img/user_add.png</file>
-        <file alias="del">img/user_delete.png</file>
+        <file alias="del_stud">img/user_delete.png</file>
         <file alias="add_group">img/group_add.png</file>
         <file alias="del_group">img/group_delete.png</file>
         <file alias="edit_group">img/group_edit.png</file>
