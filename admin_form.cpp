@@ -21,8 +21,11 @@ admin_form::admin_form(QWidget *parent) :
     ui->treeWidget_students->hideColumn(1);
     ui->treeWidget_test_questions->hideColumn(1);
     ui->treeWidget_test_questions->hideColumn(2);
+    connect(ui->treeWidget_test_questions,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(set_questions_buttons_availablity(QTreeWidgetItem*)));
     ui->treeWidget_learn_questions->hideColumn(1);
     ui->treeWidget_learn_questions->hideColumn(2);
+    connect(ui->treeWidget_learn_questions,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(set_questions_buttons_availablity(QTreeWidgetItem*)));
+
 
     db = QSqlDatabase::addDatabase("QIBASE");
     getDataBases();
@@ -61,6 +64,8 @@ void admin_form::setAvailabilityOfItems(bool val)
 {
     ui->groupBox_SendEMail->setEnabled(val);
     ui->tabWidget->setEnabled(val);
+    ui->pushButton_Edit_Quest->setEnabled(false);
+    ui->pushButton_Del_Quest->setEnabled(false);
 }
 //
 void admin_form::getDataBases()
@@ -139,8 +144,9 @@ void admin_form::on_listWidget_DB_clicked()
     bool db_is_open = openDB(&db,QApplication::applicationDirPath()+"/data/"+db_file+".QLT");
     setAvailabilityOfItems(db_is_open);
     if(db_is_open){
+        getQuestionList();
         getQuestionList(0);
-        //    getQuestionList(1)
+        getQuestionList(1);
         getStudentsList();
     }
     else{
@@ -149,10 +155,15 @@ void admin_form::on_listWidget_DB_clicked()
 }
 // --- Database --- }}
 // --- tab questions --- {{
-QTreeWidget* admin_form::get_curQTW()
+QTreeWidget* admin_form::get_curQTW(int q_type)
 {
     QTreeWidget *result;
-    int question_Type = ui->tabWidget_Questions->currentIndex();
+    int question_Type = q_type;
+
+    if(q_type == -1){
+       question_Type = (ui->tabWidget_Questions->currentIndex()<2) ? ui->tabWidget_Questions->currentIndex() : 0;
+   }
+
     if(question_Type == 0){
         result = ui->treeWidget_test_questions;
     }
@@ -162,10 +173,10 @@ QTreeWidget* admin_form::get_curQTW()
     return result;
 }
 //
-void admin_form::getQuestionList(int question_Type)
+void admin_form::getQuestionList(int q_type)
 {
     this->setCursor(Qt::BusyCursor);
-    QTreeWidget *curQTW = get_curQTW();
+    QTreeWidget *curQTW = get_curQTW(q_type);
 
     curQTW->clear();
     QList<st_svMAP> q_res = sql_getThemes(&db); // select themes from database
@@ -294,9 +305,28 @@ void admin_form::on_toolButton_Add_Quest_clicked()
 void admin_form::on_pushButton_Edit_Quest_clicked()
 {
     QTreeWidget *curQTW = get_curQTW();
+    if(curQTW->currentItem()->text(2) == "t"){
+        // edit theme
+    }
+    else{
+        // edit question
+    }
+
 }
-// --- tab questions --- }}
-// --- tab students --- {{
+//
+void admin_form::set_questions_buttons_availablity(QTreeWidgetItem *item)
+{
+    if(item){
+        ui->pushButton_Edit_Quest->setEnabled(true);
+        ui->pushButton_Del_Quest->setEnabled(true);
+    }
+    else{
+        ui->pushButton_Edit_Quest->setEnabled(false);
+        ui->pushButton_Del_Quest->setEnabled(false);
+    }
+}
+// !!!! --- tab questions --- !!!! }}
+// !!!! --- tab students --- !!!! {{
 void admin_form::getStudentsList()
 {
     QList<st_svMAP> q_res_groups, q_res_stud;
@@ -651,8 +681,5 @@ void admin_form::on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int c
         ui->pushButton_Delete_Stud->setIcon(QIcon(":/stud/del_group"));
     }
 }
-// --- tab students --- }}
-
-
-
+//  !!!! --- tab students --- !!!! }}
 

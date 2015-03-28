@@ -24,7 +24,7 @@ class admin_form : public QMainWindow
 
 public:
     explicit admin_form(QWidget *parent = 0);
-    ~admin_form();    
+    ~admin_form();
 
 private slots:
     void on_actionChange_admin_password_triggered();
@@ -41,13 +41,12 @@ private slots:
     void on_pushButton_Delete_Stud_clicked();
     void on_action_clearGroup_clicked();
     void on_pushButton_DelDB_clicked();
+    void on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int column);
     // questions
     void on_toolButton_Add_Quest_clicked();
     void on_action_addTheme_triggered();
-
-    void on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int column);
-
     void on_pushButton_Edit_Quest_clicked();
+    void set_questions_buttons_availablity(QTreeWidgetItem *item);
 
 private:
     Ui::admin_form *ui;
@@ -71,8 +70,8 @@ private:
     bool prepareAddStudDlg(stud_dlg *dlg);
     bool sendStudData_toDB(QList<st_stud> *data);
     // questions
-    QTreeWidget* get_curQTW();
-    void getQuestionList(int question_Type); // 0 - test; 1 - learn
+    QTreeWidget* get_curQTW(int q_type = -1);
+    void getQuestionList(int q_type = -1);
     void prepareThemesDlg(theme_dlg *dlg);
 
 };
