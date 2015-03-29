@@ -18,6 +18,7 @@ public:
     void clear_PThemes();
     void add_PTheme(QString item, QString itemID, QString parent_ID = 0);
     void set_current_PTheme(QString id);
+    void set_current_ThemeName(QString thname);
     QString get_PThemeID();
     QString get_ThemeName();
 

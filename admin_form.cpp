@@ -161,8 +161,8 @@ QTreeWidget* admin_form::get_curQTW(int q_type)
     int question_Type = q_type;
 
     if(q_type == -1){
-       question_Type = (ui->tabWidget_Questions->currentIndex()<2) ? ui->tabWidget_Questions->currentIndex() : 0;
-   }
+        question_Type = (ui->tabWidget_Questions->currentIndex()<2) ? ui->tabWidget_Questions->currentIndex() : 0;
+    }
 
     if(question_Type == 0){
         result = ui->treeWidget_test_questions;
@@ -234,7 +234,7 @@ void admin_form::getQuestionList(int q_type)
     this->setCursor(Qt::ArrowCursor);
 }
 //
-void admin_form::prepareThemesDlg(theme_dlg *dlg)
+void admin_form::prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW)
 {
     QList<st_svMAP> q_res_themes = sql_getThemes(&db);
     dlg->clear_PThemes();
@@ -247,6 +247,18 @@ void admin_form::prepareThemesDlg(theme_dlg *dlg)
                     q_res_themes.at(i).map["ID"].toString(),
                     q_res_themes.at(i).map["PARENT_ID"].toString());
         }
+    }
+
+    if(curQTW->currentItem()){
+        if(curQTW->currentItem()->text(2) == "t"){
+            dlg->set_current_PTheme(curQTW->currentItem()->text(1));
+        }
+        else{
+            dlg->set_current_PTheme(curQTW->currentItem()->parent()->text(1));
+        }
+    }
+    else{
+        dlg->set_current_PTheme("0");
     }
 }
 //
@@ -261,18 +273,7 @@ void admin_form::on_action_addTheme_triggered()
     theme_dlg th_dlg(this);
     th_dlg.setWindowTitle(tr("Add new theme"));
 
-    prepareThemesDlg(&th_dlg);
-    if(curQTW->currentItem()){
-        if(curQTW->currentItem()->text(2) == "t"){
-            th_dlg.set_current_PTheme(curQTW->currentItem()->text(1));
-        }
-        else{
-            th_dlg.set_current_PTheme(curQTW->currentItem()->parent()->text(1));
-        }
-    }
-    else{
-        th_dlg.set_current_PTheme("0");
-    }
+    prepareThemesDlg(&th_dlg,curQTW);
 
     QString new_themeName, PThemeID;
     if(th_dlg.exec() == 1){
@@ -294,7 +295,6 @@ void admin_form::on_action_addTheme_triggered()
             }
         }
     }
-
 }
 //
 void admin_form::on_toolButton_Add_Quest_clicked()
@@ -306,10 +306,43 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
 {
     QTreeWidget *curQTW = get_curQTW();
     if(curQTW->currentItem()->text(2) == "t"){
-        // edit theme
+        qDebug() << "edit theme: " << curQTW->currentItem()->text(0);
+        theme_dlg th_dlg(this);
+        th_dlg.setWindowTitle(tr("Edit theme"));
+
+        prepareThemesDlg(&th_dlg,curQTW);
+        th_dlg.set_current_ThemeName(curQTW->currentItem()->text(0).trimmed());
+
+        if(th_dlg.exec() == 1){
+            QString new_themeName, PThemeID, upd_data;
+            new_themeName = th_dlg.get_ThemeName();
+            PThemeID = th_dlg.get_PThemeID();
+            QString q_str ="UPDATE qthemes SET ";
+            upd_data.clear();
+            if(new_themeName.trimmed().length() > 0){
+                if(new_themeName.trimmed() != curQTW->currentItem()->text(0).trimmed()){
+                    upd_data.append("name=\'"+new_themeName+"\'");
+                }
+                if(PThemeID.trimmed() != curQTW->currentItem()->parent()->text(1).trimmed()){
+                    if(upd_data.length() > 0) upd_data.append(", ");
+                    upd_data.append("parent_id = "+PThemeID.trimmed());
+                }
+
+                if(upd_data.trimmed().length() > 0){
+                    QString q_str ="UPDATE qthemes SET "+upd_data+" WHERE id="+curQTW->currentItem()->text(1).trimmed()+
+                            " AND name=\'"+curQTW->currentItem()->text(0).trimmed()+"\' AND parent_id="+
+                            curQTW->currentItem()->parent()->text(1).trimmed()+";";
+                }
+
+                if(SendSimpleQueryStr(&db,q_str)){
+                    getQuestionList(0);
+                    getQuestionList(1);
+                }
+            }
+        }
     }
     else{
-        // edit question
+        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
     }
 
 }

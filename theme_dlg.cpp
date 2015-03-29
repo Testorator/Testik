@@ -56,6 +56,11 @@ void theme_dlg::set_current_PTheme(QString id)
         if(parentItem_QTWI) ui->treeWidget_Themes->setCurrentItem(parentItem_QTWI);
 }
 //
+void theme_dlg::set_current_ThemeName(QString thname)
+{
+    ui->lineEdit_ThemeName->setText(thname);
+}
+//
 QString theme_dlg::get_ThemeName()
 {
    return  ui->lineEdit_ThemeName->text().trimmed();
