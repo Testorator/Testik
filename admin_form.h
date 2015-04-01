@@ -72,7 +72,7 @@ private:
     // questions
     QTreeWidget* get_curQTW(int q_type = -1);
     void getQuestionList(int q_type = -1);
-    void prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW);
+    void prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString exclude_id = 0);
 
 };
 
