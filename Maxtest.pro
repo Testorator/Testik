@@ -65,9 +65,9 @@ DISTFILES += \
     buglist.txt \
     drivers/win32/qsqlibase.dll \
     drivers/win32/qsqlibased.dll \
-    data/BLANK.QLT \
     drivers/mac_os_x64/libqsqlibase_debug.dylib \
-    drivers/mac_os_x64/libqsqlibase.dylib
+    drivers/mac_os_x64/libqsqlibase.dylib \
+    data/QSLITE_BLANK.QLT
 
 RESOURCES += \
     res.qrc
