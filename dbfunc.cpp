@@ -5,6 +5,11 @@
 #include <QSqlRecord>
 
 //**********************************************
+bool createNewDB()
+{
+
+}
+//
 bool openDB(QSqlDatabase *db,QString db_file)
 {
     bool result;
