@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     question_mod_dialog.cpp \
     dbfunc.cpp \
     theme_dlg.cpp \
-    stud_dlg.cpp
+    stud_dlg.cpp \
+    encryption.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \
@@ -42,7 +43,8 @@ HEADERS  += maxtest.h \
     question_mod_dialog.h \
     dbfunc.h \
     theme_dlg.h \
-    stud_dlg.h
+    stud_dlg.h \
+    encryption.h
 
 FORMS    += maxtest.ui \
     second.ui \

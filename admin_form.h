@@ -21,7 +21,8 @@ class admin_form;
 class admin_form : public QMainWindow
 {
     Q_OBJECT
-
+private:
+    sql_cl *sql;
 public:
     explicit admin_form(QWidget *parent = 0);
     ~admin_form();

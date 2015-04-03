@@ -27,7 +27,7 @@ admin_form::admin_form(QWidget *parent) :
     connect(ui->treeWidget_learn_questions,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(set_questions_buttons_availablity(QTreeWidgetItem*)));
 
 
-    db = QSqlDatabase::addDatabase("QIBASE");
+    db = QSqlDatabase::addDatabase("QSQLITE");
     getDataBases();
 
     act_addGroup = new QAction(QIcon(":/stud/add_group"),tr("Add Group"),ui->toolButton_Add_Stud->menu());
@@ -81,8 +81,13 @@ void admin_form::getDataBases()
 
     for(int i=0; i < db_files.count(); i++){
         QString curFile = db_files.at(i);
-        if(!isBlankDB(&db,DBPath+curFile)){
+        if(QFile(DBPath+curFile).isReadable() && QFile(DBPath+curFile).isWritable()){
             ui->listWidget_DB->addItem(curFile.replace(".QLT","",Qt::CaseInsensitive));
+        }
+        else{
+            QMessageBox::critical(this,
+                                  tr("Error"),
+                                  tr("Can\'t open file")+" \'"+DBPath+curFile+"\' "+tr("for read or write. Skipped."));
         }
     }
     this->setCursor(Qt::ArrowCursor);
@@ -101,9 +106,16 @@ void admin_form::on_pushButton_AddDB_clicked()
                               tr("The name of the new database is empty!\nOperaion cancelled."));
     }
     else{
-        if(QFile::copy(DBPath+"BLANK.QLT",DBPath+new_db_name+".QLT")){
-            setDB_NoBlank(&db,DBPath+new_db_name+".QLT");
-            getDataBases();
+        sql = new sql_cl(db);
+        if(sql->openDB(DBPath+new_db_name+".QLT")){
+            if(sql->createNewDB()){
+                getDataBases();
+            }
+            else{
+                QMessageBox::critical(this,
+                                      tr("Error"),
+                                      tr("Can't create database struct."));
+            }
         }
         else{
             QMessageBox::critical(this,
@@ -141,7 +153,7 @@ void admin_form::on_pushButton_DelDB_clicked()
 void admin_form::on_listWidget_DB_clicked()
 {
     QString db_file = ui->listWidget_DB->currentItem()->text().trimmed();
-    bool db_is_open = openDB(&db,QApplication::applicationDirPath()+"/data/"+db_file+".QLT");
+    bool db_is_open = sql->openDB(QApplication::applicationDirPath()+"/data/"+db_file+".QLT");
     setAvailabilityOfItems(db_is_open);
     if(db_is_open){
         getQuestionList();
@@ -179,7 +191,7 @@ void admin_form::getQuestionList(int q_type)
     QTreeWidget *curQTW = get_curQTW(q_type);
 
     curQTW->clear();
-    QList<st_svMAP> q_res = sql_getThemes(&db); // select themes from database
+    QList<st_svMAP> q_res = sql->getThemes(); // select themes from database
     QList<st_QTWI> tmp_ThemeList;
     if(q_res.count() > 0){
         st_QTWI newitem_data; // create struct for saving theme data
@@ -193,7 +205,7 @@ void admin_form::getQuestionList(int q_type)
             newitem_data.qtwi = new QTreeWidgetItem(newItem_sl); // create theme item
 
             // add questions to theme
-            QList<st_svMAP> themeQuestions = sql_getQuestions(&db,q_res.at(i).map["ID"].toInt());
+            QList<st_svMAP> themeQuestions = sql->getQuestions(q_res.at(i).map["ID"].toInt());
             if(themeQuestions.count()>0){ // if questions is found, then add founded questions to theme item
                 for(int q=0;q<themeQuestions.count();q++){
                     QStringList newQuestion;
@@ -236,7 +248,7 @@ void admin_form::getQuestionList(int q_type)
 //
 void admin_form::prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString exclude_id)
 {
-    QList<st_svMAP> q_res_themes = sql_getThemes(&db);
+    QList<st_svMAP> q_res_themes = sql->getThemes();
     dlg->clear_PThemes();
     dlg->add_PTheme(tr("No parent"),"0");
 
@@ -244,20 +256,20 @@ void admin_form::prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString e
 
         for(int i = 0;i < q_res_themes.count(); i++){
             if(q_res_themes.at(i).map["ID"].toString() != exclude_id){
-            dlg->add_PTheme(q_res_themes.at(i).map["NAME"].toString(),
-                    q_res_themes.at(i).map["ID"].toString(),
-                    q_res_themes.at(i).map["PARENT_ID"].toString());
+                dlg->add_PTheme(q_res_themes.at(i).map["NAME"].toString(),
+                        q_res_themes.at(i).map["ID"].toString(),
+                        q_res_themes.at(i).map["PARENT_ID"].toString());
             }
         }
     }
 
     if(curQTW->currentItem()->parent()){
-//        if(curQTW->currentItem()->text(2) == "t"){
-//            dlg->set_current_PTheme(curQTW->currentItem()->text(1));
-//        }
-//        else{
-            dlg->set_current_PTheme(curQTW->currentItem()->parent()->text(1));
-//        }
+        //        if(curQTW->currentItem()->text(2) == "t"){
+        //            dlg->set_current_PTheme(curQTW->currentItem()->text(1));
+        //        }
+        //        else{
+        dlg->set_current_PTheme(curQTW->currentItem()->parent()->text(1));
+        //        }
     }
     else{
         dlg->set_current_PTheme("0");
@@ -285,10 +297,10 @@ void admin_form::on_action_addTheme_triggered()
         if(new_themeName.trimmed().length() > 0){
             bool q_result;
             if(PThemeID.trimmed().length() > 0 && QVariant(PThemeID).toInt() > 0){
-                q_result = sql_addTheme(&db,new_themeName,PThemeID);
+                q_result = sql->addTheme(new_themeName,PThemeID);
             }
             else{
-                q_result = sql_addTheme(&db,new_themeName);
+                q_result = sql->addTheme(new_themeName);
             }
 
             if(q_result) {
@@ -335,7 +347,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
                             ((curQTW->currentItem()->parent()) ? curQTW->currentItem()->parent()->text(1).trimmed() : "0")+";";
                 }
 
-                if(SendSimpleQueryStr(&db,q_str)){
+                if(sql->SendSimpleQueryStr(q_str)){
                     getQuestionList(0);
                     getQuestionList(1);
                 }
@@ -364,7 +376,7 @@ void admin_form::set_questions_buttons_availablity(QTreeWidgetItem *item)
 void admin_form::getStudentsList()
 {
     QList<st_svMAP> q_res_groups, q_res_stud;
-    q_res_groups.append(getGroups(&db));
+    q_res_groups.append(sql->getGroups());
 
     if(q_res_groups.count() > 0){
         QList<QTreeWidgetItem *> groups, students;
@@ -379,7 +391,7 @@ void admin_form::getStudentsList()
             group.append(q_res_groups.at(i).map["ID"].toString());
 
             q_res_stud.clear();
-            q_res_stud = getStudents(&db,q_res_groups.at(i).map["ID"].toString());
+            q_res_stud = sql->getStudents(q_res_groups.at(i).map["ID"].toString());
 
             for(int s = 0;s < q_res_stud.count(); s++){
                 student.clear();
@@ -458,14 +470,14 @@ void admin_form::on_actionAddGroup_triggered(QString group_code)
     }
 
     if(new_grpName.trimmed().length() > 0){
-        bool res = sql_addGroup(&db,new_grpName);
+        bool res = sql->addGroup(new_grpName);
         if(res) getStudentsList();
     }
 }
 //
 bool admin_form::prepareAddStudDlg(stud_dlg *dlg)
 {
-    QList<st_svMAP> q_res_groups = getGroups(&db);
+    QList<st_svMAP> q_res_groups = sql->getGroups();
     bool result;
     if(q_res_groups.count() > 0){
         dlg->comboBox_groups_clear();
@@ -502,8 +514,7 @@ void admin_form::on_actionAddStud_triggered()
 
     if(prepareAddStudDlg(&dlg)){
         if(dlg.exec() == 1){
-            if(sql_studUnique(&db,
-                              dlg.get_lineEdit_Surname().trimmed(),
+            if(sql->studUnique(dlg.get_lineEdit_Surname().trimmed(),
                               dlg.get_lineEdit_Name().trimmed(),
                               dlg.get_lineEdit_Patronymic().trimmed(),
                               dlg.get_group_id().toString())){
@@ -514,7 +525,7 @@ void admin_form::on_actionAddStud_triggered()
                 new_stud.surname = dlg.get_lineEdit_Surname();
                 new_stud.patronymic = dlg.get_lineEdit_Patronymic();
 
-                if(sql_addStudent(&db,new_stud)){
+                if(sql->addStudent(new_stud)){
                     getStudentsList();
                 }
             }
@@ -538,10 +549,9 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                                                    QLineEdit::Normal,
                                                    curItem->text(0)).trimmed();
             if(in_grp.length() > 0){
-                if(sql_grpUnique(&db,in_grp)){
-                    bool q_res = SendSimpleQueryStr(&db,
-                                                    "UPDATE GROUPS SET CODE=\'"+in_grp+"\' WHERE CODE=\'"
-                                                    +curItem->text(0)+"\' AND ID="+curItem->text(1)+";");
+                if(sql->grpUnique(in_grp)){
+                    bool q_res = sql->SendSimpleQueryStr("UPDATE GROUPS SET CODE=\'"+in_grp+"\' WHERE CODE=\'"+
+                                                    curItem->text(0)+"\' AND ID="+curItem->text(1)+";");
                     if(q_res){
                         getStudentsList();
                     }
@@ -550,7 +560,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
 
         }
         else{ // edit student
-            st_qRes q_res = sql_getStudent(&db,curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed());
+            st_qRes q_res = sql->getStudent(curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed());
 
             if(q_res.q_result){
                 stud_dlg dlg(this);
@@ -584,7 +594,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                         }
 
                         if(updFields.length() > 0){
-                            if(SendSimpleQueryStr(&db,"UPDATE students SET "+updFields+" WHERE id="+curItem->text(1)+
+                            if(sql->SendSimpleQueryStr("UPDATE students SET "+updFields+" WHERE id="+curItem->text(1)+
                                                   " AND group_id="+curItem->parent()->text(1)+";")){
                                 getStudentsList();
                             }
@@ -603,7 +613,7 @@ void admin_form::on_action_clearGroup_clicked()
         QMessageBox::warning(this,tr("Error"),tr("Please select group for clean."));
     }
     else{
-        sql_clearGroup(&db,curItem->text(1));
+        sql->clearGroup(curItem->text(1));
         getStudentsList();
     }
 }
@@ -621,7 +631,7 @@ void admin_form::on_pushButton_Delete_Stud_clicked()
                                         QMessageBox::Yes | QMessageBox::No,
                                         QMessageBox::No);
         if(ret == QMessageBox::Yes){
-            if(sql_delStudent(&db,curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed())){
+            if(sql->delStudent(curItem->text(1).trimmed(),curItem->parent()->text(1).trimmed())){
                 getStudentsList();
             }
         }
@@ -635,8 +645,8 @@ void admin_form::on_pushButton_Delete_Stud_clicked()
                                         QMessageBox::Yes | QMessageBox::No,
                                         QMessageBox::No);
         if(ret == QMessageBox::Yes){
-            if(sql_clearGroup(&db,curItem->text(1))){
-                sql_delGroup(&db,curItem->text(1));
+            if(sql->clearGroup(curItem->text(1))){
+                sql->delGroup(curItem->text(1));
             }
             getStudentsList();
         }
@@ -647,15 +657,14 @@ bool admin_form::sendStudData_toDB(QList<st_stud> *data)
 {
     bool result = true;
     for(int i=0; i<data->count();i++){
-        if(sql_grpUnique(&db,data->at(i).grp_code,true)){
-            sql_addGroup(&db,data->at(i).grp_code);
+        if(sql->grpUnique(data->at(i).grp_code,true)){
+            sql->addGroup(data->at(i).grp_code);
         }
-        if(sql_studUnique(&db,
-                          data->at(i).surname,
+        if(sql->studUnique(data->at(i).surname,
                           data->at(i).name,
                           data->at(i).patronymic,
-                          getGroupIdByCode(&db,data->at(i).grp_code).toString(),true)){
-            result = sql_addStudent(&db,data->at(i));
+                          sql->getGroupIdByCode(data->at(i).grp_code).toString(),true)){
+            result = sql->addStudent(data->at(i));
         }
 
         if(!result) break;
