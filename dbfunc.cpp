@@ -21,79 +21,35 @@ sql_cl::~sql_cl()
 //**********************************************
 bool sql_cl::createNewDB()
 {
+    bool result = false;
 
-    QSqlQuery create;
-    QString stud = "CREATE TABLE students (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"
-            "group_id INTEGER,"
-            "name TEXT NOT NULL,"
-            "surname TEXT NOT NULL,"
-            "patronymic TEXT,"
-            "FOREIGN KEY (group_id) REFERENCES groups (id) );";
-    bool st = create.exec(stud);
-    if(!st){
-        qDebug() << create.lastError();
+    QStringList queries;
+    queries.clear();
+
+    queries.append("CREATE TABLE students (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\
+                   group_id INTEGER, name TEXT NOT NULL, surname TEXT NOT NULL, patronymic TEXT, \
+                   FOREIGN KEY (group_id) REFERENCES groups (id) );");
+    queries.append("CREATE TABLE questions (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, \
+                   theme_id INTEGER NOT NULL, for_learn INTEGER NOT NULL DEFAULT 0, question TEXT NOT NULL, \
+                   FOREIGN KEY (theme_id) REFERENCES q_themes (id) );");
+    queries.append("CREATE TABLE q_themes ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, \
+                   parent_id INTEGER NOT NULL DEFAULT 0, name TEXT NOT NULL UNIQUE, FOREIGN KEY (parent_id) \
+                   REFERENCES q_themes (id) );");
+    queries.append("CREATE TABLE options (send_report_by_email INTEGER NOT NULL DEFAULT 0);");
+    queries.append("CREATE TABLE groups (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, \
+                   Code TEXT NOT NULL UNIQUE);");
+    queries.append("CREATE TABLE answers (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, question_id INTEGER NOT NULL, \
+                   correct INTEGER NOT NULL DEFAULT 0, answer TEXT, comment TEXT, FOREIGN KEY (question_id) REFERENCES question (id) );");
+    queries.append("CREATE TABLE email_addreses (recipient_name TEXT NOT NULL, address TEXT NOT NULL );");
+    queries.append("CREATE VIEW vw_test_questions AS SELECT id, theme_id, question FROM question WHERE for_learn = 0 ;");
+    queries.append("CREATE VIEW vw_learn_questions AS SELECT id, theme_id, question FROM question WHERE for_learn > 0 ;");
+
+    for(int i=0; i<queries.count();i++){
+        result = SendSimpleQueryStr(queries.at(i));
+        if(!result) break;
     }
-    QString quest = "CREATE TABLE questions (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
-            "theme_id INTEGER NOT NULL, "
-            "for_learn INTEGER NOT NULL DEFAULT 0, "
-            "question TEXT NOT NULL, "
-            "FOREIGN KEY (theme_id) REFERENCES q_themes (id) );";
 
-   bool que = create.exec(quest);
-   if(!que){
-
-
-       qDebug() << create.lastError();
-   }
-    QString theme = "CREATE TABLE q_themes ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
-            "parent_id INTEGER NOT NULL DEFAULT 0, "
-            "name TEXT NOT NULL UNIQUE, "
-            "FOREIGN KEY (parent_id) REFERENCES q_themes (id) );";
-    bool th = create.exec(theme);
-    if(!th){
-        qDebug() << create.lastError();
-    }
-     QString opt = "CREATE TABLE options (send_report_by_email INTEGER NOT NULL DEFAULT 0);";
-     bool op = create.exec(opt);
-             if(!op) {
-                 qDebug() << create.lastError();
-             }
-     QString grp = "CREATE TABLE groups (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
-             "Code TEXT NOT NULL UNIQUE);";
-     bool gr = create.exec(grp);
-     if(!gr) {
-     qDebug() << create.lastError();
-     }
-     QString answer = "CREATE TABLE answers (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
-             "question_id INTEGER NOT NULL, "
-             "correct INTEGER NOT NULL DEFAULT 0, "
-             "answer TEXT, "
-             "comment TEXT, "
-             "FOREIGN KEY (question_id) REFERENCES question (id) );";
-             bool ans = create.exec(answer);
-     if(!ans) {
-         qDebug() << create.lastError();
-
-     }
-
-     QString email = "CREATE TABLE email_addreses (recipient_name TEXT NOT NULL, "
-             "address TEXT NOT NULL );";
-     bool mail = create.exec(answer);
-if(!mail) {
- qDebug() << create.lastError();
-
-}
-
-create.exec("CREATE VIEW vw_test_questions (AS SELECT id, theme_id, question\
-                FROM question\
-                WHERE for_learn = 0 );");
-
-
-
-create.exec("CREATE VIEW vw_learn_questions (AS SELECT id, theme_id, question\
-                        FROM question\
-                        WHERE for_learn > 0 );");
-
+    return result;
 }
 //
 bool sql_cl::openDB(QString db_file)

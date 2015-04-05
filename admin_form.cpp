@@ -81,13 +81,15 @@ void admin_form::getDataBases()
 
     for(int i=0; i < db_files.count(); i++){
         QString curFile = db_files.at(i);
-        if(QFile(DBPath+curFile).isReadable() && QFile(DBPath+curFile).isWritable()){
+        bool r = QFile(DBPath+curFile).isReadable();
+        bool w = QFile(DBPath+curFile).isWritable();
+        if(r && w){
             ui->listWidget_DB->addItem(curFile.replace(".QLT","",Qt::CaseInsensitive));
         }
         else{
             QMessageBox::critical(this,
                                   tr("Error"),
-                                  tr("Can\'t open file")+" \'"+DBPath+curFile+"\' "+tr("for read or write. Skipped."));
+                                  tr("Can\'t open file")+" \'"+DBPath+curFile+"\' "+tr("for read and write. Skipped."));
         }
     }
     this->setCursor(Qt::ArrowCursor);
