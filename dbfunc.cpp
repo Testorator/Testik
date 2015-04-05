@@ -41,8 +41,8 @@ bool sql_cl::createNewDB()
     queries.append("CREATE TABLE answers (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, question_id INTEGER NOT NULL, \
                    correct INTEGER NOT NULL DEFAULT 0, answer TEXT, comment TEXT, FOREIGN KEY (question_id) REFERENCES question (id) );");
     queries.append("CREATE TABLE email_addreses (recipient_name TEXT NOT NULL, address TEXT NOT NULL );");
-    queries.append("CREATE VIEW vw_test_questions AS SELECT id, theme_id, question FROM question WHERE for_learn = 0 ;");
-    queries.append("CREATE VIEW vw_learn_questions AS SELECT id, theme_id, question FROM question WHERE for_learn > 0 ;");
+    queries.append("CREATE VIEW vw_test_questions AS SELECT id, theme_id, question FROM questions WHERE for_learn = 0 ;");
+    queries.append("CREATE VIEW vw_learn_questions AS SELECT id, theme_id, question FROM questions WHERE for_learn > 0 ;");
 
     for(int i=0; i<queries.count();i++){
         result = SendSimpleQueryStr(queries.at(i));
