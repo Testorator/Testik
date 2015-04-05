@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QApplication>
 #include <QTableView>
+
 sql_cl::sql_cl(QSqlDatabase &db)
 {
     cur_db = QSqlDatabase(db);
@@ -27,19 +28,19 @@ bool sql_cl::createNewDB()
             "name TEXT NOT NULL,"
             "surname TEXT NOT NULL,"
             "patronymic TEXT,"
-            "FOREIGN KEY (group_id) REFERENCES groups (id) )";
-    bool stud = create.exec(stud);
-    if(!stud){
+            "FOREIGN KEY (group_id) REFERENCES groups (id) );";
+    bool st = create.exec(stud);
+    if(!st){
         qDebug() << create.lastError();
     }
     QString quest = "CREATE TABLE questions (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
             "theme_id INTEGER NOT NULL, "
             "for_learn INTEGER NOT NULL DEFAULT 0, "
             "question TEXT NOT NULL, "
-            "FOREIGN KEY (theme_id) REFERENCES q_themes (id) )";
+            "FOREIGN KEY (theme_id) REFERENCES q_themes (id) );";
 
-   bool quest = create.exec(quest);
-   if(!quest){
+   bool que = create.exec(quest);
+   if(!que){
 
 
        qDebug() << create.lastError();
@@ -47,20 +48,20 @@ bool sql_cl::createNewDB()
     QString theme = "CREATE TABLE q_themes ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
             "parent_id INTEGER NOT NULL DEFAULT 0, "
             "name TEXT NOT NULL UNIQUE, "
-            "FOREIGN KEY (parent_id) REFERENCES q_themes (id) )";
-    bool theme = create.exec(theme);
-    if(!theme){
+            "FOREIGN KEY (parent_id) REFERENCES q_themes (id) );";
+    bool th = create.exec(theme);
+    if(!th){
         qDebug() << create.lastError();
     }
-     QString opt = "CREATE TABLE options (send_report_by_email INTEGER NOT NULL DEFAULT 0)";
-     bool opt = create.exec(opt);
-             if(!opt) {
+     QString opt = "CREATE TABLE options (send_report_by_email INTEGER NOT NULL DEFAULT 0);";
+     bool op = create.exec(opt);
+             if(!op) {
                  qDebug() << create.lastError();
              }
      QString grp = "CREATE TABLE groups (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
-             "Code TEXT NOT NULL UNIQUE)";
-     bool grp = create.exec(grp);
-     if(!grp) {
+             "Code TEXT NOT NULL UNIQUE);";
+     bool gr = create.exec(grp);
+     if(!gr) {
      qDebug() << create.lastError();
      }
      QString answer = "CREATE TABLE answers (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "
@@ -68,29 +69,30 @@ bool sql_cl::createNewDB()
              "correct INTEGER NOT NULL DEFAULT 0, "
              "answer TEXT, "
              "comment TEXT, "
-             "FOREIGN KEY (question_id) REFERENCES question (id) )";
-             bool answer = create.exec(answer);
-     if(!answer) {
+             "FOREIGN KEY (question_id) REFERENCES question (id) );";
+             bool ans = create.exec(answer);
+     if(!ans) {
          qDebug() << create.lastError();
 
      }
 
      QString email = "CREATE TABLE email_addreses (recipient_name TEXT NOT NULL, "
-             "address TEXT NOT NULL )";
-     bool email = create.exec(answer);
-if(!email) {
+             "address TEXT NOT NULL );";
+     bool mail = create.exec(answer);
+if(!mail) {
  qDebug() << create.lastError();
 
 }
 
- create.exec("CREATE VIEW vw_test_questions (AS SELECT id, theme_id, question\
+create.exec("CREATE VIEW vw_test_questions (AS SELECT id, theme_id, question\
                 FROM question\
-                WHERE for_learn = 0 )");
+                WHERE for_learn = 0 );");
+
 
 
 create.exec("CREATE VIEW vw_learn_questions (AS SELECT id, theme_id, question\
                         FROM question\
-                        WHERE for_learn > 0 )");
+                        WHERE for_learn > 0 );");
 
 }
 //
