@@ -26,8 +26,6 @@ admin_form::admin_form(QWidget *parent) :
     ui->treeWidget_learn_questions->hideColumn(2);
     connect(ui->treeWidget_learn_questions,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(set_questions_buttons_availablity(QTreeWidgetItem*)));
 
-
-    db = QSqlDatabase::addDatabase("QSQLITE");
     getDataBases();
 
     act_addGroup = new QAction(QIcon(":/stud/add_group"),tr("Add Group"),ui->toolButton_Add_Stud->menu());
@@ -45,12 +43,13 @@ admin_form::admin_form(QWidget *parent) :
     act_addQuest = new QAction(tr("Add Question"),ui->toolButton_Add_Quest->menu());
     ui->toolButton_Add_Quest->addAction(act_addQuest);
 
-    setAvailabilityOfItems(db.isOpen());
+    sql = new sql_cl();
+    setAvailabilityOfItems(sql->dbIsOpen());
 }
 
 admin_form::~admin_form()
 {
-    if(db.isOpen()) db.close();
+    if(sql) delete sql;
     delete ui;
 }
 //
@@ -81,16 +80,16 @@ void admin_form::getDataBases()
 
     for(int i=0; i < db_files.count(); i++){
         QString curFile = db_files.at(i);
-        //bool r = QFile(DBPath+curFile).isReadable();
-        //bool w = QFile(DBPath+curFile).isWritable();
-        //if(r && w){
+        QFileInfo f_info(DBPath+curFile);
+
+        if(f_info.isReadable() && f_info.isWritable()){
             ui->listWidget_DB->addItem(curFile.replace(".QLT","",Qt::CaseInsensitive));
-       // }
-       // else{
-        //    QMessageBox::critical(this,
-       //                           tr("Error"),
-       //                           tr("Can\'t open file")+" \'"+DBPath+curFile+"\' "+tr("for read and write. Skipped."));
-       // }
+        }
+        else{
+            QMessageBox::critical(this,
+                                  tr("Error"),
+                                  tr("Can\'t open file")+" \'"+DBPath+curFile+"\' "+tr("for read and write. Skipped."));
+        }
     }
     this->setCursor(Qt::ArrowCursor);
 }
@@ -108,21 +107,18 @@ void admin_form::on_pushButton_AddDB_clicked()
                               tr("The name of the new database is empty!\nOperaion cancelled."));
     }
     else{
-
+// ?????????????????
        bool r = QFileInfo(DBPath+new_db_name+".QLT").isReadable();
        bool w = QFileInfo(DBPath+new_db_name+".QLT").isWritable();
         if(r == true && w == true) {
-        sql = new sql_cl(db);
+// ?????????????????
+        sql = new sql_cl();
         if(sql->openDB(DBPath+new_db_name+".QLT")){
             if(sql->createNewDB()){
                 getDataBases();
 
 
             }
-
-
-
-
 
             else{
                 QMessageBox::critical(this,
@@ -150,8 +146,8 @@ void admin_form::on_pushButton_DelDB_clicked()
                                         QMessageBox::Yes | QMessageBox::No,
                                         QMessageBox::No);
         if(ret == QMessageBox::Yes){
-            if(db.isOpen()) db.close();
-            setAvailabilityOfItems(db.isOpen());
+            if(sql->dbIsOpen()) sql->closeDB();
+            setAvailabilityOfItems(sql->dbIsOpen());
             QFile file_for_del(DBPath+curDB_item->text()+".QLT");
 
             if(file_for_del.remove()){

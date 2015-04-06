@@ -8,9 +8,10 @@
 #include <QApplication>
 #include <QTableView>
 
-sql_cl::sql_cl(QSqlDatabase &db)
+
+sql_cl::sql_cl()
 {
-    cur_db = QSqlDatabase(db);
+    cur_db = QSqlDatabase::addDatabase("QSQLITE");
 }
 //
 sql_cl::~sql_cl()
@@ -19,6 +20,11 @@ sql_cl::~sql_cl()
 }
 
 //**********************************************
+bool sql_cl::dbIsOpen()
+{
+    return cur_db.isOpen();
+}
+//
 bool sql_cl::createNewDB()
 {
     bool result = false;
@@ -55,14 +61,15 @@ bool sql_cl::createNewDB()
 bool sql_cl::openDB(QString db_file)
 {
     bool result;
-    if(cur_db.isOpen()) cur_db.close();
+
+    if(dbIsOpen()) cur_db.close();
     cur_db.setDatabaseName(db_file);
     cur_db.open();
     result = cur_db.isOpen();
 
     if(!result){
         QMessageBox msgBox;
-        msgBox.setText("DB file serror: "+db_file);
+        msgBox.setText("DB file error: "+db_file);
         msgBox.setDetailedText("Driver: "+cur_db.lastError().driverText()+
                                "\nDatabase: "+cur_db.lastError().databaseText());
         msgBox.exec();
@@ -71,6 +78,11 @@ bool sql_cl::openDB(QString db_file)
         qDebug() << "DB openinig - success";
     }
     return result;
+}
+//
+void sql_cl::closeDB()
+{
+    cur_db.close();
 }
 //**********************************************
 bool sql_cl::SendSimpleQueryStr(const QString& q_str)
@@ -152,7 +164,7 @@ bool sql_cl::themeUnique(const QString themeName, bool silent)
         result =false;
     }
     else{
-        st_qRes q_res = SendSimpleQueryStrWR("SELECT id FROM qthemes WHERE name='"+themeName+"';");
+        st_qRes q_res = SendSimpleQueryStrWR("SELECT id FROM q_themes WHERE name='"+themeName+"';");
         if(q_res.q_result){
             if(q_res.sel_data.count() > 0){
                 result = false;
@@ -175,18 +187,18 @@ bool sql_cl::themeUnique(const QString themeName, bool silent)
 //
 QList<st_svMAP> sql_cl::getThemeByID(QVariant theme_id)
 {
-    st_qRes result = SendSimpleQueryStrWR("SELECT qthemes.id, qthemes.parent_id, qthemes.name \
-                                          FROM qthemes \
+    st_qRes result = SendSimpleQueryStrWR("SELECT q_themes.id, q_themes.parent_id, q_themes.name \
+                                          FROM q_themes \
                                           WHERE ID="+theme_id.toString()+
-                                                   " ORDER BY qthemes.id");
+                                                   " ORDER BY q_themes.id");
     return result.sel_data;
 
 }
 //
 QList<st_svMAP> sql_cl::getThemes()
 {
-    st_qRes result = SendSimpleQueryStrWR("SELECT qthemes.id, qthemes.parent_id, qthemes.name \
-                                          FROM qthemes ORDER BY qthemes.id");
+    st_qRes result = SendSimpleQueryStrWR("SELECT q_themes.id, q_themes.parent_id, q_themes.name \
+                                          FROM q_themes ORDER BY q_themes.id");
                                           return result.sel_data;
 }
 
@@ -196,7 +208,7 @@ bool sql_cl::addTheme(const QString themeName, QString parent_id)
     bool result = false;
     result = themeUnique(themeName.trimmed());
     if(result){
-        QString q_str = "INSERT INTO qthemes(";
+        QString q_str = "INSERT INTO q_themes(";
         if(parent_id > 0) q_str.append("parent_id,");
         q_str.append("name) VALUES(");
         if(parent_id > 0) q_str.append(parent_id+",");
@@ -208,7 +220,7 @@ bool sql_cl::addTheme(const QString themeName, QString parent_id)
 //
 QList<st_svMAP> sql_cl::getThemeChild(QVariant parent_id)
 {
-    st_qRes result = SendSimpleQueryStrWR("SELECT * FROM qthemes WHERE parent_id="+parent_id.toString()+";");
+    st_qRes result = SendSimpleQueryStrWR("SELECT * FROM q_themes WHERE parent_id="+parent_id.toString()+";");
     return result.sel_data;
 }
 //

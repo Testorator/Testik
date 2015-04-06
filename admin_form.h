@@ -8,15 +8,10 @@
 
 #include <QApplication>
 #include <QMainWindow>
-#include <QtSql/QSqlDatabase>
-
-
 
 namespace Ui {
 class admin_form;
 }
-
-
 
 class admin_form : public QMainWindow
 {
@@ -62,7 +57,6 @@ private:
     };
 
     QString DBPath = QApplication::applicationDirPath()+"/data/";
-    QSqlDatabase db;
     QAction *act_addGroup, *act_addStud, *act_addTheme, *act_addQuest;
     void getDataBases();
     // students

@@ -1,6 +1,7 @@
 #ifndef DBFUNC
 #define DBFUNC
 
+#include <QObject>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -24,17 +25,19 @@ struct st_stud {
     QString patronymic;
 };
 
-#include <QObject>
+
 
 class sql_cl
 {
 private:
     QSqlDatabase cur_db;
 public:
-    sql_cl(QSqlDatabase &db);
+    sql_cl();
     ~sql_cl();
     //
     bool openDB(QString db_file);
+    void closeDB();
+    bool dbIsOpen();
     bool createNewDB();
     //
     bool SendSimpleQueryStr(const QString& q_str);
