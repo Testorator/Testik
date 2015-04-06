@@ -81,16 +81,16 @@ void admin_form::getDataBases()
 
     for(int i=0; i < db_files.count(); i++){
         QString curFile = db_files.at(i);
-        bool r = QFile(DBPath+curFile).isReadable();
-        bool w = QFile(DBPath+curFile).isWritable();
-        if(r && w){
+        //bool r = QFile(DBPath+curFile).isReadable();
+        //bool w = QFile(DBPath+curFile).isWritable();
+        //if(r && w){
             ui->listWidget_DB->addItem(curFile.replace(".QLT","",Qt::CaseInsensitive));
-        }
-        else{
-            QMessageBox::critical(this,
-                                  tr("Error"),
-                                  tr("Can\'t open file")+" \'"+DBPath+curFile+"\' "+tr("for read and write. Skipped."));
-        }
+       // }
+       // else{
+        //    QMessageBox::critical(this,
+       //                           tr("Error"),
+       //                           tr("Can\'t open file")+" \'"+DBPath+curFile+"\' "+tr("for read and write. Skipped."));
+       // }
     }
     this->setCursor(Qt::ArrowCursor);
 }
@@ -108,22 +108,36 @@ void admin_form::on_pushButton_AddDB_clicked()
                               tr("The name of the new database is empty!\nOperaion cancelled."));
     }
     else{
+
+       bool r = QFileInfo(DBPath+new_db_name+".QLT").isReadable();
+       bool w = QFileInfo(DBPath+new_db_name+".QLT").isWritable();
+        if(r == true && w == true) {
         sql = new sql_cl(db);
         if(sql->openDB(DBPath+new_db_name+".QLT")){
             if(sql->createNewDB()){
                 getDataBases();
+
+
             }
+
+
+
+
+
             else{
                 QMessageBox::critical(this,
                                       tr("Error"),
                                       tr("Can't create database struct."));
-            }
+           }
         }
+     }
         else{
             QMessageBox::critical(this,
                                   tr("Error"),
                                   tr("Error on create new database."));
+
         }
+
     }
 }
 //
