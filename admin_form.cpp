@@ -107,18 +107,21 @@ void admin_form::on_pushButton_AddDB_clicked()
                               tr("The name of the new database is empty!\nOperaion cancelled."));
     }
     else{
-sql = new sql_cl();
+        bool new_db_ok = true;
         QFileInfoList db_files = QDir(DBPath).entryInfoList(QStringList() << "*", QDir::Files);
         for(int i=0; i < db_files.count(); i++){
+            qDebug() << "base_name= " << db_files.at(i).baseName();
+            qDebug() << "new_name= " << new_db_name;
     if(db_files.at(i).baseName() == new_db_name){
         QMessageBox::critical(this,
                               tr("Error"),
                               tr("Name have been used already.\n Please, introduse new name."));
+        new_db_ok = false;
         break;
     }
 }
 
-
+if(new_db_ok){
         if(sql->openDB(DBPath+new_db_name+".QLT")){
             if(sql->createNewDB()){
                 getDataBases();
@@ -135,7 +138,8 @@ sql = new sql_cl();
                                   tr("Error"),
                                   tr("Error on create new database."));
          }
-      }
+       }
+     }
    }
 //
 void admin_form::on_pushButton_DelDB_clicked()
