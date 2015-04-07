@@ -12,6 +12,17 @@
 sql_cl::sql_cl()
 {
     cur_db = QSqlDatabase::addDatabase("QSQLITE");
+    crypt = new encryption();
+    tabs_crypt_key = cur_db.databaseName();
+    students_crypt_key = crypt->stringEncrypt("students",tabs_crypt_key);
+    questions_crypt_key = crypt->stringEncrypt("questions",tabs_crypt_key);
+    q_themes_crypt_key = crypt->stringEncrypt("q_themes",tabs_crypt_key);
+    options_crypt_key = crypt->stringEncrypt("options",tabs_crypt_key);
+    groups_crypt_key = crypt->stringEncrypt("groups",tabs_crypt_key);
+    answers_crypt_key = crypt->stringEncrypt("answers",tabs_crypt_key);
+    email_addreses_crypt_key = crypt->stringEncrypt("email_addreses",tabs_crypt_key);
+    vw_test_questions_crypt_key = crypt->stringEncrypt("vw_test_questions",tabs_crypt_key);
+    vw_learn_questions_crypt_key = crypt->stringEncrypt("vw_learn_questions",tabs_crypt_key);
 }
 //
 sql_cl::~sql_cl()
@@ -32,9 +43,13 @@ bool sql_cl::createNewDB()
     QStringList queries;
     queries.clear();
 
-    queries.append("CREATE TABLE students (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,\
-                   group_id INTEGER, name TEXT NOT NULL, surname TEXT NOT NULL, patronymic TEXT, \
-                   FOREIGN KEY (group_id) REFERENCES groups (id) );");
+    queries.append("CREATE TABLE "+students_crypt_key+
+                   "("+crypt->stringEncrypt("id",students_crypt_key)+" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"+
+                   crypt->stringEncrypt("group_id",students_crypt_key)+" INTEGER, "+crypt->stringEncrypt("name",students_crypt_key)+
+                   " TEXT NOT NULL, "+crypt->stringEncrypt("surname",students_crypt_key)+" TEXT NOT NULL, "+
+                   crypt->stringEncrypt("patronymic",students_crypt_key)+" TEXT, FOREIGN KEY ("+
+                   crypt->stringEncrypt("group_id",students_crypt_key)+") REFERENCES "+crypt->stringEncrypt("groups",tabs_crypt_key)+
+                   "("+crypt->stringEncrypt("id",students_crypt_key)+") );");
     queries.append("CREATE TABLE questions (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, \
                    theme_id INTEGER NOT NULL, for_learn INTEGER NOT NULL DEFAULT 0, question TEXT NOT NULL, \
                    FOREIGN KEY (theme_id) REFERENCES q_themes (id) );");
@@ -123,7 +138,7 @@ QString sql_cl::convertTypeOfQuestions(int type)
 }
 
 //**********************************************
-st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str)
+st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
 {
     st_qRes result;
 
@@ -146,7 +161,7 @@ st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str)
         st_svMAP col;
         while(query->next()){
             for(int counter=0; counter < query->record().count() ;counter++){
-                col.map.insert(query->record().fieldName(counter),query->value(counter));
+                 col.map.insert(query->record().fieldName(counter),query->value(counter));
             }
             result.sel_data << col;
             col.map.clear();
@@ -254,7 +269,8 @@ QList<st_svMAP> sql_cl::getQuestions(int questions_type, QString theme_id)
 //**********************************************
 // **** GROUPS **** {{
 QList<st_svMAP> sql_cl::getGroups(){
-    st_qRes result = SendSimpleQueryStrWR("SELECT * FROM groups");
+    st_qRes result = SendSimpleQueryStrWR("SELECT id,code FROM groups");
+
     return result.sel_data;
 }
 //

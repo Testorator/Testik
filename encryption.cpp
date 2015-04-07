@@ -1,4 +1,5 @@
 #include "encryption.h"
+#include "QDebug"
 
 encryption::encryption()
 {
@@ -33,7 +34,8 @@ QString encryption::stringEncrypt(QString strInput, QString strPassword)
     }
 
     //Возврат кодированной строки
-    return strOutput;
+//    qDebug() << "strInput: " << strInput << "\nkey: " << strPassword << "\nresult: " << strOutput;
+     return strOutput;
 }
 
 

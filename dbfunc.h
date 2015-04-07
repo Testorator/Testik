@@ -8,6 +8,7 @@
 #include <QString>
 #include <QMap>
 #include <QVariant>
+#include "encryption.h"
 
 struct st_svMAP{
     QMap<QString,QVariant> map;
@@ -31,9 +32,12 @@ class sql_cl
 {
 private:
     QSqlDatabase cur_db;
+    QString tabs_crypt_key,students_crypt_key,questions_crypt_key,q_themes_crypt_key,options_crypt_key,groups_crypt_key,
+    answers_crypt_key,email_addreses_crypt_key,vw_test_questions_crypt_key,vw_learn_questions_crypt_key;
 public:
     sql_cl();
     ~sql_cl();
+    encryption *crypt;
     //
     bool openDB(QString db_file);
     void closeDB();
@@ -41,7 +45,7 @@ public:
     bool createNewDB();
     //
     bool SendSimpleQueryStr(const QString& q_str);
-    st_qRes SendSimpleQueryStrWR(const QString& q_str);
+    st_qRes SendSimpleQueryStrWR(const QString& q_str, QString crypt_key = 0 );
     //
     QString getGroupCodeById(QString grpId);
     QVariant getGroupIdByCode(QString grpCode);
