@@ -116,8 +116,8 @@ sql = new sql_cl();
                               tr("Name have been used already.\n Please, introduse new name."));
         break;
     }
+}
 
-    else {
 
         if(sql->openDB(DBPath+new_db_name+".QLT")){
             if(sql->createNewDB()){
@@ -135,10 +135,8 @@ sql = new sql_cl();
                                   tr("Error"),
                                   tr("Error on create new database."));
          }
-       }
-     }
+      }
    }
- }
 //
 void admin_form::on_pushButton_DelDB_clicked()
 {
