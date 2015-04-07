@@ -43,7 +43,7 @@ bool sql_cl::createNewDB()
                    REFERENCES q_themes (id) );");
     queries.append("CREATE TABLE options (send_report_by_email INTEGER NOT NULL DEFAULT 0);");
     queries.append("CREATE TABLE groups (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, \
-                   Code TEXT NOT NULL UNIQUE);");
+                   code TEXT NOT NULL UNIQUE);");
     queries.append("CREATE TABLE answers (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, question_id INTEGER NOT NULL, \
                    correct INTEGER NOT NULL DEFAULT 0, answer TEXT, comment TEXT, FOREIGN KEY (question_id) REFERENCES question (id) );");
     queries.append("CREATE TABLE email_addreses (recipient_name TEXT NOT NULL, address TEXT NOT NULL );");
@@ -263,7 +263,7 @@ QString sql_cl::getGroupCodeById(QString grpId)
     QString result;
     st_qRes q_res = SendSimpleQueryStrWR("SELECT code FROM groups WHERE id="+grpId.trimmed());
     if(q_res.q_result){
-        result = q_res.sel_data.at(0).map["CODE"].toString();
+        result = q_res.sel_data.at(0).map["code"].toString();
     }
     else{
         result.clear();
@@ -276,7 +276,7 @@ QVariant sql_cl::getGroupIdByCode(QString grpCode)
     QVariant result;
     st_qRes q_res = SendSimpleQueryStrWR("SELECT id FROM groups WHERE code=\'"+grpCode.trimmed()+"\';");
     if(q_res.q_result){
-        result = q_res.sel_data.at(0).map["ID"];
+        result = q_res.sel_data.at(0).map["id"];
     }
     else{
         result.clear();
@@ -330,7 +330,6 @@ bool sql_cl::grpUnique(const QString grpCode, bool silent)
         else{
             result = false;
         }
-
     }
     return result;
 }
@@ -344,7 +343,7 @@ QList<st_svMAP> sql_cl::getStudents(QString groupID)
         condition.clear();
     }
     else{
-        condition = " WHERE GROUP_ID="+groupID.trimmed()+" ";
+        condition = " WHERE group_id="+groupID.trimmed()+" ";
     }
     result = SendSimpleQueryStrWR("SELECT * FROM students"+condition+";");
 
@@ -394,7 +393,7 @@ bool sql_cl::studUnique(const QString Surname, const QString Name, const QString
                                          "\' AND surname=\'"+Surname+"\' AND patronymic=\'"+Patrinymic+"\'"+
                                          cond_grpId+";");
     if(q_res.q_result){
-        if(q_res.sel_data.at(0).map["STUD_EXISTS"].toInt() == 0){
+        if(q_res.sel_data.at(0).map["stud_exists"].toInt() == 0){
             result = true;
         }
         else{
