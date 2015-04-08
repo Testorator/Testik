@@ -21,8 +21,8 @@ sql_cl::sql_cl()
     groups_crypt_key = crypt->stringEncrypt("groups",tabs_crypt_key);
     answers_crypt_key = crypt->stringEncrypt("answers",tabs_crypt_key);
     email_addreses_crypt_key = crypt->stringEncrypt("email_addreses",tabs_crypt_key);
-    vw_test_questions_crypt_key = crypt->stringEncrypt("vw_test_questions",tabs_crypt_key);
-    vw_learn_questions_crypt_key = crypt->stringEncrypt("vw_learn_questions",tabs_crypt_key);
+    vw_tq_crypt_key = crypt->stringEncrypt("vw_test_questions",tabs_crypt_key);
+    vw_lq_crypt_key = crypt->stringEncrypt("vw_learn_questions",tabs_crypt_key);
 }
 //
 sql_cl::~sql_cl()
@@ -42,28 +42,46 @@ bool sql_cl::createNewDB()
 
     QStringList queries;
     queries.clear();
-
     queries.append("CREATE TABLE "+students_crypt_key+
                    "("+crypt->stringEncrypt("id",students_crypt_key)+" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"+
                    crypt->stringEncrypt("group_id",students_crypt_key)+" INTEGER, "+crypt->stringEncrypt("name",students_crypt_key)+
                    " TEXT NOT NULL, "+crypt->stringEncrypt("surname",students_crypt_key)+" TEXT NOT NULL, "+
                    crypt->stringEncrypt("patronymic",students_crypt_key)+" TEXT, FOREIGN KEY ("+
                    crypt->stringEncrypt("group_id",students_crypt_key)+") REFERENCES "+crypt->stringEncrypt("groups",tabs_crypt_key)+
-                   "("+crypt->stringEncrypt("id",students_crypt_key)+") );");
-    queries.append("CREATE TABLE questions (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, \
-                   theme_id INTEGER NOT NULL, for_learn INTEGER NOT NULL DEFAULT 0, question TEXT NOT NULL, \
-                   FOREIGN KEY (theme_id) REFERENCES q_themes (id) );");
-    queries.append("CREATE TABLE q_themes ( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, \
-                   parent_id INTEGER NOT NULL DEFAULT 0, name TEXT NOT NULL UNIQUE, FOREIGN KEY (parent_id) \
-                   REFERENCES q_themes (id) );");
-    queries.append("CREATE TABLE options (send_report_by_email INTEGER NOT NULL DEFAULT 0);");
-    queries.append("CREATE TABLE groups (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, \
-                   code TEXT NOT NULL UNIQUE);");
-    queries.append("CREATE TABLE answers (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, question_id INTEGER NOT NULL, \
-                   correct INTEGER NOT NULL DEFAULT 0, answer TEXT, comment TEXT, FOREIGN KEY (question_id) REFERENCES question (id) );");
-    queries.append("CREATE TABLE email_addreses (recipient_name TEXT NOT NULL, address TEXT NOT NULL );");
-    queries.append("CREATE VIEW vw_test_questions AS SELECT id, theme_id, question FROM questions WHERE for_learn = 0 ;");
-    queries.append("CREATE VIEW vw_learn_questions AS SELECT id, theme_id, question FROM questions WHERE for_learn > 0 ;");
+                   "("+crypt->stringEncrypt("id",students_crypt_key)+"));");
+    queries.append("CREATE TABLE "+crypt->stringEncrypt("questions",questions_crypt_key)+" ("+crypt->stringEncrypt("id",questions_crypt_key)+
+                   " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->stringEncrypt("theme_id",questions_crypt_key)+
+                   "INTEGER NOT NULL, "+crypt->stringEncrypt("for_learn",questions_crypt_key)+" INTEGER NOT NULL DEFAULT 0, "+
+                   crypt->stringEncrypt("question",questions_crypt_key)+" TEXT NOT NULL, FOREIGN KEY ("+
+                   crypt->stringEncrypt("theme_id",questions_crypt_key)+") REFERENCES "+crypt->stringEncrypt("q_themes",questions_crypt_key)+
+                   "("+crypt->stringEncrypt("id",questions_crypt_key)+"));");
+    queries.append("CREATE TABLE "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+" ("+crypt->stringEncrypt("id",q_themes_crypt_key)+
+                   " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->stringEncrypt("parent_id",q_themes_crypt_key)+
+                   " INTEGER NOT NULL DEFAULT 0, "+crypt->stringEncrypt("name",q_themes_crypt_key)+
+                   " TEXT NOT NULL UNIQUE, FOREIGN KEY ("+crypt->stringEncrypt("parent_id",q_themes_crypt_key)+") REFERENCES "+
+                   crypt->stringEncrypt("q_themes",q_themes_crypt_key)+" ("+crypt->stringEncrypt("id",q_themes_crypt_key)+") );");
+    queries.append("CREATE TABLE "+crypt->stringEncrypt("options",options_crypt_key)+"("+crypt->stringEncrypt("send_report_by_email",options_crypt_key)+
+                   "INTEGER NOT NULL DEFAULT 0);");
+    queries.append("CREATE TABLE "+crypt->stringEncrypt("groups",groups_crypt_key)+" ("+crypt->stringEncrypt("id",groups_crypt_key)+
+                   " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->stringEncrypt("code",groups_crypt_key)+" TEXT NOT NULL UNIQUE);");
+    queries.append("CREATE TABLE "+crypt->stringEncrypt("answers",answers_crypt_key)+" ("+crypt->stringEncrypt("id",answers_crypt_key)+
+                   " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->stringEncrypt("question_id",answers_crypt_key)+
+                   " INTEGER NOT NULL, "+crypt->stringEncrypt("correct",answers_crypt_key)+" INTEGER NOT NULL DEFAULT 0, "+
+                   crypt->stringEncrypt("answer",answers_crypt_key)+" TEXT, "+crypt->stringEncrypt("comment",answers_crypt_key)+
+                   " TEXT, FOREIGN KEY ("+crypt->stringEncrypt("question_id",answers_crypt_key)+") REFERENCES "+crypt->stringEncrypt("question",answers_crypt_key)+
+                   " ("+crypt->stringEncrypt("id",answers_crypt_key)+"));");
+    queries.append("CREATE TABLE "+crypt->stringEncrypt("email_addreses",email_addreses_crypt_key)+" ("+
+                   crypt->stringEncrypt("recipient_name",email_addreses_crypt_key)+" TEXT NOT NULL, "+crypt->stringEncrypt("address",email_addreses_crypt_key)+
+                   "TEXT NOT NULL );");
+    queries.append("CREATE VIEW "+crypt->stringEncrypt("vw_test_questions",vw_tq_crypt_key)+
+                   " AS SELECT "+crypt->stringEncrypt("id",questions_crypt_key)+","+
+                   crypt->stringEncrypt("theme_id",questions_crypt_key)+","+crypt->stringEncrypt("question",questions_crypt_key)
+                   +" FROM "+crypt->stringEncrypt("questions",questions_crypt_key)+" WHERE "+
+                   crypt->stringEncrypt("for_learn",questions_crypt_key)+" = "+crypt->stringEncrypt("0",questions_crypt_key)+";");
+    queries.append("CREATE VIEW "+crypt->stringEncrypt("vw_learn_questions",vw_lq_crypt_key)+
+                   " AS SELECT "+crypt->stringEncrypt("id",questions_crypt_key)+","+crypt->stringEncrypt("theme_id",questions_crypt_key)+
+                   ","+crypt->stringEncrypt("question",questions_crypt_key)+" FROM "+crypt->stringEncrypt("questions",questions_crypt_key)+
+                   " WHERE "+crypt->stringEncrypt("for_learn",questions_crypt_key)+" > "+crypt->stringEncrypt("0",questions_crypt_key)+" ;");
 
     for(int i=0; i<queries.count();i++){
         result = SendSimpleQueryStr(queries.at(i));
@@ -104,7 +122,6 @@ bool sql_cl::SendSimpleQueryStr(const QString& q_str)
 {
     bool result;
     QSqlQuery *query = new QSqlQuery(cur_db);
-
     cur_db.transaction();
     if(!query->exec(q_str)){
         result = false;

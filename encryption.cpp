@@ -34,8 +34,7 @@ QString encryption::stringEncrypt(QString strInput, QString strPassword)
     }
 
     //Возврат кодированной строки
-//    qDebug() << "strInput: " << strInput << "\nkey: " << strPassword << "\nresult: " << strOutput;
-     return strOutput;
+     return "\'"+strOutput+"\'";
 }
 
 
