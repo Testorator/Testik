@@ -16,48 +16,59 @@ QString encryption::stringEncrypt(QString strInput, QString strPassword)
     int i,j;
     QString strOutput="";
 
-    // Перевод строк в битовые массивы с использованием локальных таблиц
     QByteArray baInput    = strInput.toLocal8Bit();
     QByteArray baPassword = strPassword.toLocal8Bit();
 
-    // Кодирование информации
     for (i=0; i < baInput.size(); i++)
     {
         for (j=0; j < baPassword.size(); j++)
         {
-            // XOR - кодировка символа
             baInput[i] = baInput[i] ^ (baPassword[j] + (i*j));
         }
 
-        //Преобразование числа в шестнадцатеричную систему
         strOutput += QString("%1").arg((int)((unsigned char)baInput[i]),2,16,QChar('0'));
     }
 
-    //Возврат кодированной строки
-     return "\'"+strOutput+"\'";
+    return "\'"+strOutput+"\'";
 }
-
-
-// Декодирование строки
-QString encryption::stringDecrypt(QString strInput, QString strPassword)
+//
+QString encryption::stringDecrypt(QVariant strInput, QString strPassword)
 {
     int i,j;
 
-    // Декодировка строки из 16-ричной системы в битовый массив
-    QByteArray baInput    = QByteArray::fromHex(strInput.toLocal8Bit());
-    // Перевод строки пароля в битовый массив
+    QByteArray baInput    = QByteArray::fromHex(strInput.toString().toLocal8Bit());
     QByteArray baPassword = strPassword.toLocal8Bit();
 
-    // Декодирование информации
     for (i=0; i < baInput.size(); i++)
     {
         for (j=0; j < baPassword.size(); j++)
         {
-            // XOR - кодировка символа
             baInput[i] = baInput[i] ^ (baPassword[j] + (i*j));
         }
     }
 
-    //Возврат кодированной строки
     return QString::fromLocal8Bit(baInput.data());
+}
+//
+QList<QMap<QString,QVariant> > encryption::qresDecrypt(QList<QMap<QString,QVariant> > crypted_qres,QString crypt_key)
+{
+    QList<QMap<QString,QVariant> > result;
+    QString f_name;
+    QVariant f_val;
+    result.clear();
+    for(int i=0;i<crypted_qres.count();i++){
+        QMap<QString,QVariant> decVals;
+        QMapIterator<QString, QVariant> iter(crypted_qres.at(i));
+        while (iter.hasNext()){
+            f_name.clear();
+            f_val.clear();
+
+            f_name = stringDecrypt(iter.key(),crypt_key);
+            f_val = stringDecrypt(iter.value(),crypt_key);
+
+            decVals.insert(f_name,f_val);
+        }
+        result << decVals;
+    }
+    return result;
 }

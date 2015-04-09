@@ -160,7 +160,7 @@ st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
     st_qRes result;
 
     result.sel_data.clear();
-    st_svMAP col;
+    QList<QMap<QString,QVariant> > col;
 
     QSqlQuery *query = new QSqlQuery(cur_db);
 
@@ -175,13 +175,13 @@ st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
     }
     else{
         result.q_result = true;
-        st_svMAP col;
+        QMap<QString,QVariant> col;
         while(query->next()){
             for(int counter=0; counter < query->record().count() ;counter++){
-                 col.map.insert(query->record().fieldName(counter),query->value(counter));
+                 col.insert(query->record().fieldName(counter),query->value(counter));
             }
             result.sel_data << col;
-            col.map.clear();
+            col.clear();
         }
     }
     query->clear();
@@ -196,7 +196,11 @@ bool sql_cl::themeUnique(const QString themeName, bool silent)
         result =false;
     }
     else{
-        st_qRes q_res = SendSimpleQueryStrWR("SELECT id FROM q_themes WHERE name='"+themeName+"';");
+        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->stringEncrypt("id",q_themes_crypt_key)+
+                                             " FROM "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+" WHERE "+
+                                             crypt->stringEncrypt("name",q_themes_crypt_key)+"="+
+                                             crypt->stringEncrypt("themeName",q_themes_crypt_key)+";");
+        // ////////DECVRYPT///////
         if(q_res.q_result){
             if(q_res.sel_data.count() > 0){
                 result = false;
@@ -217,17 +221,23 @@ bool sql_cl::themeUnique(const QString themeName, bool silent)
     return result;
 }
 //
-QList<st_svMAP> sql_cl::getThemeByID(QVariant theme_id)
+QList<QMap<QString, QVariant> > sql_cl::getThemeByID(QVariant theme_id)
 {
-    st_qRes result = SendSimpleQueryStrWR("SELECT q_themes.id, q_themes.parent_id, q_themes.name \
-                                          FROM q_themes \
-                                          WHERE ID="+theme_id.toString()+
-                                                   " ORDER BY q_themes.id");
+    st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+"."+
+                                          crypt->stringEncrypt("id",q_themes_crypt_key)+", "+
+                                          crypt->stringEncrypt("q_themes",q_themes_crypt_key)+"."+
+                                          crypt->stringEncrypt("parent_id",q_themes_crypt_key)+", "+
+                                          crypt->stringEncrypt("q_themes",q_themes_crypt_key)+"."+
+                                          crypt->stringEncrypt("name",q_themes_crypt_key)+
+                                          "FROM "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+
+                                          "WHERE ID="+theme_id.toString()+" ORDER BY "+
+                                          crypt->stringEncrypt("q_themes",q_themes_crypt_key)+"."+
+                                          crypt->stringEncrypt("id",q_themes_crypt_key));
     return result.sel_data;
 
 }
 //
-QList<st_svMAP> sql_cl::getThemes()
+QList<QMap<QString, QVariant> > sql_cl::getThemes()
 {
     st_qRes result = SendSimpleQueryStrWR("SELECT q_themes.id, q_themes.parent_id, q_themes.name \
                                           FROM q_themes ORDER BY q_themes.id");
@@ -250,13 +260,13 @@ bool sql_cl::addTheme(const QString themeName, QString parent_id)
     return result;
 }
 //
-QList<st_svMAP> sql_cl::getThemeChild(QVariant parent_id)
+QList<QMap<QString, QVariant> > sql_cl::getThemeChild(QVariant parent_id)
 {
     st_qRes result = SendSimpleQueryStrWR("SELECT * FROM q_themes WHERE parent_id="+parent_id.toString()+";");
     return result.sel_data;
 }
 //
-QList<st_svMAP> sql_cl::getQuestionsWithThemes(int questions_type)
+QList<QMap<QString, QVariant> > sql_cl::getQuestionsWithThemes(int questions_type)
 {
     QString _questions_type = convertTypeOfQuestions(questions_type);
 
@@ -266,7 +276,7 @@ QList<st_svMAP> sql_cl::getQuestionsWithThemes(int questions_type)
 }
 
 //
-QList<st_svMAP> sql_cl::getQuestions(int questions_type, QString theme_id)
+QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString theme_id)
 {
     QString _questions_type = convertTypeOfQuestions(questions_type);
     QString condition = "";
@@ -285,7 +295,7 @@ QList<st_svMAP> sql_cl::getQuestions(int questions_type, QString theme_id)
 // **** QUESTIONS **** }}
 //**********************************************
 // **** GROUPS **** {{
-QList<st_svMAP> sql_cl::getGroups(){
+QList<QMap<QString,QVariant> > sql_cl::getGroups(){
     st_qRes result = SendSimpleQueryStrWR("SELECT id,code FROM groups");
 
     return result.sel_data;
@@ -296,7 +306,7 @@ QString sql_cl::getGroupCodeById(QString grpId)
     QString result;
     st_qRes q_res = SendSimpleQueryStrWR("SELECT code FROM groups WHERE id="+grpId.trimmed());
     if(q_res.q_result){
-        result = q_res.sel_data.at(0).map["code"].toString();
+        result = q_res.sel_data.at(0)["code"].toString();
     }
     else{
         result.clear();
@@ -309,7 +319,7 @@ QVariant sql_cl::getGroupIdByCode(QString grpCode)
     QVariant result;
     st_qRes q_res = SendSimpleQueryStrWR("SELECT id FROM groups WHERE code=\'"+grpCode.trimmed()+"\';");
     if(q_res.q_result){
-        result = q_res.sel_data.at(0).map["id"];
+        result = q_res.sel_data.at(0)["id"];
     }
     else{
         result.clear();
@@ -368,7 +378,7 @@ bool sql_cl::grpUnique(const QString grpCode, bool silent)
 }
 // **** GROUPS **** }}
 // **** STUDENTS **** {{
-QList<st_svMAP> sql_cl::getStudents(QString groupID)
+QList<QMap<QString, QVariant> > sql_cl::getStudents(QString groupID)
 {
     st_qRes result;
     QString condition;
@@ -426,7 +436,7 @@ bool sql_cl::studUnique(const QString Surname, const QString Name, const QString
                                          "\' AND surname=\'"+Surname+"\' AND patronymic=\'"+Patrinymic+"\'"+
                                          cond_grpId+";");
     if(q_res.q_result){
-        if(q_res.sel_data.at(0).map["stud_exists"].toInt() == 0){
+        if(q_res.sel_data.at(0)["stud_exists"].toInt() == 0){
             result = true;
         }
         else{

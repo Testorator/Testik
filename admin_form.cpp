@@ -207,26 +207,26 @@ void admin_form::getQuestionList(int q_type)
     QTreeWidget *curQTW = get_curQTW(q_type);
 
     curQTW->clear();
-    QList<st_svMAP> q_res = sql->getThemes(); // select themes from database
+    QList<QMap<QString,QVariant> > q_res = sql->getThemes(); // select themes from database
     QList<st_QTWI> tmp_ThemeList;
     if(q_res.count() > 0){
         st_QTWI newitem_data; // create struct for saving theme data
         for(int i = 0; i < q_res.count(); i++){
             QStringList newItem_sl;
-            newItem_sl.append(q_res.at(i).map["name"].toString());
-            newItem_sl.append(q_res.at(i).map["id"].toString());
+            newItem_sl.append(q_res.at(i)["name"].toString());
+            newItem_sl.append(q_res.at(i)["id"].toString());
             newItem_sl.append("t"); // set mark
 
-            newitem_data.parent_id = q_res.at(i).map["parent_id"].toString().trimmed(); // save theme parent id
+            newitem_data.parent_id = q_res.at(i)["parent_id"].toString().trimmed(); // save theme parent id
             newitem_data.qtwi = new QTreeWidgetItem(newItem_sl); // create theme item
 
             // add questions to theme
-            QList<st_svMAP> themeQuestions = sql->getQuestions(q_res.at(i).map["id"].toInt());
+            QList<QMap<QString,QVariant> > themeQuestions = sql->getQuestions(q_res.at(i)["id"].toInt());
             if(themeQuestions.count()>0){ // if questions is found, then add founded questions to theme item
                 for(int q=0;q<themeQuestions.count();q++){
                     QStringList newQuestion;
-                    newQuestion.append(themeQuestions.at(q).map["question"].toString());
-                    newQuestion.append(themeQuestions.at(q).map["id"].toString());
+                    newQuestion.append(themeQuestions.at(q)["question"].toString());
+                    newQuestion.append(themeQuestions.at(q)["id"].toString());
                     newQuestion.append("q"); // set mark
                     newitem_data.qtwi->addChild(new QTreeWidgetItem(newQuestion));
                 }
@@ -264,17 +264,17 @@ void admin_form::getQuestionList(int q_type)
 //
 void admin_form::prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString exclude_id)
 {
-    QList<st_svMAP> q_res_themes = sql->getThemes();
+    QList<QMap<QString,QVariant> > q_res_themes = sql->getThemes();
     dlg->clear_PThemes();
     dlg->add_PTheme(tr("No parent"),"0");
 
     if(q_res_themes.count() > 0){
 
         for(int i = 0;i < q_res_themes.count(); i++){
-            if(q_res_themes.at(i).map["ID"].toString() != exclude_id){
-                dlg->add_PTheme(q_res_themes.at(i).map["name"].toString(),
-                        q_res_themes.at(i).map["id"].toString(),
-                        q_res_themes.at(i).map["parent_id"].toString());
+            if(q_res_themes.at(i)["ID"].toString() != exclude_id){
+                dlg->add_PTheme(q_res_themes.at(i)["name"].toString(),
+                        q_res_themes.at(i)["id"].toString(),
+                        q_res_themes.at(i)["parent_id"].toString());
             }
         }
     }
@@ -391,7 +391,7 @@ void admin_form::set_questions_buttons_availablity(QTreeWidgetItem *item)
 // !!!! --- tab students --- !!!! {{
 void admin_form::getStudentsList()
 {
-    QList<st_svMAP> q_res_groups, q_res_stud;
+    QList<QMap<QString,QVariant> > q_res_groups, q_res_stud;
     q_res_groups.append(sql->getGroups());
 
     if(q_res_groups.count() > 0){
@@ -403,18 +403,18 @@ void admin_form::getStudentsList()
             group.clear();
             students.clear();
 
-            group.append(q_res_groups.at(i).map["code"].toString());
-            group.append(q_res_groups.at(i).map["id"].toString());
+            group.append(q_res_groups.at(i)["code"].toString());
+            group.append(q_res_groups.at(i)["id"].toString());
 
             q_res_stud.clear();
-            q_res_stud = sql->getStudents(q_res_groups.at(i).map["id"].toString());
+            q_res_stud = sql->getStudents(q_res_groups.at(i)["id"].toString());
 
             for(int s = 0;s < q_res_stud.count(); s++){
                 student.clear();
-                student.append(q_res_stud.at(s).map["surname"].toString()+" "+
-                        q_res_stud.at(s).map["name"].toString()+" "+
-                        q_res_stud.at(s).map["patronymic"].toString());
-                student.append(q_res_stud.at(s).map["id"].toString());
+                student.append(q_res_stud.at(s)["surname"].toString()+" "+
+                        q_res_stud.at(s)["name"].toString()+" "+
+                        q_res_stud.at(s)["patronymic"].toString());
+                student.append(q_res_stud.at(s)["id"].toString());
                 QTreeWidgetItem *stud_item = new QTreeWidgetItem((QTreeWidget*)0,QStringList(student));
                 stud_item->setIcon(0,QIcon(":/stud/stud"));
                 students.append(stud_item);
@@ -493,13 +493,13 @@ void admin_form::on_actionAddGroup_triggered(QString group_code)
 //
 bool admin_form::prepareAddStudDlg(stud_dlg *dlg)
 {
-    QList<st_svMAP> q_res_groups = sql->getGroups();
+    QList<QMap<QString,QVariant> > q_res_groups = sql->getGroups();
     bool result;
     if(q_res_groups.count() > 0){
         dlg->comboBox_groups_clear();
         for(int i = 0;i < q_res_groups.count(); i++){
-            dlg->comboBox_groups_addItem(q_res_groups.at(i).map["code"].toString(),
-                    q_res_groups.at(i).map["id"]);
+            dlg->comboBox_groups_addItem(q_res_groups.at(i)["code"].toString(),
+                    q_res_groups.at(i)["id"]);
         }
 
         QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
@@ -583,28 +583,28 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                 dlg.setWindowTitle(tr("Edit student"));
 
                 if(prepareAddStudDlg(&dlg)){
-                    dlg.lineEdit_Name_setText(q_res.sel_data.at(0).map["name"].toString());
-                    dlg.lineEdit_Surname_setText(q_res.sel_data.at(0).map["surname"].toString());
-                    dlg.lineEdit_Patronymic_setText(q_res.sel_data.at(0).map["patronymic"].toString());
+                    dlg.lineEdit_Name_setText(q_res.sel_data.at(0)["name"].toString());
+                    dlg.lineEdit_Surname_setText(q_res.sel_data.at(0)["surname"].toString());
+                    dlg.lineEdit_Patronymic_setText(q_res.sel_data.at(0)["patronymic"].toString());
 
                     if(dlg.exec() == 1){
                         QString updFields;
                         updFields.clear();
-                        if(dlg.get_group_id() != q_res.sel_data.at(0).map["group_id"]){
+                        if(dlg.get_group_id() != q_res.sel_data.at(0)["group_id"]){
                             updFields.append("group_id="+dlg.get_group_id().toString());
                         };
 
-                        if(dlg.get_lineEdit_Name() != q_res.sel_data.at(0).map["name"].toString()){
+                        if(dlg.get_lineEdit_Name() != q_res.sel_data.at(0)["name"].toString()){
                             if(updFields.length() > 0) updFields.append(",");
                             updFields.append("name=\'"+dlg.get_lineEdit_Name()+"\'");
                         }
 
-                        if(dlg.get_lineEdit_Surname() != q_res.sel_data.at(0).map["surname"].toString()){
+                        if(dlg.get_lineEdit_Surname() != q_res.sel_data.at(0)["surname"].toString()){
                             if(updFields.length() > 0) updFields.append(",");
                             updFields.append("surname=\'"+dlg.get_lineEdit_Surname()+"\'");
                         }
 
-                        if(dlg.get_lineEdit_Patronymic() != q_res.sel_data.at(0).map["patronymic"].toString()){
+                        if(dlg.get_lineEdit_Patronymic() != q_res.sel_data.at(0)["patronymic"].toString()){
                             if(updFields.length() > 0) updFields.append(",");
                             updFields.append("patronymic=\'"+dlg.get_lineEdit_Patronymic()+"\'");
                         }

@@ -10,13 +10,10 @@
 #include <QVariant>
 #include "encryption.h"
 
-struct st_svMAP{
-    QMap<QString,QVariant> map;
-};
 
 struct st_qRes{
     bool q_result;
-    QList<st_svMAP> sel_data;
+    QList<QMap<QString,QVariant> > sel_data;
 };
 
 struct st_stud {
@@ -49,26 +46,26 @@ public:
     //
     QString getGroupCodeById(QString grpId);
     QVariant getGroupIdByCode(QString grpCode);
-    QList<st_svMAP> getGroups();
+    QList<QMap<QString,QVariant> > getGroups();
     bool addGroup(const QString grpCode);
     bool clearGroup(const QVariant grpId);
     bool delGroup(const QVariant grpId);
     bool grpUnique(const QString grpCode, bool silent = 0);
     //
-    QList<st_svMAP> getStudents(QString groupID = 0 );
+    QList<QMap<QString,QVariant> > getStudents(QString groupID = 0 );
     st_qRes getStudent(QString studId, QString groupID);
     bool addStudent(st_stud data);
     bool delStudent(QString studId, QString grpId = 0);
     bool studUnique(const QString Surname, const QString Name, const QString Patrinymic, QString grpId = 0, bool silent = 0);
     //
     QString convertTypeOfQuestions(int type);
-    QList<st_svMAP> getThemes();
-    QList<st_svMAP> getThemeChild(QVariant parent_id);
-    QList<st_svMAP> getThemeByID(QVariant theme_id);
+    QList<QMap<QString,QVariant> > getThemes();
+    QList<QMap<QString,QVariant> > getThemeChild(QVariant parent_id);
+    QList<QMap<QString,QVariant> > getThemeByID(QVariant theme_id);
     bool themeUnique(const QString themeName, bool silent = 0);
     bool addTheme(const QString themeName, QString parent_id = 0);
-    QList<st_svMAP> getQuestionsWithThemes(int questions_type);
-    QList<st_svMAP> getQuestions(int questions_type, QString theme_id = 0);
+    QList<QMap<QString,QVariant> > getQuestionsWithThemes(int questions_type);
+    QList<QMap<QString,QVariant> > getQuestions(int questions_type, QString theme_id = 0);
 };
 #endif // DBFUNC
 
