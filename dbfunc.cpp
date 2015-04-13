@@ -42,7 +42,7 @@ bool sql_cl::createNewDB()
 
     QStringList queries;
     queries.clear();
-    queries.append("CREATE TABLE "+students_crypt_key+
+    queries.append("CREATE TABLE "+crypt->stringEncrypt("students",students_crypt_key)+
                    "("+crypt->stringEncrypt("id",students_crypt_key)+" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,"+
                    crypt->stringEncrypt("group_id",students_crypt_key)+" INTEGER, "+crypt->stringEncrypt("name",students_crypt_key)+
                    " TEXT NOT NULL, "+crypt->stringEncrypt("surname",students_crypt_key)+" TEXT NOT NULL, "+
@@ -178,13 +178,18 @@ st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
         QMap<QString,QVariant> col;
         while(query->next()){
             for(int counter=0; counter < query->record().count() ;counter++){
-                 col.insert(query->record().fieldName(counter),query->value(counter));
+                qDebug() << query->record().fieldName(counter) << " = " << crypt->stringDecrypt(query->record().fieldName(counter),crypt_key);
+                qDebug() << query->value(counter) << " = " << crypt->stringDecrypt(query->value(counter),crypt_key);
+                qDebug() << "key = " << crypt_key;
+                col.insert(crypt->stringDecrypt(query->record().fieldName(counter),crypt_key),
+                            crypt->stringDecrypt(query->value(counter),crypt_key));
             }
             result.sel_data << col;
             col.clear();
         }
     }
     query->clear();
+
     return result;
 }
 //**********************************************
@@ -200,7 +205,7 @@ bool sql_cl::themeUnique(const QString themeName, bool silent)
                                              " FROM "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+" WHERE "+
                                              crypt->stringEncrypt("name",q_themes_crypt_key)+"=\'"+
                                              crypt->stringEncrypt("themeName",q_themes_crypt_key)+"\';");
-        // ////////DECVRYPT//////
+        // ////////DECRYPT//////
         if(q_res.q_result){
             if(q_res.sel_data.count() > 0){
                 result = false;
@@ -239,12 +244,16 @@ QList<QMap<QString, QVariant> > sql_cl::getThemeByID(QVariant theme_id)
 //
 QList<QMap<QString, QVariant> > sql_cl::getThemes()
 {
-    st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+"."+crypt->stringEncrypt("id",q_themes_crypt_key)+", "+
-                                          crypt->stringEncrypt("q_themes",q_themes_crypt_key)+". "+crypt->stringEncrypt("parent_id",q_themes_crypt_key)+", "+
-                                          crypt->stringEncrypt("q_themes",q_themes_crypt_key)+". "+crypt->stringEncrypt("name",q_themes_crypt_key)+
-                                          "FROM "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+" ORDER BY "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+". "+
+    st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+"."+
+                                          crypt->stringEncrypt("id",q_themes_crypt_key)+", "+
+                                          crypt->stringEncrypt("q_themes",q_themes_crypt_key)+". "+
+                                          crypt->stringEncrypt("parent_id",q_themes_crypt_key)+", "+
+                                          crypt->stringEncrypt("q_themes",q_themes_crypt_key)+". "+
+                                          crypt->stringEncrypt("name",q_themes_crypt_key)+
+                                          "FROM "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+
+                                          " ORDER BY "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+". "+
                                           crypt->stringEncrypt("id",q_themes_crypt_key));
-                                          return result.sel_data;
+    return result.sel_data;
 }
 
 //
@@ -254,7 +263,7 @@ bool sql_cl::addTheme(const QString themeName, QString parent_id) //?????????
     result = themeUnique(themeName.trimmed());
     if(result){
         QString q_str = "INSERT INTO "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+" (";
-        if(parent_id > 0) q_str.append("parent_id,");
+        if(parent_id > 0) q_str.append(crypt->stringEncrypt("parent_id",q_themes_crypt_key)).append(",");
         q_str.append("("+crypt->stringDecrypt("name",q_themes_crypt_key)+" ) VALUES(");
         if(parent_id > 0) q_str.append(parent_id+",");
         q_str.append("\'"+crypt->stringEncrypt(themeName.trimmed(),q_themes_crypt_key)+"\');");
@@ -291,7 +300,7 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString
     st_qRes result = SendSimpleQueryStrWR("SELECT vw_"+_questions_type+"_questions.id,vw_"+_questions_type+
                                           "_questions.theme_id, vw_"+_questions_type+"_questions.question \
                                           FROM vw_"+_questions_type+"_questions "+condition+
-                                                                                "order by vw_"+_questions_type+"_questions.id, \
+                                          "order by vw_"+_questions_type+"_questions.id, \
                                           vw_"+_questions_type+"_questions.question ");
                                           return result.sel_data;
 }
@@ -301,7 +310,8 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString
 // **** GROUPS **** {{
 QList<QMap<QString,QVariant> > sql_cl::getGroups(){
     st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->stringEncrypt("id",groups_crypt_key)+", "+
-                                          crypt->stringEncrypt("code",groups_crypt_key)+" FROM "+crypt->stringEncrypt("groups",groups_crypt_key));
+                                          crypt->stringEncrypt("code",groups_crypt_key)+" FROM "+
+                                          crypt->stringEncrypt("groups",groups_crypt_key),groups_crypt_key);
 
     return result.sel_data;
 }
@@ -310,7 +320,8 @@ QString sql_cl::getGroupCodeById(QString grpId)
 {
     QString result;
     st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->stringEncrypt("code",groups_crypt_key)+" FROM "+
-                                         crypt->stringEncrypt("groups",groups_crypt_key)+" WHERE "+crypt->stringEncrypt("id",groups_crypt_key)+" ="+
+                                         crypt->stringEncrypt("groups",groups_crypt_key)+" WHERE "+
+                                         crypt->stringEncrypt("id",groups_crypt_key)+" ="+
                                          crypt->stringEncrypt(grpId.trimmed(),groups_crypt_key));
     if(q_res.q_result){
         result = q_res.sel_data.at(0)[crypt->stringEncrypt("code",groups_crypt_key)].toString();
@@ -325,7 +336,7 @@ QVariant sql_cl::getGroupIdByCode(QString grpCode)
 {
     QVariant result;
     st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->stringEncrypt("id",groups_crypt_key)+" FROM "+crypt->stringEncrypt("groups",groups_crypt_key)+" WHERE "+
-                                         crypt->stringEncrypt("code",groups_crypt_key)+" =\'"+crypt->stringEncrypt(grpCode.trimmed(),groups_crypt_key)+"\';");
+                                         crypt->stringEncrypt("code",groups_crypt_key)+" ="+crypt->stringEncrypt(grpCode.trimmed(),groups_crypt_key)+"\';");
     if(q_res.q_result){
         result = q_res.sel_data.at(0)["id"];
     }
@@ -334,13 +345,14 @@ QVariant sql_cl::getGroupIdByCode(QString grpCode)
     }
     return result;
 }
-// НЕ РАБОТАЕТ
+//
 bool sql_cl::addGroup(QString grpCode)
 {
     bool result;
     if(sql_cl::grpUnique(grpCode)){
         result = SendSimpleQueryStr("INSERT INTO "+crypt->stringEncrypt("groups",groups_crypt_key)+" ("+
-                                    crypt->stringEncrypt("code",groups_crypt_key)+" ) VALUES('"+crypt->stringEncrypt(grpCode,groups_crypt_key)+"');");
+                                    crypt->stringEncrypt("code",groups_crypt_key)+" ) VALUES("+
+                                    crypt->stringEncrypt(grpCode,groups_crypt_key)+");");
     }
     else{
         result = false;
@@ -350,14 +362,14 @@ bool sql_cl::addGroup(QString grpCode)
 //
 bool sql_cl::clearGroup(const QVariant grpId)
 {
-    return SendSimpleQueryStr("DELETE FROM "+crypt->stringEncrypt("students",students_crypt_key)+" WHERE "+crypt->stringEncrypt("group_id",students_crypt_key)+" =\'"+
-                              crypt->stringEncrypt(grpId.toString(),students_crypt_key)+"\'");
+    return SendSimpleQueryStr("DELETE FROM "+crypt->stringEncrypt("students",students_crypt_key)+
+                              " WHERE "+crypt->stringEncrypt("group_id",students_crypt_key)+"="+grpId.toString());
 }
-//НЕ РАБОТАЕТ
+//
 bool sql_cl::delGroup(const QVariant grpId)
 {
     return SendSimpleQueryStr("DELETE FROM "+crypt->stringEncrypt("groups",groups_crypt_key)+" WHERE "+
-                              crypt->stringEncrypt("id",groups_crypt_key)+" =\'"+crypt->stringEncrypt(grpId.toString(),groups_crypt_key)+"\'");
+                              crypt->stringEncrypt("id",groups_crypt_key)+" ="+grpId.toString());
 }
 
 //
@@ -368,8 +380,10 @@ bool sql_cl::grpUnique(const QString grpCode, bool silent)
         result =false;
     }
     else{
-        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->stringEncrypt("code",groups_crypt_key)+" FROM "+crypt->stringEncrypt("groups",groups_crypt_key)+" WHERE "+
-                                             crypt->stringEncrypt("code",groups_crypt_key)+"='"+grpCode+"';");
+        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->stringEncrypt("code",groups_crypt_key)+
+                                             " FROM "+crypt->stringEncrypt("groups",groups_crypt_key)+" WHERE "+
+                                             crypt->stringEncrypt("code",groups_crypt_key)+"="+
+                                             crypt->stringEncrypt(grpCode,groups_crypt_key)+";");
         if(q_res.q_result){
             if(q_res.sel_data.count() > 0){
                 result = false;
@@ -398,24 +412,30 @@ QList<QMap<QString, QVariant> > sql_cl::getStudents(QString groupID) //как д
         condition.clear();
     }
     else{
-        condition = " WHERE "+crypt->stringEncrypt("group_id",students_crypt_key)+" ='"+crypt->stringEncrypt(groupID.trimmed(),students_crypt_key)+"' ";
+        condition = " WHERE "+crypt->stringEncrypt("group_id",students_crypt_key)+"="+groupID.trimmed();
     }
-    result = SendSimpleQueryStrWR("SELECT * FROM students"+condition+";");
+    result = SendSimpleQueryStrWR("SELECT * FROM "+crypt->stringEncrypt("students",students_crypt_key)+condition+";");
 
     return result.sel_data;
 }
 //
-st_qRes sql_cl::getStudent(QString studId, QString groupID) //как делать??
+st_qRes sql_cl::getStudent(QString studId, QString groupID)
 {
-    return SendSimpleQueryStrWR("SELECT * FROM students WHERE id="+studId+
-                                " AND group_id="+groupID+";");
+    return SendSimpleQueryStrWR("SELECT * FROM "+crypt->stringEncrypt("students",students_crypt_key)
+                                +" WHERE "+crypt->stringEncrypt("id",students_crypt_key)+"="+studId+
+                                " AND "+crypt->stringEncrypt("group_id",students_crypt_key)+"="+groupID+";");
 }
 //
 bool sql_cl::addStudent(st_stud data)
 {
-    return SendSimpleQueryStr("INSERT INTO students(group_id,name,surname,patronymic) VALUES("+
-                              getGroupIdByCode(data.grp_code).toString()+",\'"+data.name+"\',\'"+
-                              data.surname+"\',\'"+data.patronymic+"\');");
+    return SendSimpleQueryStr("INSERT INTO "+crypt->stringEncrypt("students",students_crypt_key)+
+                              "("+crypt->stringEncrypt("group_id",students_crypt_key)+
+                              ","+crypt->stringEncrypt("name",students_crypt_key)+","+
+                              crypt->stringEncrypt("surname",students_crypt_key)+","+
+                              crypt->stringEncrypt("patronymic",students_crypt_key)+") VALUES("+
+                              getGroupIdByCode(data.grp_code).toString()+","+crypt->stringEncrypt(data.name,students_crypt_key)+","+
+                              crypt->stringEncrypt(data.surname,students_crypt_key)+","+
+                              crypt->stringEncrypt(data.patronymic,students_crypt_key)+");");
 }
 
 //
@@ -440,13 +460,17 @@ bool sql_cl::studUnique(const QString Surname, const QString Name, const QString
         msg_grpId.clear();
     }
     else{
-        cond_grpId = " AND group_id="+grpId;
+        cond_grpId = " AND "+crypt->stringEncrypt("group_id",students_crypt_key)+"="+grpId;
         msg_grpId =  QObject::tr(" in group")+" \""+getGroupCodeById(grpId)+"\"";
     }
 
-    st_qRes q_res = SendSimpleQueryStrWR("SELECT count(*) AS stud_exists FROM students WHERE name=\'"+Name+
-                                         "\' AND surname=\'"+Surname+"\' AND patronymic=\'"+Patrinymic+"\'"+
-                                         cond_grpId+";");
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT count(*) AS stud_exists FROM "+crypt->stringEncrypt("students",students_crypt_key)+
+                                         " WHERE "+crypt->stringEncrypt("name",students_crypt_key)+"="+
+                                         crypt->stringEncrypt(Name,students_crypt_key)+
+                                         " AND "+crypt->stringEncrypt("surname",students_crypt_key)+"="+
+                                         crypt->stringEncrypt(Surname,students_crypt_key)+" AND "+
+                                         crypt->stringEncrypt("patronymic",students_crypt_key)+"="+
+                                         crypt->stringEncrypt(Patrinymic,students_crypt_key)+cond_grpId+";");
     if(q_res.q_result){
         if(q_res.sel_data.at(0)["stud_exists"].toInt() == 0){
             result = true;
