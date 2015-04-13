@@ -200,7 +200,7 @@ bool sql_cl::themeUnique(const QString themeName, bool silent)
                                              " FROM "+crypt->stringEncrypt("q_themes",q_themes_crypt_key)+" WHERE "+
                                              crypt->stringEncrypt("name",q_themes_crypt_key)+"=\'"+
                                              crypt->stringEncrypt("themeName",q_themes_crypt_key)+"\';");
-        // ////////DECVRYPT///////
+        // ////////DECVRYPT//////
         if(q_res.q_result){
             if(q_res.sel_data.count() > 0){
                 result = false;
@@ -248,7 +248,7 @@ QList<QMap<QString, QVariant> > sql_cl::getThemes()
 }
 
 //
-bool sql_cl::addTheme(const QString themeName, QString parent_id)
+bool sql_cl::addTheme(const QString themeName, QString parent_id) //?????????
 {
     bool result = false;
     result = themeUnique(themeName.trimmed());
@@ -334,7 +334,7 @@ QVariant sql_cl::getGroupIdByCode(QString grpCode)
     }
     return result;
 }
-//
+// НЕ РАБОТАЕТ
 bool sql_cl::addGroup(QString grpCode)
 {
     bool result;
@@ -353,7 +353,7 @@ bool sql_cl::clearGroup(const QVariant grpId)
     return SendSimpleQueryStr("DELETE FROM "+crypt->stringEncrypt("students",students_crypt_key)+" WHERE "+crypt->stringEncrypt("group_id",students_crypt_key)+" =\'"+
                               crypt->stringEncrypt(grpId.toString(),students_crypt_key)+"\'");
 }
-//
+//НЕ РАБОТАЕТ
 bool sql_cl::delGroup(const QVariant grpId)
 {
     return SendSimpleQueryStr("DELETE FROM "+crypt->stringEncrypt("groups",groups_crypt_key)+" WHERE "+
@@ -390,7 +390,7 @@ bool sql_cl::grpUnique(const QString grpCode, bool silent)
 }
 // **** GROUPS **** }}
 // **** STUDENTS **** {{
-QList<QMap<QString, QVariant> > sql_cl::getStudents(QString groupID)
+QList<QMap<QString, QVariant> > sql_cl::getStudents(QString groupID) //как делать??
 {
     st_qRes result;
     QString condition;
@@ -398,14 +398,14 @@ QList<QMap<QString, QVariant> > sql_cl::getStudents(QString groupID)
         condition.clear();
     }
     else{
-        condition = " WHERE group_id="+groupID.trimmed()+" ";
+        condition = " WHERE "+crypt->stringEncrypt("group_id",students_crypt_key)+" ='"+crypt->stringEncrypt(groupID.trimmed(),students_crypt_key)+"' ";
     }
     result = SendSimpleQueryStrWR("SELECT * FROM students"+condition+";");
 
     return result.sel_data;
 }
 //
-st_qRes sql_cl::getStudent(QString studId, QString groupID)
+st_qRes sql_cl::getStudent(QString studId, QString groupID) //как делать??
 {
     return SendSimpleQueryStrWR("SELECT * FROM students WHERE id="+studId+
                                 " AND group_id="+groupID+";");
