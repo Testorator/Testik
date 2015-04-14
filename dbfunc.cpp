@@ -404,7 +404,8 @@ bool sql_cl::grpUnique(const QString grpCode, bool silent)
 }
 // **** GROUPS **** }}
 // **** STUDENTS **** {{
-QList<QMap<QString, QVariant> > sql_cl::getStudents(QString groupID) //как делать??
+//как делать??
+QList<QMap<QString, QVariant> > sql_cl::getStudents(QString groupID)
 {
     st_qRes result;
     QString condition;
@@ -446,9 +447,9 @@ bool sql_cl::delStudent(QString studId, QString grpId)
         cond_grpId.clear();
     }
     else{
-        cond_grpId = " AND group_id="+grpId;
+        cond_grpId = " AND "+crypt->stringEncrypt("group_id",students_crypt_key)+" ="+crypt->stringEncrypt(grpId,students_crypt_key);
     }
-    return SendSimpleQueryStr("DELETE FROM students WHERE id="+studId+cond_grpId+";");
+    return SendSimpleQueryStr("DELETE FROM "+crypt->stringEncrypt("students",students_crypt_key)+" WHERE "+crypt->stringEncrypt("id",students_crypt_key)+" ="+crypt->stringEncrypt(studId+cond_grpId,students_crypt_key)+";");
 }
 //
 bool sql_cl::studUnique(const QString Surname, const QString Name, const QString Patrinymic, QString grpId, bool silent)
@@ -460,7 +461,7 @@ bool sql_cl::studUnique(const QString Surname, const QString Name, const QString
         msg_grpId.clear();
     }
     else{
-        cond_grpId = " AND "+crypt->stringEncrypt("group_id",students_crypt_key)+"="+grpId;
+        cond_grpId = " AND "+crypt->stringEncrypt("group_id",students_crypt_key)+"="+crypt->stringEncrypt(grpId,students_crypt_key);
         msg_grpId =  QObject::tr(" in group")+" \""+getGroupCodeById(grpId)+"\"";
     }
 
