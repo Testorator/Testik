@@ -404,7 +404,7 @@ bool sql_cl::grpUnique(const QString grpCode, bool silent)
 }
 // **** GROUPS **** }}
 // **** STUDENTS **** {{
-//как делать??
+//DANGEROUS!! ERROR!
 QList<QMap<QString, QVariant> > sql_cl::getStudents(QString groupID)
 {
     st_qRes result;
