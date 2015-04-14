@@ -42,7 +42,7 @@ public:
     bool createNewDB();
     //
     bool SendSimpleQueryStr(const QString& q_str);
-    st_qRes SendSimpleQueryStrWR(const QString& q_str, QString crypt_key = 0 );
+    st_qRes SendSimpleQueryStrWR(const QString& q_str, QString crypt_key);
     //
     QString getGroupCodeById(QString grpId);
     QVariant getGroupIdByCode(QString grpCode);
@@ -56,7 +56,7 @@ public:
     st_qRes getStudent(QString studId, QString groupID);
     bool addStudent(st_stud data);
     bool delStudent(QString studId, QString grpId = 0);
-    bool studUnique(const QString Surname, const QString Name, const QString Patrinymic, QString grpId = 0, bool silent = 0);
+    bool studUnique(const QString Surname, const QString Name, const QString Patronymic, QString grpId = 0, bool silent = 0);
     //
     QString convertTypeOfQuestions(int type);
     QList<QMap<QString,QVariant> > getThemes();

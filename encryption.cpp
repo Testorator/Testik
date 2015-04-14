@@ -11,7 +11,28 @@ encryption::~encryption()
 
 }
 
-QString encryption::stringEncrypt(QString strInput, QString strPassword)
+QString encryption::mdEncrypt(QString strInput, QString strPassword)
+{
+    int i,j;
+    QString strOutput="";
+
+    QByteArray baInput    = strInput.toLocal8Bit();
+    QByteArray baPassword = strPassword.toLocal8Bit();
+
+    for (i=0; i < baInput.size(); i++)
+    {
+        for (j=0; j < baPassword.size(); j++)
+        {
+            baInput[i] = baInput[i] ^ (baPassword[j] + (i*j));
+        }
+
+        strOutput += QString("%1").arg((int)((unsigned char)baInput[i]),2,16,QChar('0'));
+    }
+
+    return "`"+strOutput+"`";
+}
+
+QString encryption::valueEncrypt(QString strInput, QString strPassword)
 {
     int i,j;
     QString strOutput="";

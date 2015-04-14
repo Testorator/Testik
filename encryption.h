@@ -8,7 +8,8 @@ class encryption
 public:
     encryption();
     ~encryption();
-    QString stringEncrypt(QString strInput, QString strPassword);
+    QString mdEncrypt(QString strInput, QString strPassword);
+    QString valueEncrypt(QString strInput, QString strPassword);
     QString stringDecrypt(QVariant strInput, QString strPassword);
 
 };
