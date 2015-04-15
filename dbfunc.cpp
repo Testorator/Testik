@@ -120,7 +120,7 @@ void sql_cl::closeDB()
 //**********************************************
 bool sql_cl::SendSimpleQueryStr(const QString& q_str)
 {
-//    qDebug() << q_str;
+    qDebug() << q_str;
     bool result;
     QSqlQuery *query = new QSqlQuery(cur_db);
     cur_db.transaction();
@@ -251,15 +251,15 @@ QList<QMap<QString, QVariant> > sql_cl::getThemeByID(QVariant theme_id)
 //
 QList<QMap<QString, QVariant> > sql_cl::getThemes()
 {
-    st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->valueEncrypt("q_themes",q_themes_crypt_key)+"."+
-                                          crypt->valueEncrypt("id",q_themes_crypt_key)+", "+
-                                          crypt->valueEncrypt("q_themes",q_themes_crypt_key)+". "+
-                                          crypt->valueEncrypt("parent_id",q_themes_crypt_key)+", "+
-                                          crypt->valueEncrypt("q_themes",q_themes_crypt_key)+". "+
-                                          crypt->valueEncrypt("name",q_themes_crypt_key)+
-                                          "FROM "+crypt->valueEncrypt("q_themes",q_themes_crypt_key)+
-                                          " ORDER BY "+crypt->valueEncrypt("q_themes",q_themes_crypt_key)+". "+
-                                          crypt->valueEncrypt("id",q_themes_crypt_key),q_themes_crypt_key);
+    st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+"."+
+                                          crypt->mdEncrypt("id",q_themes_crypt_key)+", "+
+                                          crypt->mdEncrypt("q_themes",q_themes_crypt_key)+". "+
+                                          crypt->mdEncrypt("parent_id",q_themes_crypt_key)+", "+
+                                          crypt->mdEncrypt("q_themes",q_themes_crypt_key)+". "+
+                                          crypt->mdEncrypt("name",q_themes_crypt_key)+
+                                          "FROM "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+
+                                          " ORDER BY "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+". "+
+                                          crypt->mdEncrypt("id",q_themes_crypt_key),q_themes_crypt_key);
     return result.sel_data;
 }
 
@@ -269,9 +269,9 @@ bool sql_cl::addTheme(const QString themeName, QString parent_id)
     bool result = false;
     result = themeUnique(themeName.trimmed());
     if(result){
-        QString q_str = "INSERT INTO "+crypt->valueEncrypt("q_themes",q_themes_crypt_key)+" (";
-        if(parent_id > 0) q_str.append(crypt->valueEncrypt("parent_id",q_themes_crypt_key)).append(",");
-        q_str.append("("+crypt->stringDecrypt("name",q_themes_crypt_key)+" ) VALUES(");
+        QString q_str = "INSERT INTO "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+" (";
+        if(parent_id > 0) q_str.append(crypt->mdEncrypt("parent_id",q_themes_crypt_key)).append(",");
+        q_str.append("("+crypt->mdEncrypt("name",q_themes_crypt_key)+" ) VALUES(");
         if(parent_id > 0) q_str.append(parent_id+",");
         q_str.append("\'"+crypt->valueEncrypt(themeName.trimmed(),q_themes_crypt_key)+"\');");
         result = SendSimpleQueryStr(q_str);
