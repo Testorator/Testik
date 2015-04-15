@@ -565,8 +565,8 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                                                    curItem->text(0)).trimmed();
             if(in_grp.length() > 0){
                 if(sql->grpUnique(in_grp)){
-                    bool q_res = sql->SendSimpleQueryStr("UPDATE groups SET code=\'"+in_grp+"\' WHERE code=\'"+
-                                                         curItem->text(0)+"\' AND ID="+curItem->text(1)+";");
+                    bool q_res = sql->SendSimpleQueryStr("UPDATE "+sql->crypt->mdEncrypt("groups",sql->groups_crypt_key)+" SET "+sql->crypt->mdEncrypt("code",sql->groups_crypt_key)+" =\'"+in_grp,sql->groups_crypt_key+"\' WHERE "+
+                                                         sql->crypt->mdEncrypt("code",sql->groups_crypt_key)+"=\'"+curItem->text(0)+"\' AND ID="+curItem->text(1)+";");
                     if(q_res){
                         getStudentsList();
                     }
