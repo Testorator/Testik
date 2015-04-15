@@ -565,7 +565,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                                                    curItem->text(0)).trimmed();
             if(in_grp.length() > 0){
                 if(sql->grpUnique(in_grp)){
-                    bool q_res = sql->SendSimpleQueryStr("UPDATE "+sql->crypt->mdEncrypt("groups",sql->groups_crypt_key)+" SET "+sql->crypt->mdEncrypt("code",sql->groups_crypt_key)+" =\'"+in_grp,sql->groups_crypt_key+"\' WHERE "+
+                    bool q_res = sql->SendSimpleQueryStr("UPDATE "+sql->crypt->mdEncrypt("groups",sql->groups_crypt_key)+" SET "+sql->crypt->mdEncrypt("code",sql->groups_crypt_key)+" ="+in_grp,sql->groups_crypt_key+" WHERE "+
                                                          sql->crypt->mdEncrypt("code",sql->groups_crypt_key)+"=\'"+curItem->text(0)+"\' AND ID="+curItem->text(1)+";");
                     if(q_res){
                         getStudentsList();
@@ -582,20 +582,20 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                 dlg.setWindowTitle(tr("Edit student"));
 
                 if(prepareAddStudDlg(&dlg)){
-                    dlg.lineEdit_Name_setText(q_res.sel_data.at(0)["name"].toString());
-                    dlg.lineEdit_Surname_setText(q_res.sel_data.at(0)["surname"].toString());
-                    dlg.lineEdit_Patronymic_setText(q_res.sel_data.at(0)["patronymic"].toString());
+                    dlg.lineEdit_Name_setText(q_res.sel_data.at(0)[+sql->crypt->mdEncrypt("name",sql->students_crypt_key)+].toString());
+                    dlg.lineEdit_Surname_setText(q_res.sel_data.at(0)[+sql->crypt->mdEncrypt("surname",sql->students_crypt_key)+].toString());
+                    dlg.lineEdit_Patronymic_setText(q_res.sel_data.at(0)[+sql->crypt->mdEncrypt("patronymic",sql->students_crypt_key)+].toString());
 
                     if(dlg.exec() == 1){
                         QString updFields;
                         updFields.clear();
-                        if(dlg.get_group_id() != q_res.sel_data.at(0)["group_id"]){
-                            updFields.append("group_id="+dlg.get_group_id().toString());
+                        if(dlg.get_group_id() != q_res.sel_data.at(0)[+sql->crypt->mdEncrypt("group_id",sql->students_crypt_key)+]){
+                            updFields.append(+sql->crypt->mdEncrypt("group_id",sql->students_crypt_key)+" ="+(dlg.get_group_id(),sql->students_crypt_key).toString());
                         };
 
                         if(dlg.get_lineEdit_Name() != q_res.sel_data.at(0)["name"].toString()){
                             if(updFields.length() > 0) updFields.append(",");
-                            updFields.append("name=\'"+dlg.get_lineEdit_Name()+"\'");
+                            updFields.append(+sql->crypt->mdEncrypt("name",sql->students_crypt_key)+" ="+(dlg.get_lineEdit_Name(),sql->students_crypt_key)+"");
                         }
 
                         if(dlg.get_lineEdit_Surname() != q_res.sel_data.at(0)["surname"].toString()){
