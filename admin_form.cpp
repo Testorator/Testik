@@ -501,12 +501,11 @@ bool admin_form::prepareAddStudDlg(stud_dlg *dlg)
                     q_res_groups.at(i)["id"]);
         }
 
-        QTreeWidgetItem *curItem = ui->treeWidget_students->currentItem();
-        if(!curItem->parent()){
-            dlg->comboBox_groups_set_curItem(curItem->text(0));
+        if(ui->treeWidget_students->currentItem() && ui->treeWidget_students->currentItem()->parent()){
+            dlg->comboBox_groups_set_curItem(ui->treeWidget_students->currentItem()->parent()->text(0));
         }
         else {
-            dlg->comboBox_groups_set_curItem(curItem->parent()->text(0));
+            dlg->comboBox_groups_set_curItem(ui->treeWidget_students->currentItem()->text(0));
         }
         result = true;
     }

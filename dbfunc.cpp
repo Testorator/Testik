@@ -21,8 +21,6 @@ sql_cl::sql_cl()
     groups_crypt_key = crypt->valueEncrypt("groups",tabs_crypt_key);
     answers_crypt_key = crypt->valueEncrypt("answers",tabs_crypt_key);
     email_addreses_crypt_key = crypt->valueEncrypt("email_addreses",tabs_crypt_key);
-    vw_tq_crypt_key = crypt->valueEncrypt("vw_test_questions",tabs_crypt_key);
-    vw_lq_crypt_key = crypt->valueEncrypt("vw_learn_questions",tabs_crypt_key);
 }
 //
 sql_cl::~sql_cl()
@@ -73,12 +71,12 @@ bool sql_cl::createNewDB()
     queries.append("CREATE TABLE "+crypt->valueEncrypt("email_addreses",email_addreses_crypt_key)+" ("+
                    crypt->valueEncrypt("recipient_name",email_addreses_crypt_key)+" TEXT NOT NULL, "+crypt->valueEncrypt("address",email_addreses_crypt_key)+
                    "TEXT NOT NULL );");
-    queries.append("CREATE VIEW "+crypt->valueEncrypt("vw_test_questions",vw_tq_crypt_key)+
+    queries.append("CREATE VIEW "+crypt->valueEncrypt("vw_test_questions",questions_crypt_key)+
                    " AS SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+","+
                    crypt->mdEncrypt("theme_id",questions_crypt_key)+","+crypt->mdEncrypt("question",questions_crypt_key)
                    +" FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+" WHERE "+
                    crypt->mdEncrypt("for_learn",questions_crypt_key)+" = "+crypt->valueEncrypt("0",questions_crypt_key)+";");
-    queries.append("CREATE VIEW "+crypt->valueEncrypt("vw_learn_questions",vw_lq_crypt_key)+
+    queries.append("CREATE VIEW "+crypt->valueEncrypt("vw_learn_questions",questions_crypt_key)+
                    " AS SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+","+crypt->mdEncrypt("theme_id",questions_crypt_key)+
                    ","+crypt->mdEncrypt("question",questions_crypt_key)+" FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+
                    " WHERE "+crypt->mdEncrypt("for_learn",questions_crypt_key)+" > "+crypt->valueEncrypt("0",questions_crypt_key)+" ;");
@@ -158,6 +156,7 @@ QString sql_cl::convertTypeOfQuestions(int type)
 //**********************************************
 st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
 {
+//    qDebug() << q_str;
     st_qRes result;
 
     result.sel_data.clear();
@@ -208,11 +207,10 @@ bool sql_cl::themeUnique(const QString themeName, bool silent)
         result =false;
     }
     else{
-        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->valueEncrypt("id",q_themes_crypt_key)+
-                                             " FROM "+crypt->valueEncrypt("q_themes",q_themes_crypt_key)+" WHERE "+
-                                             crypt->valueEncrypt("name",q_themes_crypt_key)+"=\'"+
+        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",q_themes_crypt_key)+
+                                             " FROM "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+" WHERE "+
+                                             crypt->mdEncrypt("name",q_themes_crypt_key)+"="+
                                              crypt->valueEncrypt("themeName",q_themes_crypt_key)+";",q_themes_crypt_key);
-        // ////////DECRYPT//////
         if(q_res.q_result){
             if(q_res.sel_data.count() > 0){
                 result = false;
@@ -228,7 +226,6 @@ bool sql_cl::themeUnique(const QString themeName, bool silent)
         else{
             result = false;
         }
-
     }
     return result;
 }
@@ -266,9 +263,9 @@ bool sql_cl::addTheme(const QString themeName, QString parent_id)
     if(result){
         QString q_str = "INSERT INTO "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+" (";
         if(parent_id > 0) q_str.append(crypt->mdEncrypt("parent_id",q_themes_crypt_key)).append(",");
-        q_str.append("("+crypt->mdEncrypt("name",q_themes_crypt_key)+" ) VALUES(");
+        q_str.append(crypt->mdEncrypt("name",q_themes_crypt_key)+") VALUES(");
         if(parent_id > 0) q_str.append(parent_id+",");
-        q_str.append("\'"+crypt->valueEncrypt(themeName.trimmed(),q_themes_crypt_key)+"\');");
+        q_str.append(crypt->valueEncrypt(themeName.trimmed(),q_themes_crypt_key)+");");
         result = SendSimpleQueryStr(q_str);
     }
     return result;
@@ -293,18 +290,24 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestionsWithThemes(int questions_typ
 //
 QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString theme_id)
 {
-    QString _questions_type = convertTypeOfQuestions(questions_type);
     QString condition = "";
+
+    QString cur_view = "vw_"+convertTypeOfQuestions(questions_type)+"_questions";
+    QString cur_view_crypted = crypt->mdEncrypt(cur_view,questions_crypt_key);
+    QString fld_id_crypted = crypt->mdEncrypt("id",questions_crypt_key);
+    QString fld_theme_id_crypted = crypt->mdEncrypt("theme_id",questions_crypt_key);
+    QString fld_question_crypted = crypt->mdEncrypt("question",questions_crypt_key);
+
     if(theme_id.trimmed().length()>0){
-        condition = "WHERE "+crypt->valueEncrypt("theme_id",questions_crypt_key)+" = "+theme_id.trimmed()+" ";
+        condition = " WHERE "+fld_theme_id_crypted+" = "+theme_id.trimmed()+" ";
     }
 
-    st_qRes result = SendSimpleQueryStrWR("SELECT vw_"+_questions_type+"_questions.id,vw_"+_questions_type+
-                                          "_questions.theme_id, vw_"+_questions_type+"_questions.question \
-                                          FROM vw_"+_questions_type+"_questions "+condition+
-                                                                                "order by vw_"+_questions_type+"_questions.id, \
-                                          vw_"+_questions_type+"_questions.question ","111");
-                                          return result.sel_data;
+    st_qRes result = SendSimpleQueryStrWR("SELECT "+cur_view_crypted+"."+fld_id_crypted+","+
+                                          cur_view_crypted+"."+fld_theme_id_crypted+","+
+                                          cur_view_crypted+"."+fld_question_crypted+
+                                          " FROM "+cur_view_crypted+condition+"order by "+cur_view_crypted+"."+fld_id_crypted+
+                                          ","+cur_view_crypted+"."+fld_question_crypted,questions_crypt_key);
+    return result.sel_data;
 }
 
 // **** QUESTIONS **** }}
