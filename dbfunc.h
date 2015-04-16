@@ -29,13 +29,13 @@ class sql_cl
 {
 private:
     QSqlDatabase cur_db;
-    QString tabs_crypt_key,questions_crypt_key,q_themes_crypt_key,options_crypt_key,
+    QString tabs_crypt_key,questions_crypt_key,options_crypt_key,
     answers_crypt_key,email_addreses_crypt_key;
 public:
     sql_cl();
     ~sql_cl();
     encryption *crypt;
-    QString students_crypt_key, groups_crypt_key;
+    QString students_crypt_key, groups_crypt_key,q_themes_crypt_key;
     //
     bool openDB(QString db_file);
     void closeDB();

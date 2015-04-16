@@ -349,16 +349,21 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             upd_data.clear();
             if(new_themeName.trimmed().length() > 0){
                 if(new_themeName.trimmed() != curQTW->currentItem()->text(0).trimmed()){
-                    upd_data.append("name=\'"+new_themeName+"\'");
+                    upd_data.append(sql->crypt->mdEncrypt("name",sql->q_themes_crypt_key)+"="+
+                                    sql->crypt->valueEncrypt(new_themeName,sql->q_themes_crypt_key));
                 }
                 if(PThemeID.trimmed() != ((curQTW->currentItem()->parent()) ? curQTW->currentItem()->parent()->text(1).trimmed() : "0")){
                     if(upd_data.length() > 0) upd_data.append(", ");
-                    upd_data.append("parent_id = "+PThemeID.trimmed());
+                    upd_data.append(sql->crypt->mdEncrypt("parent_id",sql->q_themes_crypt_key)+"="+PThemeID.trimmed());
                 }
 
                 if(upd_data.trimmed().length() > 0){
-                    q_str ="UPDATE qthemes SET "+upd_data+" WHERE id="+curQTW->currentItem()->text(1).trimmed()+
-                            " AND name=\'"+curQTW->currentItem()->text(0).trimmed()+"\' AND parent_id="+
+                    q_str ="UPDATE "+sql->crypt->mdEncrypt("q_themes",sql->q_themes_crypt_key)+
+                            " SET "+upd_data+" WHERE "+sql->crypt->mdEncrypt("id",sql->q_themes_crypt_key)+"="+
+                            curQTW->currentItem()->text(1).trimmed()+
+                            " AND "+sql->crypt->mdEncrypt("name",sql->q_themes_crypt_key)+"="+
+                            sql->crypt->valueEncrypt(curQTW->currentItem()->text(0).trimmed(),sql->q_themes_crypt_key)+
+                            " AND "+sql->crypt->mdEncrypt("parent_id",sql->q_themes_crypt_key)+"="+
                             ((curQTW->currentItem()->parent()) ? curQTW->currentItem()->parent()->text(1).trimmed() : "0")+";";
                 }
 
