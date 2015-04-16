@@ -270,7 +270,7 @@ void admin_form::prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString e
     if(q_res_themes.count() > 0){
 
         for(int i = 0;i < q_res_themes.count(); i++){
-            if(q_res_themes.at(i)["ID"].toString() != exclude_id){
+            if(q_res_themes.at(i)["id"].toString() != exclude_id){
                 dlg->add_PTheme(q_res_themes.at(i)["name"].toString(),
                         q_res_themes.at(i)["id"].toString(),
                         q_res_themes.at(i)["parent_id"].toString());
@@ -278,7 +278,7 @@ void admin_form::prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString e
         }
     }
 
-    if(curQTW->currentItem()->parent()){
+    if(curQTW->currentItem() && curQTW->currentItem()->parent()){
         //        if(curQTW->currentItem()->text(2) == "t"){
         //            dlg->set_current_PTheme(curQTW->currentItem()->text(1));
         //        }
