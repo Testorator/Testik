@@ -44,6 +44,8 @@ private slots:
     void on_pushButton_Edit_Quest_clicked();
     void set_questions_buttons_availablity(QTreeWidgetItem *item);
 
+    void on_pushButton_Del_Quest_clicked();
+
 private:
     Ui::admin_form *ui;
     struct st_theme{

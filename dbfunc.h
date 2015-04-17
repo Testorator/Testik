@@ -65,6 +65,8 @@ public:
     QList<QMap<QString,QVariant> > getThemeByID(QVariant theme_id);
     bool themeUnique(const QString themeName, bool silent = 0);
     bool addTheme(const QString themeName, QString parent_id = 0);
+    bool delTheme(const QVariant theme_id);
+    bool clearTheme(const QVariant theme_id);
     QList<QMap<QString,QVariant> > getQuestionsWithThemes(int questions_type);
     QList<QMap<QString,QVariant> > getQuestions(int questions_type, QString theme_id = 0);
 };

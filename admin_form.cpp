@@ -326,6 +326,29 @@ void admin_form::on_action_addTheme_triggered()
     }
 }
 //
+//
+void admin_form::on_pushButton_Del_Quest_clicked()
+{
+    QTreeWidgetItem *curItem1 = ui->treeWidget_test_questions->currentItem();
+   // QTreeWidgetItem *curItem2 = ui->treeWidget_learn_questions->currentItem();
+    {
+        //theme test
+        int ret = QMessageBox::question(this, tr("Removing theme"),
+                                        tr("Are you shure want delete theme")+" \n\""+
+                                        curItem1->text(0).trimmed()+"\" \n "+
+                                        tr("and all questions included to this theme")+"?",
+                                        QMessageBox::Yes | QMessageBox::No,
+                                        QMessageBox::No);
+        if(ret == QMessageBox::Yes){
+            if(sql->clearTheme(curItem1->text(1))){
+                sql->delTheme(curItem1->text(1));
+            }
+            getQuestionList();
+        }
+    }
+}
+
+//
 void admin_form::on_toolButton_Add_Quest_clicked()
 {
     if(ui->toolButton_Add_Quest->text() == tr("Add")) ui->toolButton_Add_Quest->showMenu();
@@ -760,4 +783,3 @@ void admin_form::on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int c
     }
 }
 //  !!!! --- tab students --- !!!! }}
-

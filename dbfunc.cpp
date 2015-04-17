@@ -271,6 +271,20 @@ bool sql_cl::addTheme(const QString themeName, QString parent_id)
     return result;
 }
 //
+//
+bool sql_cl::delTheme(const QVariant theme_id)
+{
+    return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+
+                              " WHERE "+crypt->mdEncrypt("id",q_themes_crypt_key)+"="+theme_id.toString());
+}
+//
+//
+bool sql_cl::clearTheme(const QVariant theme_id)
+{
+    return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("question",questions_crypt_key)+
+                              " WHERE "+crypt->mdEncrypt("theme_id",questions_crypt_key)+"="+theme_id.toString());
+}
+//
 QList<QMap<QString, QVariant> > sql_cl::getThemeChild(QVariant parent_id)
 {
     st_qRes result = SendSimpleQueryStrWR("SELECT * FROM "+crypt->valueEncrypt("q_themes",q_themes_crypt_key)+" WHERE "+
