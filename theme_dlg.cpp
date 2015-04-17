@@ -37,7 +37,8 @@ void theme_dlg::add_PTheme(QString item, QString itemID, QString parent_ID)
     QStringList newItem;
     newItem << item << itemID;
     bool hasParent = false;
-    if(!parent_ID.isNull() && !parent_ID.isEmpty() && parent_ID.trimmed().length() > 0){
+    if(!parent_ID.isNull() && !parent_ID.isEmpty() && parent_ID.trimmed().length() > 0 &&
+            QVariant(parent_ID).toInt() > 0){
         parentItem_QTWI = getQTWItemByID(parent_ID);
         if(parentItem_QTWI) hasParent = true;
     }

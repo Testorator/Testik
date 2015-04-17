@@ -216,7 +216,8 @@ void admin_form::getQuestionList(int q_type)
             newItem_sl.append(q_res.at(i)["id"].toString());
             newItem_sl.append("t"); // set mark
 
-            newitem_data.parent_id = q_res.at(i)["parent_id"].toString().trimmed(); // save theme parent id
+            qDebug() << q_res.at(i)["parent_id"].toString();
+            newitem_data.parent_id = (q_res.at(i)["parent_id"].toInt() != 0) ? q_res.at(i)["parent_id"].toString().trimmed(): ""; // save theme parent id
             newitem_data.qtwi = new QTreeWidgetItem(newItem_sl); // create theme item
 
             // add questions to theme
@@ -278,13 +279,18 @@ void admin_form::prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString e
         }
     }
 
-    if(curQTW->currentItem() && curQTW->currentItem()->parent()){
-        //        if(curQTW->currentItem()->text(2) == "t"){
-        //            dlg->set_current_PTheme(curQTW->currentItem()->text(1));
-        //        }
-        //        else{
-        dlg->set_current_PTheme(curQTW->currentItem()->parent()->text(1));
-        //        }
+    if(curQTW->currentItem()){
+        if(curQTW->currentItem()->text(2) == "t"){
+            dlg->set_current_PTheme(curQTW->currentItem()->text(1));
+        }
+        else{
+            if(curQTW->currentItem()->parent()){
+                dlg->set_current_PTheme(curQTW->currentItem()->parent()->text(1));
+            }
+            else{
+                dlg->set_current_PTheme("0");
+            }
+        }
     }
     else{
         dlg->set_current_PTheme("0");
@@ -330,7 +336,7 @@ void admin_form::on_action_addTheme_triggered()
 void admin_form::on_pushButton_Del_Quest_clicked()
 {
     QTreeWidgetItem *curItem1 = ui->treeWidget_test_questions->currentItem();
-   // QTreeWidgetItem *curItem2 = ui->treeWidget_learn_questions->currentItem();
+    // QTreeWidgetItem *curItem2 = ui->treeWidget_learn_questions->currentItem();
     {
         //theme test
         int ret = QMessageBox::question(this, tr("Removing theme"),
@@ -341,9 +347,10 @@ void admin_form::on_pushButton_Del_Quest_clicked()
                                         QMessageBox::No);
         if(ret == QMessageBox::Yes){
             //if(sql->clearTheme(curItem1->text(1))){
-                sql->delTheme(curItem1->text(1));
+            sql->delTheme(curItem1->text(1));
             //}
-            //getQuestionList();
+            getQuestionList(0);
+            getQuestionList(1);
         }
     }
 }
