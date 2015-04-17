@@ -340,10 +340,10 @@ void admin_form::on_pushButton_Del_Quest_clicked()
                                         QMessageBox::Yes | QMessageBox::No,
                                         QMessageBox::No);
         if(ret == QMessageBox::Yes){
-            if(sql->clearTheme(curItem1->text(1))){
+            //if(sql->clearTheme(curItem1->text(1))){
                 sql->delTheme(curItem1->text(1));
-            }
-            getQuestionList();
+            //}
+            //getQuestionList();
         }
     }
 }

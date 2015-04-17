@@ -302,6 +302,22 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestionsWithThemes(int questions_typ
 }
 
 //
+//
+//bool sql_cl::addQuest(const QString questionName, QString theme_id)
+//{
+//    bool result = false;
+//    result = questUnique(questionName.trimmed());
+//    if(result){
+//        QString q_str = "INSERT INTO "+crypt->mdEncrypt("questions",questions_crypt_key)+" (";
+//        if(theme_id > 0) q_str.append(crypt->mdEncrypt("theme_id",questions_crypt_key)).append(",");
+//        q_str.append(crypt->mdEncrypt("question",questions_crypt_key)+") VALUES(");
+//        if(theme_id > 0) q_str.append(theme_id+",");
+//        q_str.append(crypt->valueEncrypt(questionName.trimmed(),questions_crypt_key)+");");
+//        result = SendSimpleQueryStr(q_str);
+//    }
+//    return result;
+//}
+//
 QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString theme_id)
 {
     QString condition = "";
