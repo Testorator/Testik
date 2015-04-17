@@ -347,7 +347,6 @@ void admin_form::on_pushButton_Del_Quest_clicked()
         }
     }
 }
-
 //
 void admin_form::on_toolButton_Add_Quest_clicked()
 {
