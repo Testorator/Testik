@@ -41,6 +41,7 @@ admin_form::admin_form(QWidget *parent) :
     ui->toolButton_Add_Quest->addAction(act_addTheme);
 
     act_addQuest = new QAction(tr("Add Question"),ui->toolButton_Add_Quest->menu());
+    connect(act_addQuest, SIGNAL(triggered()),this,SLOT(on_action_addQuest_triggered()));
     ui->toolButton_Add_Quest->addAction(act_addQuest);
 
     sql = new sql_cl();
@@ -365,11 +366,9 @@ void admin_form::on_action_addQuest_triggered()
 {
 
  ui->toolButton_Add_Quest->setText(tr("Add question"));
-
-       // ui->toolButton_Add_Quest->setText(tr("Add Question"));
-    connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
-        question_mod_dialog queMD_dialog;
-            queMD_dialog.exec();
+ connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
+ question_mod_dialog queMD_dialog;
+ queMD_dialog.exec();
 
 }
 //
