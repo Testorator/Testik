@@ -16,23 +16,7 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
-        <string>Question</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0">
-           <widget class="QTextEdit" name="textEdit_Question"/>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="0">
+     <item row="2" column="0">
       <widget class="QGroupBox" name="groupBox_2">
        <property name="title">
         <string>List of answers</string>
@@ -84,6 +68,36 @@
           </item>
           <item row="0" column="0" colspan="2">
            <layout class="QGridLayout" name="gridLayout_Answers_tb"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="title">
+        <string>Theme</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <widget class="QComboBox" name="comboBox_Themes"/>
+        </item>
+       </layout>
+       <zorder>comboBox</zorder>
+       <zorder>comboBox_Themes</zorder>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Question</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QTextEdit" name="textEdit_Question"/>
           </item>
          </layout>
         </item>

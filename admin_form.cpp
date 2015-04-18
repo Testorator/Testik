@@ -267,7 +267,7 @@ void admin_form::prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString e
 {
     QList<QMap<QString,QVariant> > q_res_themes = sql->getThemes();
     dlg->clear_PThemes();
-    dlg->add_PTheme(tr("No parent"),"0");
+    dlg->add_PTheme(tr("."),"0");
 
     if(q_res_themes.count() > 0){
 
