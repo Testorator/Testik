@@ -39,7 +39,9 @@ private slots:
     void on_pushButton_DelDB_clicked();
     void on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int column);
     // questions
+
     void on_toolButton_Add_Quest_clicked();
+    void on_action_addQuest_triggered();
     void on_action_addTheme_triggered();
     void on_pushButton_Edit_Quest_clicked();
     void set_questions_buttons_availablity(QTreeWidgetItem *item);

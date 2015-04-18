@@ -346,9 +346,9 @@ void admin_form::on_pushButton_Del_Quest_clicked()
                                         QMessageBox::Yes | QMessageBox::No,
                                         QMessageBox::No);
         if(ret == QMessageBox::Yes){
-            //if(sql->clearTheme(curItem1->text(1))){
+            if(sql->clearTheme(curItem1->text(1))){
             sql->delTheme(curItem1->text(1));
-            //}
+            }
             getQuestionList(0);
             getQuestionList(1);
         }
@@ -357,7 +357,20 @@ void admin_form::on_pushButton_Del_Quest_clicked()
 //
 void admin_form::on_toolButton_Add_Quest_clicked()
 {
-    if(ui->toolButton_Add_Quest->text() == tr("Add")) ui->toolButton_Add_Quest->showMenu();
+    if(ui->toolButton_Add_Quest->text() == tr("Add"))ui->toolButton_Add_Quest->showMenu();
+}
+//
+//
+void admin_form::on_action_addQuest_triggered()
+{
+
+ ui->toolButton_Add_Quest->setText(tr("Add question"));
+
+       // ui->toolButton_Add_Quest->setText(tr("Add Question"));
+    connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
+        question_mod_dialog queMD_dialog;
+            queMD_dialog.exec();
+
 }
 //
 void admin_form::on_pushButton_Edit_Quest_clicked()

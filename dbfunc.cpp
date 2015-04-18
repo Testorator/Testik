@@ -281,8 +281,9 @@ bool sql_cl::delTheme(const QVariant theme_id)
 //
 bool sql_cl::clearTheme(const QVariant theme_id)
 {
-    return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("question",questions_crypt_key)+
+    return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+
                               " WHERE "+crypt->mdEncrypt("theme_id",questions_crypt_key)+"="+theme_id.toString());
+
 }
 //
 QList<QMap<QString, QVariant> > sql_cl::getThemeChild(QVariant parent_id)
@@ -303,20 +304,51 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestionsWithThemes(int questions_typ
 
 //
 //
-//bool sql_cl::addQuest(const QString questionName, QString theme_id)
-//{
-//    bool result = false;
-//    result = questUnique(questionName.trimmed());
-//    if(result){
-//        QString q_str = "INSERT INTO "+crypt->mdEncrypt("questions",questions_crypt_key)+" (";
-//        if(theme_id > 0) q_str.append(crypt->mdEncrypt("theme_id",questions_crypt_key)).append(",");
-//        q_str.append(crypt->mdEncrypt("question",questions_crypt_key)+") VALUES(");
-//        if(theme_id > 0) q_str.append(theme_id+",");
-//        q_str.append(crypt->valueEncrypt(questionName.trimmed(),questions_crypt_key)+");");
-//        result = SendSimpleQueryStr(q_str);
-//    }
-//    return result;
-//}
+bool sql_cl::addQuest(const QString questionName, QString theme_id)
+{
+    bool result = false;
+    result = questUnique(questionName.trimmed());
+    if(result){
+        QString q_str = "INSERT INTO "+crypt->mdEncrypt("questions",questions_crypt_key)+" (";
+        if(theme_id > 0) q_str.append(crypt->mdEncrypt("theme_id",questions_crypt_key)).append(",");
+        q_str.append(crypt->mdEncrypt("question",questions_crypt_key)+") VALUES(");
+        if(theme_id > 0) q_str.append(theme_id+",");
+        q_str.append(crypt->valueEncrypt(questionName.trimmed(),questions_crypt_key)+");");
+        result = SendSimpleQueryStr(q_str);
+    }
+    return result;
+}
+//
+//
+bool sql_cl::questUnique(const QString questionName, bool silent)
+{
+    bool result;
+    if(questionName.isEmpty() || questionName.isNull() || questionName.trimmed().length() < 1){
+        result =false;
+    }
+    else{
+        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("question",questions_crypt_key)+
+                                             " FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+" WHERE "+
+                                             crypt->mdEncrypt("question",questions_crypt_key)+"="+
+                                             crypt->valueEncrypt(questionName,questions_crypt_key)+";",questions_crypt_key);
+        if(q_res.q_result){
+            if(q_res.sel_data.count() > 0){
+                result = false;
+                if(!silent){
+                    QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This question ")+
+                                          "\""+questionName+"\""+QObject::tr(" already exists!"));
+                }
+            }
+            else{
+                result = true;
+            }
+        }
+        else{
+            result = false;
+        }
+    }
+    return result;
+}
 //
 QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString theme_id)
 {
