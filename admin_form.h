@@ -4,6 +4,7 @@
 #include "change_admin_pw_dialog.h"
 #include "stud_dlg.h"
 #include "theme_dlg.h"
+#include "question_mod_dialog.h"
 #include "dbfunc.h"
 
 #include <QApplication>
@@ -72,6 +73,7 @@ private:
     QTreeWidget* get_curQTW(int q_type = -1);
     void getQuestionList(int q_type = -1);
     void prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString exclude_id = 0);
+    void prepareQuestDlg(question_mod_dialog *dlg);
 
 };
 

@@ -14,6 +14,10 @@ class question_mod_dialog : public QDialog
 public:
     explicit question_mod_dialog(QWidget *parent = 0);
     ~question_mod_dialog();
+    void addThemeToList(QString theme_name, QVariant theme_id);
+    void setCurrentTheme(QVariant theme_id);
+    QString getQuestion();
+    QVariant getQuestionTheme();
 
 private:
     Ui::question_mod_dialog *ui;

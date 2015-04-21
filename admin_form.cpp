@@ -1,7 +1,6 @@
 #include "admin_form.h"
 #include "ui_admin_form.h"
 #include "change_admin_pw_dialog.h"
-#include "question_mod_dialog.h"
 
 #include <QDebug>
 #include <QDir>
@@ -348,7 +347,7 @@ void admin_form::on_pushButton_Del_Quest_clicked()
                                         QMessageBox::No);
         if(ret == QMessageBox::Yes){
             if(sql->clearTheme(curItem1->text(1))){
-            sql->delTheme(curItem1->text(1));
+                sql->delTheme(curItem1->text(1));
             }
             getQuestionList(0);
             getQuestionList(1);
@@ -361,14 +360,38 @@ void admin_form::on_toolButton_Add_Quest_clicked()
     if(ui->toolButton_Add_Quest->text() == tr("Add"))ui->toolButton_Add_Quest->showMenu();
 }
 //
+void admin_form::prepareQuestDlg(question_mod_dialog *dlg)
+{
+    QList<QMap<QString,QVariant> > q_res_themes = sql->getThemes();
+
+    if(q_res_themes.count() > 0){
+        for(int i = 0;i < q_res_themes.count(); i++){
+            dlg->addThemeToList(q_res_themes.at(i)["name"].toString(),
+                    q_res_themes.at(i)["id"].toString());
+        }
+    }
+}
 //
 void admin_form::on_action_addQuest_triggered()
 {
 
- ui->toolButton_Add_Quest->setText(tr("Add question"));
- connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
- question_mod_dialog queMD_dialog;
- queMD_dialog.exec();
+    ui->toolButton_Add_Quest->setText(tr("Add question"));
+    connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
+    question_mod_dialog queMD_dialog;
+    prepareQuestDlg(&queMD_dialog);
+    QTreeWidget *curQTW = get_curQTW();
+    if(curQTW->currentItem()){
+        queMD_dialog.setCurrentTheme(curQTW->currentItem()->text(1));
+    }
+
+    if(queMD_dialog.exec()){
+
+        QString quest_text=queMD_dialog.getQuestion();
+        QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
+        if(sql->questUnique(quest_text)){
+            sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString());
+        }
+    }
 
 }
 //
