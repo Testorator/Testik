@@ -374,7 +374,6 @@ void admin_form::prepareQuestDlg(question_mod_dialog *dlg)
 //
 void admin_form::on_action_addQuest_triggered()
 {
-
     ui->toolButton_Add_Quest->setText(tr("Add question"));
     connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
     question_mod_dialog queMD_dialog;
