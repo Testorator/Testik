@@ -365,9 +365,7 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString
         condition = " WHERE "+fld_theme_id_crypted+" = "+theme_id.trimmed()+" ";
     }
 
-    st_qRes result = SendSimpleQueryStrWR("SELECT "+cur_view_crypted+"."+fld_id_crypted+","+
-                                          cur_view_crypted+"."+fld_theme_id_crypted+","+
-                                          cur_view_crypted+"."+fld_question_crypted+
+    st_qRes result = SendSimpleQueryStrWR("SELECT "+fld_id_crypted+","+fld_theme_id_crypted+","+fld_question_crypted+
                                           " FROM "+cur_view_crypted+condition+"order by "+cur_view_crypted+"."+fld_id_crypted+
                                           ","+cur_view_crypted+"."+fld_question_crypted,questions_crypt_key);
     return result.sel_data;

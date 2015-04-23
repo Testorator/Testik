@@ -16,6 +16,7 @@ public:
     ~question_mod_dialog();
     void addThemeToList(QString theme_name, QVariant theme_id);
     void setCurrentTheme(QVariant theme_id);
+    void setQuestionText(QString text);
     QString getQuestion();
     QVariant getQuestionTheme();
 

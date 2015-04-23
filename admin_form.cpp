@@ -221,7 +221,7 @@ void admin_form::getQuestionList(int q_type)
             newitem_data.qtwi = new QTreeWidgetItem(newItem_sl); // create theme item
 
             // add questions to theme
-            QList<QMap<QString,QVariant> > themeQuestions = sql->getQuestions(q_res.at(i)["id"].toInt());
+            QList<QMap<QString,QVariant> > themeQuestions = sql->getQuestions(q_type,q_res.at(i)["id"].toString());
             if(themeQuestions.count()>0){ // if questions is found, then add founded questions to theme item
                 for(int q=0;q<themeQuestions.count();q++){
                     QStringList newQuestion;
@@ -398,7 +398,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
 {
     QTreeWidget *curQTW = get_curQTW();
     if(curQTW->currentItem()->text(2) == "t"){
-        qDebug() << "edit theme: " << curQTW->currentItem()->text(0);
+//        qDebug() << "edit theme: " << curQTW->currentItem()->text(0);
         theme_dlg th_dlg(this);
         th_dlg.setWindowTitle(tr("Edit theme"));
 
@@ -438,7 +438,23 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
         }
     }
     else{
-        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
+//        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
+        question_mod_dialog queMD_dialog;
+        prepareQuestDlg(&queMD_dialog);
+        QTreeWidget *curQTW = get_curQTW();
+        if(curQTW->currentItem()){
+            queMD_dialog.setQuestionText(curQTW->currentItem()->text(0));
+            queMD_dialog.setCurrentTheme(curQTW->currentItem()->text(1));
+        }
+
+        if(queMD_dialog.exec()){
+
+//            QString quest_text=queMD_dialog.getQuestion();
+//            QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
+//            if(sql->questUnique(quest_text)){
+//                sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString());
+//            }
+        }
     }
 
 }

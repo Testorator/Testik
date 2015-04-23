@@ -44,3 +44,9 @@ QVariant question_mod_dialog::getQuestionTheme()
 {
     return ui->comboBox_Themes->currentData();
 }
+//
+void question_mod_dialog::setQuestionText(QString text)
+{
+    ui->textEdit_Question->clear();
+    ui->textEdit_Question->setText(text);
+}

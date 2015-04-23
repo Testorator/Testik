@@ -76,9 +76,6 @@ QString theme_dlg::get_PThemeID()
     QTreeWidgetItem *curItem = ui->treeWidget_Themes->currentItem();
 
     if(curItem){
-        QString v0 = curItem->text(0).trimmed();
-        QString v1 = curItem->text(1).trimmed();
-        QString v2 = curItem->text(2).trimmed();
         result = curItem->text(1).trimmed();
     }
     return result;
