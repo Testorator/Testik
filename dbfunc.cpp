@@ -271,13 +271,11 @@ bool sql_cl::addTheme(const QString themeName, QString parent_id)
     return result;
 }
 //
-//
 bool sql_cl::delTheme(const QVariant theme_id)
 {
     return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+
                               " WHERE "+crypt->mdEncrypt("id",q_themes_crypt_key)+"="+theme_id.toString());
 }
-//
 //
 bool sql_cl::clearTheme(const QVariant theme_id)
 {
@@ -303,7 +301,6 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestionsWithThemes(int questions_typ
 }
 
 //
-//
 bool sql_cl::addQuest(const QString questionName, QVariant for_learn, QString theme_id)
 {
     bool result = false;
@@ -319,7 +316,6 @@ bool sql_cl::addQuest(const QString questionName, QVariant for_learn, QString th
     }
     return result;
 }
-//
 //
 bool sql_cl::questUnique(const QString questionName, bool silent)
 {
@@ -372,6 +368,45 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString
 }
 
 // **** QUESTIONS **** }}
+//**********************************************
+// **** ANSWERS **** {{
+//
+bool sql_cl::addAnswers(ans data)
+{
+
+    //if(){
+    return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
+                              "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
+                              ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+
+                              crypt->mdEncrypt("correct",answers_crypt_key)+",) VALUES("+
+                              getQuestIdByName(data.quest_Name).toString()+","+crypt->valueEncrypt(data.answer,answers_crypt_key)+","+
+                              crypt->valueEncrypt(data.correct,answers_crypt_key)+");");
+   // }
+    //else{
+        return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
+                                  "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
+                                  ","+crypt->mdEncrypt("answer",answers_crypt_key)+",) VALUES("+
+                                  getQuestIdByName(data.quest_Name).toString()+","+crypt->valueEncrypt(data.answer,answers_crypt_key)+");");
+    //}
+}
+//
+QVariant sql_cl::getQuestIdByName(QString questName)
+{
+    QVariant result;
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+" FROM "+
+                                         crypt->mdEncrypt("questions",questions_crypt_key)+" WHERE "+
+                                         crypt->mdEncrypt("question",questions_crypt_key)+"="+
+                                         crypt->valueEncrypt(questName.trimmed(),questions_crypt_key)+";",questions_crypt_key);
+    if(q_res.q_result){
+        result = q_res.sel_data.at(0)["id"];
+    }
+    else{
+        result.clear();
+    }
+    return result;
+}
+//
+// **** ANSWERS **** }}
 //**********************************************
 // **** GROUPS **** {{
 QList<QMap<QString,QVariant> > sql_cl::getGroups(){
@@ -471,7 +506,6 @@ bool sql_cl::grpUnique(const QString grpCode, bool silent)
 }
 // **** GROUPS **** }}
 // **** STUDENTS **** {{
-//DANGEROUS!! ERROR!
 QList<QMap<QString, QVariant> > sql_cl::getStudents(QString groupID)
 {
     st_qRes result;

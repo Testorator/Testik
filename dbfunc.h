@@ -23,6 +23,11 @@ struct st_stud {
     QString patronymic;
 };
 
+struct ans {
+    QString quest_Name;
+    QString correct;
+    QString answer;
+};
 
 
 class sql_cl
@@ -71,6 +76,11 @@ public:
     QList<QMap<QString,QVariant> > getQuestions(int questions_type, QString theme_id = 0);
     bool addQuest(const QString questionName, QVariant for_learn, QString theme_id);
     bool questUnique(const QString questionName, bool silent = 0);
+    QVariant getQuestIdByName(QString questName);
+    //
+    bool addAnswers(ans data);
+
+
 };
 #endif // DBFUNC
 
