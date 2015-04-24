@@ -79,7 +79,7 @@ public:
     QVariant getQuestIdByName(QString questName);
     //
     bool addAnswers(ans data);
-
+    bool delAnswer(QString ans_id, QString questId);
 
 };
 #endif // DBFUNC

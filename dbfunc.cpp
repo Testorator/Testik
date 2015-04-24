@@ -366,7 +366,22 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString
                                           ","+cur_view_crypted+"."+fld_question_crypted,questions_crypt_key);
     return result.sel_data;
 }
-
+//
+QVariant sql_cl::getQuestIdByName(QString questName)
+{
+    QVariant result;
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+" FROM "+
+                                         crypt->mdEncrypt("questions",questions_crypt_key)+" WHERE "+
+                                         crypt->mdEncrypt("question",questions_crypt_key)+"="+
+                                         crypt->valueEncrypt(questName.trimmed(),questions_crypt_key)+";",questions_crypt_key);
+    if(q_res.q_result){
+        result = q_res.sel_data.at(0)["id"];
+    }
+    else{
+        result.clear();
+    }
+    return result;
+}
 // **** QUESTIONS **** }}
 //**********************************************
 // **** ANSWERS **** {{
@@ -390,20 +405,17 @@ bool sql_cl::addAnswers(ans data)
     //}
 }
 //
-QVariant sql_cl::getQuestIdByName(QString questName)
+bool sql_cl::delAnswer(QString ans_id, QString questId)
 {
-    QVariant result;
-    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+" FROM "+
-                                         crypt->mdEncrypt("questions",questions_crypt_key)+" WHERE "+
-                                         crypt->mdEncrypt("question",questions_crypt_key)+"="+
-                                         crypt->valueEncrypt(questName.trimmed(),questions_crypt_key)+";",questions_crypt_key);
-    if(q_res.q_result){
-        result = q_res.sel_data.at(0)["id"];
+    QString cond_questId;
+    if(questId.isEmpty() || questId.isNull() || questId.trimmed().length() < 1){
+        cond_questId.clear();
     }
     else{
-        result.clear();
+        cond_questId = " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+" ="+questId;
     }
-    return result;
+    return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
+                              " WHERE "+crypt->mdEncrypt("id",answers_crypt_key)+"="+ans_id+cond_questId+";");
 }
 //
 // **** ANSWERS **** }}
