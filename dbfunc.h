@@ -24,9 +24,10 @@ struct st_stud {
 };
 
 struct ans {
-    QString quest_Name;
+    QString quest_id;
     QString correct;
     QString answer;
+    QString comment;
 };
 
 
@@ -36,6 +37,7 @@ private:
     QSqlDatabase cur_db;
     QString tabs_crypt_key,questions_crypt_key,options_crypt_key,
     answers_crypt_key,email_addreses_crypt_key;
+
 public:
     sql_cl();
     ~sql_cl();
@@ -78,8 +80,8 @@ public:
     bool questUnique(const QString questionName, bool silent = 0);
     QVariant getQuestIdByName(QString questName);
     //
-    bool addAnswers(ans data);
-    bool delAnswer(QString ans_id, QString questId);
+    bool addAnswer(ans data);
+    bool delAnswer(QString ans_id, QString quest_id);
 
 };
 #endif // DBFUNC

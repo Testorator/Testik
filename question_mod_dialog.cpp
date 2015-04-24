@@ -3,19 +3,26 @@
 
 #include <QToolBar>
 
-question_mod_dialog::question_mod_dialog(QWidget *parent) :
+question_mod_dialog::question_mod_dialog(sql_cl *_sql, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::question_mod_dialog)
 {
     ui->setupUi(this);
+    sql = _sql;
+
     QToolBar* ptb = new QToolBar("answers toolbar");
-    ptb->addAction(QIcon(":/resourse/add"),tr("Add"));
     ptb->setIconSize(QSize(24, 24));
+    addAns = new QAction(QIcon(":/resourse/add"),tr("Add"),ptb);
+    connect(this->addAns,SIGNAL(triggered()),this,SLOT(on_addAns_triggered()));
+    saveAns = new QAction(QIcon(":/resourse/save"),tr("Save"),ptb);
+    delAns = new QAction(QIcon(":/resourse/erase"),tr("Del"),ptb);
+    ptb->addAction(addAns);
     ptb->addSeparator();
-    ptb->addAction(QIcon(":/resourse/save"),tr("Save"));
+    ptb->addAction(saveAns);
     ptb->addSeparator();
-    ptb->addAction(QIcon(":/resourse/del"),tr("Del"));
+    ptb->addAction(delAns);
     ui->gridLayout_Answers_tb->addWidget(ptb,0,0,0,2,Qt::AlignTop);
+
     ui->comboBox_Themes->clear();
 
 }
@@ -49,4 +56,11 @@ void question_mod_dialog::setQuestionText(QString text)
 {
     ui->textEdit_Question->clear();
     ui->textEdit_Question->setText(text);
+}
+//
+void question_mod_dialog::on_addAns_triggered()
+{
+    bool ok = true;
+    if(ui->textEdit_Answer->toPlainText().trimmed().length() == 0) ok = false;
+
 }

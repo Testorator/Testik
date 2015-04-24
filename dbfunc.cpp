@@ -386,36 +386,22 @@ QVariant sql_cl::getQuestIdByName(QString questName)
 //**********************************************
 // **** ANSWERS **** {{
 //
-bool sql_cl::addAnswers(ans data)
+bool sql_cl::addAnswer(ans data)
 {
-
-    //if(){
     return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
                               "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
                               ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+
                               crypt->mdEncrypt("correct",answers_crypt_key)+",) VALUES("+
-                              getQuestIdByName(data.quest_Name).toString()+","+crypt->valueEncrypt(data.answer,answers_crypt_key)+","+
+                              data.quest_id+","+crypt->valueEncrypt(data.answer,answers_crypt_key)+","+
                               crypt->valueEncrypt(data.correct,answers_crypt_key)+");");
-   // }
-    //else{
-        return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
-                                  "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
-                                  ","+crypt->mdEncrypt("answer",answers_crypt_key)+",) VALUES("+
-                                  getQuestIdByName(data.quest_Name).toString()+","+crypt->valueEncrypt(data.answer,answers_crypt_key)+");");
-    //}
 }
 //
-bool sql_cl::delAnswer(QString ans_id, QString questId)
+bool sql_cl::delAnswer(QString ans_id, QString quest_id)
 {
-    QString cond_questId;
-    if(questId.isEmpty() || questId.isNull() || questId.trimmed().length() < 1){
-        cond_questId.clear();
-    }
-    else{
-        cond_questId = " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+" ="+questId;
-    }
+
     return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
-                              " WHERE "+crypt->mdEncrypt("id",answers_crypt_key)+"="+ans_id+cond_questId+";");
+                              " WHERE "+crypt->mdEncrypt("id",answers_crypt_key)+"="+ans_id+
+                              " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+quest_id+";");
 }
 //
 // **** ANSWERS **** }}
