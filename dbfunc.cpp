@@ -391,7 +391,8 @@ bool sql_cl::addAnswer(ans data)
     return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
                               "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
                               ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+
-                              crypt->mdEncrypt("correct",answers_crypt_key)+",) VALUES("+
+                              crypt->mdEncrypt("correct",answers_crypt_key)+","+
+                              +crypt->mdEncrypt("comment",answers_crypt_key)+",) VALUES("+
                               data.quest_id+","+crypt->valueEncrypt(data.answer,answers_crypt_key)+","+
                               crypt->valueEncrypt(data.correct,answers_crypt_key)+");");
 }
