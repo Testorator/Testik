@@ -2,6 +2,7 @@
 #define ADMIN_FORM_H
 
 #include "change_admin_pw_dialog.h"
+#include "dbfunc.h"
 #include "stud_dlg.h"
 #include "theme_dlg.h"
 #include "question_mod_dialog.h"

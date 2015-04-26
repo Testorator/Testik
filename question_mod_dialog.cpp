@@ -3,12 +3,12 @@
 
 #include <QToolBar>
 
-question_mod_dialog::question_mod_dialog(sql_cl *_sql, QWidget *parent) :
+question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::question_mod_dialog)
 {
     ui->setupUi(this);
-    sql = _sql;
+     = answers;
 
     QToolBar* ptb = new QToolBar("answers toolbar");
     ptb->setIconSize(QSize(24, 24));
@@ -24,6 +24,8 @@ question_mod_dialog::question_mod_dialog(sql_cl *_sql, QWidget *parent) :
     ui->gridLayout_Answers_tb->addWidget(ptb,0,0,0,2,Qt::AlignTop);
 
     ui->comboBox_Themes->clear();
+    ui->tableWidget_Andwers->setColumnCount(3);
+    loadAnswers(answers_from_db);
 
 }
 //
@@ -56,6 +58,16 @@ void question_mod_dialog::setQuestionText(QString text)
 {
     ui->textEdit_Question->clear();
     ui->textEdit_Question->setText(text);
+}
+//
+void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
+{
+    ui->tableWidget_Andwers->clear();
+    ui->tableWidget_Andwers->setRowCount(answers->count());
+    for(int a=0;a<answers->count();a++){
+//        ui->tableWidget_Andwers->
+    }
+
 }
 //
 void question_mod_dialog::on_addAns_triggered()
