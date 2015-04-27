@@ -376,6 +376,7 @@ void admin_form::on_action_addQuest_triggered()
 {
     ui->toolButton_Add_Quest->setText(tr("Add question"));
     connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
+    QList<st_answer> myList;
     question_mod_dialog queMD_dialog(sql);
     prepareQuestDlg(&queMD_dialog);
     QTreeWidget *curQTW = get_curQTW();
@@ -393,7 +394,7 @@ void admin_form::on_action_addQuest_triggered()
     }
 
 }
-//
+////
 void admin_form::on_pushButton_Edit_Quest_clicked()
 {
     QTreeWidget *curQTW = get_curQTW();
@@ -438,7 +439,11 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
         }
     }
     else{
-//        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
+        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
+        QList<st_answer> mylist;
+        mylist.append("SELECT "+sql->crypt->mdEncrypt("answer",sql->answers_crypt_key)+" FROM "+
+                      sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+" WHERE "+sql->crypt->mdEncrypt("theme_id",sql->answers_crypt_key)+"="+
+                      themD.trimmed()+");");
         question_mod_dialog queMD_dialog(sql);
         prepareQuestDlg(&queMD_dialog);
         QTreeWidget *curQTW = get_curQTW();

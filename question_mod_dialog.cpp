@@ -8,7 +8,7 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ui(new Ui::question_mod_dialog)
 {
     ui->setupUi(this);
-     = answers;
+//     = answers;
 
     QToolBar* ptb = new QToolBar("answers toolbar");
     ptb->setIconSize(QSize(24, 24));

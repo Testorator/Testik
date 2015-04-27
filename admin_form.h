@@ -42,7 +42,7 @@ private slots:
     // questions
 
     void on_toolButton_Add_Quest_clicked();
-    void on_action_addQuest_triggered();
+//    void on_action_addQuest_triggered();
     void on_action_addTheme_triggered();
     void on_pushButton_Edit_Quest_clicked();
     void set_questions_buttons_availablity(QTreeWidgetItem *item);
