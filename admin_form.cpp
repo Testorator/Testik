@@ -376,8 +376,8 @@ void admin_form::on_action_addQuest_triggered()
 {
     ui->toolButton_Add_Quest->setText(tr("Add question"));
     connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
-    QList<st_answer> myList;
-    question_mod_dialog queMD_dialog(sql);
+    QList<st_answer> mylist;
+    question_mod_dialog queMD_dialog(&mylist);
     prepareQuestDlg(&queMD_dialog);
     QTreeWidget *curQTW = get_curQTW();
     if(curQTW->currentItem()){
@@ -441,9 +441,23 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
     else{
         qDebug() << "edit question: " << curQTW->currentItem()->text(0);
         QList<st_answer> mylist;
-        mylist.append("SELECT "+sql->crypt->mdEncrypt("answer",sql->answers_crypt_key)+" FROM "+
-                      sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+" WHERE "+sql->crypt->mdEncrypt("theme_id",sql->answers_crypt_key)+"="+
-                      themD.trimmed()+");");
+        st_answer new_ans;
+        new_ans.q_id ="SELECT "+sql->crypt->mdEncrypt("question_id",sql->answers_crypt_key)+" FROM "+
+                sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+";";
+        new_ans.ans_id ="SELECT "+sql->crypt->mdEncrypt("id",sql->answers_crypt_key)+" FROM "+
+                sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+";";
+        new_ans.ans_comment = "SELECT "+sql->crypt->mdEncrypt("comment",sql->answers_crypt_key)+" FROM "+
+                sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+";";
+        new_ans.ans_text ="SELECT "+sql->crypt->mdEncrypt("answer",sql->answers_crypt_key)+" FROM "+
+                sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+";";
+        new_ans.ans_correct = "SELECT "+sql->crypt->mdEncrypt("correct",sql->answers_crypt_key)+" FROM "+
+                sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+";";
+        for(int i = 0; i< new_ans.q_id.count() ;i++)
+        {
+
+        }
+
+        mylist.append(new_ans);
         question_mod_dialog queMD_dialog(sql);
         prepareQuestDlg(&queMD_dialog);
         QTreeWidget *curQTW = get_curQTW();
