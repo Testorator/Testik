@@ -64,10 +64,11 @@ bool sql_cl::createNewDB()
                    " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->valueEncrypt("code",groups_crypt_key)+" TEXT NOT NULL UNIQUE);");
     queries.append("CREATE TABLE "+crypt->valueEncrypt("answers",answers_crypt_key)+" ("+crypt->valueEncrypt("id",answers_crypt_key)+
                    " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->valueEncrypt("question_id",answers_crypt_key)+
-                   " INTEGER NOT NULL, "+crypt->valueEncrypt("correct",answers_crypt_key)+" INTEGER NOT NULL DEFAULT 0, "+
-                   crypt->valueEncrypt("answer",answers_crypt_key)+" TEXT, "+crypt->valueEncrypt("comment",answers_crypt_key)+
-                   " TEXT, FOREIGN KEY ("+crypt->valueEncrypt("question_id",answers_crypt_key)+") REFERENCES "+crypt->valueEncrypt("question",answers_crypt_key)+
-                   " ("+crypt->valueEncrypt("id",answers_crypt_key)+"));");
+                   " INTEGER NOT NULL, "+crypt->valueEncrypt("answer_type",answers_crypt_key)+" SMALLINT NOT NULL CHECK ("+
+                   crypt->valueEncrypt("answer_type",answers_crypt_key)+" >0 and "+crypt->valueEncrypt("answer_type",answers_crypt_key)+"<4), "+
+                   crypt->valueEncrypt("correct",answers_crypt_key)+" INTEGER NOT NULL DEFAULT 0, "+crypt->valueEncrypt("answer",answers_crypt_key)+
+                   " TEXT, "+crypt->valueEncrypt("comment",answers_crypt_key)+" TEXT, FOREIGN KEY ("+crypt->valueEncrypt("question_id",answers_crypt_key)+
+                   ") REFERENCES "+crypt->valueEncrypt("question",answers_crypt_key)+" ("+crypt->valueEncrypt("id",answers_crypt_key)+"));");
     queries.append("CREATE TABLE "+crypt->valueEncrypt("email_addreses",email_addreses_crypt_key)+" ("+
                    crypt->valueEncrypt("recipient_name",email_addreses_crypt_key)+" TEXT NOT NULL, "+crypt->valueEncrypt("address",email_addreses_crypt_key)+
                    "TEXT NOT NULL );");
@@ -386,16 +387,16 @@ QVariant sql_cl::getQuestIdByName(QString questName)
 //**********************************************
 // **** ANSWERS **** {{
 //
-bool sql_cl::addAnswer(ans data)
-{
-    return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
-                              "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
-                              ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+
-                              crypt->mdEncrypt("correct",answers_crypt_key)+","+
-                              crypt->mdEncrypt("comment",answers_crypt_key)+" ) VALUES("+
-                              data.quest_id+","+crypt->valueEncrypt(data.answer,answers_crypt_key)+","+
-                              crypt->valueEncrypt(data.correct,answers_crypt_key)+");");
-}
+//bool sql_cl::addAnswer(ans data)
+//{
+//    return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
+//                              "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
+//                              ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+
+//                              crypt->mdEncrypt("correct",answers_crypt_key)+","+
+//                              crypt->mdEncrypt("comment",answers_crypt_key)+" ) VALUES("+
+//                              data.quest_id+","+crypt->valueEncrypt(data.answer,answers_crypt_key)+","+
+//                              crypt->valueEncrypt(data.correct,answers_crypt_key)+");");
+//}
 //
 bool sql_cl::delAnswer(QString ans_id, QString quest_id)
 {
@@ -404,6 +405,17 @@ bool sql_cl::delAnswer(QString ans_id, QString quest_id)
                               " WHERE "+crypt->mdEncrypt("id",answers_crypt_key)+"="+ans_id+
                               " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+quest_id+";");
 }
+//
+QList<QMap<QString,QVariant> > sql_cl::getAnswers(QVariant question_id)
+{
+    st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",answers_crypt_key)+", "+crypt->mdEncrypt("question_id",answers_crypt_key)+
+                              +", "+crypt->mdEncrypt("correct",answers_crypt_key)+", "+crypt->mdEncrypt("answer",answers_crypt_key)+
+                              +", "+crypt->mdEncrypt("comment",answers_crypt_key)+", "+crypt->mdEncrypt("answer_type",answers_crypt_key)+
+                              " FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
+                              " WHERE "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+question_id.toString()+";",answers_crypt_key);
+    return result.sel_data;
+}
+
 //
 // **** ANSWERS **** }}
 //**********************************************

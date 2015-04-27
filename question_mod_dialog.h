@@ -4,11 +4,12 @@
 #include <QDialog>
 
 struct st_answer{
-    QString q_id;
+    QString question_id;
     QString ans_id;
     QString ans_text;
     QString ans_comment;
     bool ans_correct;
+    int ans_type; // 1 - one anwer, 2 - type answer, 3 - multiple answer
 };
 
 namespace Ui {

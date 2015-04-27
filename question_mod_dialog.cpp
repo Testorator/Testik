@@ -8,7 +8,7 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ui(new Ui::question_mod_dialog)
 {
     ui->setupUi(this);
-//     = answers;
+    answers_from_db  = answers;
 
     QToolBar* ptb = new QToolBar("answers toolbar");
     ptb->setIconSize(QSize(24, 24));
@@ -65,9 +65,10 @@ void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
     ui->tableWidget_Andwers->clear();
     ui->tableWidget_Andwers->setRowCount(answers->count());
     for(int a=0;a<answers->count();a++){
-//        ui->tableWidget_Andwers->
+        ui->tableWidget_Andwers->setItem(a,0,new QTableWidgetItem(answers->at(a).ans_text));
+        ui->tableWidget_Andwers->setItem(a,1,new QTableWidgetItem(answers->at(a).ans_correct));
+        ui->tableWidget_Andwers->setItem(a,2,new QTableWidgetItem(answers->at(a).ans_comment));
     }
-
 }
 //
 void question_mod_dialog::on_addAns_triggered()

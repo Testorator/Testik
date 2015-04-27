@@ -376,8 +376,8 @@ void admin_form::on_action_addQuest_triggered()
 {
     ui->toolButton_Add_Quest->setText(tr("Add question"));
     connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
-    QList<st_answer> mylist;
-    question_mod_dialog queMD_dialog(&mylist);
+    QList<st_answer> answ_from_db;
+    question_mod_dialog queMD_dialog(&answ_from_db);
     prepareQuestDlg(&queMD_dialog);
     QTreeWidget *curQTW = get_curQTW();
     if(curQTW->currentItem()){
@@ -390,6 +390,7 @@ void admin_form::on_action_addQuest_triggered()
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
         if(sql->questUnique(quest_text)){
             sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString());
+            // check answers an add them
         }
     }
 
@@ -439,26 +440,25 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
         }
     }
     else{
-        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
-        QList<st_answer> mylist;
-        st_answer new_ans;
-        new_ans.q_id ="SELECT "+sql->crypt->mdEncrypt("question_id",sql->answers_crypt_key)+" FROM "+
-                sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+";";
-        new_ans.ans_id ="SELECT "+sql->crypt->mdEncrypt("id",sql->answers_crypt_key)+" FROM "+
-                sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+";";
-        new_ans.ans_comment = "SELECT "+sql->crypt->mdEncrypt("comment",sql->answers_crypt_key)+" FROM "+
-                sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+";";
-        new_ans.ans_text ="SELECT "+sql->crypt->mdEncrypt("answer",sql->answers_crypt_key)+" FROM "+
-                sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+";";
-        new_ans.ans_correct = "SELECT "+sql->crypt->mdEncrypt("correct",sql->answers_crypt_key)+" FROM "+
-                sql->crypt->mdEncrypt("answers",sql->answers_crypt_key)+";";
-        for(int i = 0; i< new_ans.q_id.count() ;i++)
+//        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
+        QList<st_answer> answ_from_db;
+        answ_from_db.clear();
+        st_answer answer;
+        QList<QMap<QString,QVariant> > answers = sql->getAnswers(curQTW->currentItem()->text(1).trimmed());
+        for(int i = 0; i< answers.count() ;i++)
         {
+            answer.question_id = answers.at(i)["question_id"].toString();
+            answer.ans_id = answers.at(i)["id"].toString();
+            answer.ans_text = answers.at(i)["answer"].toString();
+            answer.ans_comment = answers.at(i)["comment"].toString();
+            answer.ans_correct = answers.at(i)["correct"].toBool();
+            answer.ans_type = answers.at(i)["answer_type"].toInt();
+
+           answ_from_db.append(answer);
 
         }
 
-        mylist.append(new_ans);
-        question_mod_dialog queMD_dialog(sql);
+        question_mod_dialog queMD_dialog(&answ_from_db);
         prepareQuestDlg(&queMD_dialog);
         QTreeWidget *curQTW = get_curQTW();
         if(curQTW->currentItem()){

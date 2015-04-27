@@ -41,7 +41,20 @@
            </widget>
           </item>
           <item row="1" column="0" rowspan="3">
-           <widget class="QTableWidget" name="tableWidget_Andwers"/>
+           <widget class="QTableWidget" name="tableWidget_Andwers">
+            <property name="editTriggers">
+             <set>QAbstractItemView::SelectedClicked</set>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::SingleSelection</enum>
+            </property>
+            <property name="sortingEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
           <item row="1" column="1">
            <widget class="QGroupBox" name="groupBox_3">
