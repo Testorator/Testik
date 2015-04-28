@@ -9,7 +9,6 @@ struct st_answer{
     QString ans_text;
     QString ans_comment;
     bool ans_correct;
-    int ans_type; // 1 - one anwer, 2 - type answer, 3 - multiple answer
 };
 
 namespace Ui {

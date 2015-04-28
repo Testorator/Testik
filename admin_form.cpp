@@ -452,7 +452,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             answer.ans_text = answers.at(i)["answer"].toString();
             answer.ans_comment = answers.at(i)["comment"].toString();
             answer.ans_correct = answers.at(i)["correct"].toBool();
-            answer.ans_type = answers.at(i)["answer_type"].toInt();
+
 
            answ_from_db.append(answer);
 

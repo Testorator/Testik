@@ -50,7 +50,8 @@ bool sql_cl::createNewDB()
     queries.append("CREATE TABLE "+crypt->valueEncrypt("questions",questions_crypt_key)+" ("+crypt->valueEncrypt("id",questions_crypt_key)+
                    " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->valueEncrypt("theme_id",questions_crypt_key)+
                    "INTEGER NOT NULL, "+crypt->valueEncrypt("for_learn",questions_crypt_key)+" INTEGER NOT NULL DEFAULT 0, "+
-                   crypt->valueEncrypt("question",questions_crypt_key)+" TEXT NOT NULL, FOREIGN KEY ("+
+                   crypt->valueEncrypt("question",questions_crypt_key)+" TEXT NOT NULL, "+crypt->valueEncrypt("answer_type",answers_crypt_key)+" SMALLINT NOT NULL CHECK ("+
+                   crypt->valueEncrypt("answer_type",answers_crypt_key)+" >0 and "+crypt->valueEncrypt("answer_type",answers_crypt_key)+"<4) FOREIGN KEY ("+
                    crypt->valueEncrypt("theme_id",questions_crypt_key)+") REFERENCES "+crypt->valueEncrypt("q_themes",questions_crypt_key)+
                    "("+crypt->valueEncrypt("id",questions_crypt_key)+"));");
     queries.append("CREATE TABLE "+crypt->valueEncrypt("q_themes",q_themes_crypt_key)+" ("+crypt->valueEncrypt("id",q_themes_crypt_key)+
@@ -64,9 +65,7 @@ bool sql_cl::createNewDB()
                    " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->valueEncrypt("code",groups_crypt_key)+" TEXT NOT NULL UNIQUE);");
     queries.append("CREATE TABLE "+crypt->valueEncrypt("answers",answers_crypt_key)+" ("+crypt->valueEncrypt("id",answers_crypt_key)+
                    " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->valueEncrypt("question_id",answers_crypt_key)+
-                   " INTEGER NOT NULL, "+crypt->valueEncrypt("answer_type",answers_crypt_key)+" SMALLINT NOT NULL CHECK ("+
-                   crypt->valueEncrypt("answer_type",answers_crypt_key)+" >0 and "+crypt->valueEncrypt("answer_type",answers_crypt_key)+"<4), "+
-                   crypt->valueEncrypt("correct",answers_crypt_key)+" INTEGER NOT NULL DEFAULT 0, "+crypt->valueEncrypt("answer",answers_crypt_key)+
+                   " INTEGER NOT NULL, "+crypt->valueEncrypt("correct",answers_crypt_key)+" INTEGER NOT NULL DEFAULT 0, "+crypt->valueEncrypt("answer",answers_crypt_key)+
                    " TEXT, "+crypt->valueEncrypt("comment",answers_crypt_key)+" TEXT, FOREIGN KEY ("+crypt->valueEncrypt("question_id",answers_crypt_key)+
                    ") REFERENCES "+crypt->valueEncrypt("question",answers_crypt_key)+" ("+crypt->valueEncrypt("id",answers_crypt_key)+"));");
     queries.append("CREATE TABLE "+crypt->valueEncrypt("email_addreses",email_addreses_crypt_key)+" ("+
@@ -310,7 +309,7 @@ bool sql_cl::addQuest(const QString questionName, QVariant for_learn, QString th
         QString q_str = "INSERT INTO "+crypt->mdEncrypt("questions",questions_crypt_key)+" ("+
                 crypt->mdEncrypt("theme_id",questions_crypt_key)+","+
                 crypt->valueEncrypt("for_learn",questions_crypt_key)+","+
-                crypt->mdEncrypt("question",questions_crypt_key)+") VALUES("+theme_id+","+
+                crypt->mdEncrypt("question",questions_crypt_key)+", "+crypt->valueEncrypt("anwer_type",questions_crypt_key+") VALUES("+theme_id+","+
                 crypt->valueEncrypt(for_learn.toString(),questions_crypt_key)+","+
                 crypt->valueEncrypt(questionName.trimmed(),questions_crypt_key)+");";
         result = SendSimpleQueryStr(q_str);
