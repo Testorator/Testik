@@ -27,7 +27,7 @@ public:
     void setQuestionText(QString text);
     QString getQuestion();
     QVariant getQuestionTheme();
-
+    QVariant getIndexBox();
 private:
     Ui::question_mod_dialog *ui;
     QList<st_answer> *answers_from_db;

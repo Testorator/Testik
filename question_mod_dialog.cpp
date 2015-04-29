@@ -22,11 +22,12 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ptb->addSeparator();
     ptb->addAction(delAns);
     ui->gridLayout_Answers_tb->addWidget(ptb,0,0,0,2,Qt::AlignTop);
-
     ui->comboBox_Themes->clear();
     ui->tableWidget_Andwers->setColumnCount(3);
     loadAnswers(answers_from_db);
-
+    ui->comboBox_Type->addItem(tr("text entry"), 1);
+    ui->comboBox_Type->addItem(tr("one correct answer"), 2);
+    ui->comboBox_Type->addItem(tr("many correct answers"), 3);
 }
 //
 question_mod_dialog::~question_mod_dialog()
@@ -77,3 +78,7 @@ void question_mod_dialog::on_addAns_triggered()
     if(ui->textEdit_Answer->toPlainText().trimmed().length() == 0) ok = false;
 
 }
+QVariant question_mod_dialog::getIndexBox()
+ {
+   return ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex());
+ }
