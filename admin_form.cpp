@@ -9,6 +9,7 @@
 #include <QMenu>
 #include <QFileDialog>
 #include <QFile>
+#include <QToolBar>
 
 admin_form::admin_form(QWidget *parent) :
     QMainWindow(parent),
@@ -42,6 +43,19 @@ admin_form::admin_form(QWidget *parent) :
     act_addQuest = new QAction(tr("Add Question"),ui->toolButton_Add_Quest->menu());
     connect(act_addQuest, SIGNAL(triggered()),this,SLOT(on_action_addQuest_triggered()));
     ui->toolButton_Add_Quest->addAction(act_addQuest);
+
+    QToolBar* p_email_tb = new QToolBar("EMail toolbar");
+    p_email_tb->setIconSize(QSize(18, 18));
+    addAddr = new QAction(QIcon(":/resourse/add"),tr("Add"),p_email_tb);
+    connect(this->addAddr,SIGNAL(triggered()),this,SLOT(on_action_addAddr_triggered()));
+    editAddr = new QAction(QIcon(":/resourse/save"),tr("Edit"),p_email_tb);
+    delAddr = new QAction(QIcon(":/resourse/erase"),tr("Delete"),p_email_tb);
+    p_email_tb->addAction(addAddr);
+    p_email_tb->addSeparator();
+    p_email_tb->addAction(editAddr);
+    p_email_tb->addSeparator();
+    p_email_tb->addAction(delAddr);
+    ui->gridLayout_email->addWidget(p_email_tb,0,0,0,2,Qt::AlignTop);
 
     sql = new sql_cl();
     setAvailabilityOfItems(sql->dbIsOpen());
@@ -860,3 +874,10 @@ void admin_form::on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int c
     }
 }
 //  !!!! --- tab students --- !!!! }}
+//  !!!! --- tab options --- !!!! {{
+void admin_form::on_action_addAddr_triggered()
+{
+    int x =0;
+}
+
+//  !!!! --- tab options --- !!!! {{

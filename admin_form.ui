@@ -314,7 +314,7 @@
             </property>
             <layout class="QGridLayout" name="gridLayout_11">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_10">
+              <layout class="QGridLayout" name="gridLayout_email">
                <item row="1" column="0">
                 <widget class="QListWidget" name="listWidget_EMail_Recipients"/>
                </item>
@@ -331,13 +331,6 @@
            </widget>
           </item>
          </layout>
-        </item>
-        <item row="1" column="0">
-         <widget class="QDialogButtonBox" name="buttonBox">
-          <property name="standardButtons">
-           <set>QDialogButtonBox::Save</set>
-          </property>
-         </widget>
         </item>
        </layout>
       </widget>

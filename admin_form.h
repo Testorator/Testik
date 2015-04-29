@@ -49,6 +49,9 @@ private slots:
 
     void on_pushButton_Del_Quest_clicked();
 
+    // email
+    void on_action_addAddr_triggered();
+
 private:
     Ui::admin_form *ui;
     struct st_theme{
@@ -62,7 +65,7 @@ private:
     };
 
     QString DBPath = QApplication::applicationDirPath()+"/data/";
-    QAction *act_addGroup, *act_addStud, *act_addTheme, *act_addQuest;
+    QAction *act_addGroup, *act_addStud, *act_addTheme, *act_addQuest, *addAddr, *editAddr, *delAddr;
     void getDataBases();
     // students
     void getStudentsList();
