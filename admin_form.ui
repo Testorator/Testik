@@ -60,7 +60,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_Questions">
        <attribute name="icon">
@@ -315,13 +315,20 @@
             <layout class="QGridLayout" name="gridLayout_11">
              <item row="0" column="0">
               <layout class="QGridLayout" name="gridLayout_email">
-               <item row="1" column="0">
-                <widget class="QListWidget" name="listWidget_EMail_Recipients"/>
-               </item>
                <item row="0" column="0">
                 <widget class="QLabel" name="label">
                  <property name="text">
                   <string>Recipients:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QListWidget" name="listWidget_EMail_Recipients"/>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>TextLabel</string>
                  </property>
                 </widget>
                </item>

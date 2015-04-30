@@ -1,6 +1,7 @@
 #include "admin_form.h"
 #include "ui_admin_form.h"
 #include "change_admin_pw_dialog.h"
+#include "email.h"
 
 #include <QDebug>
 #include <QDir>
@@ -55,7 +56,7 @@ admin_form::admin_form(QWidget *parent) :
     p_email_tb->addAction(editAddr);
     p_email_tb->addSeparator();
     p_email_tb->addAction(delAddr);
-    ui->gridLayout_email->addWidget(p_email_tb,0,0,0,2,Qt::AlignTop);
+    ui->gridLayout_email->addWidget(p_email_tb,0,0,0,0,Qt::AlignTop);
 
     sql = new sql_cl();
     setAvailabilityOfItems(sql->dbIsOpen());
@@ -875,9 +876,16 @@ void admin_form::on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int c
 }
 //  !!!! --- tab students --- !!!! }}
 //  !!!! --- tab options --- !!!! {{
+
 void admin_form::on_action_addAddr_triggered()
 {
-    int x =0;
+    QString new_eaddr = QInputDialog::getText(this,
+                                                QObject::tr("Input new address"),
+                                                QObject::tr("Please input e-mail address"));
+
+
+   qDebug() << "addr " <<  new_eaddr << "correct: " << address_correct(new_eaddr);
+
 }
 
 //  !!!! --- tab options --- !!!! {{

@@ -3,6 +3,9 @@
 
 #include <QObject>
 
+bool address_correct(QString addr);
+
+
 class email : public QObject
 {
     Q_OBJECT

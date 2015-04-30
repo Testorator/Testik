@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     dbfunc.cpp \
     theme_dlg.cpp \
     stud_dlg.cpp \
-    encryption.cpp
+    encryption.cpp \
+    email.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \
@@ -44,7 +45,8 @@ HEADERS  += maxtest.h \
     dbfunc.h \
     theme_dlg.h \
     stud_dlg.h \
-    encryption.h
+    encryption.h \
+    email.h
 
 FORMS    += maxtest.ui \
     second.ui \
