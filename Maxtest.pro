@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     theme_dlg.cpp \
     stud_dlg.cpp \
     encryption.cpp \
-    email.cpp
+    email.cpp \
+    email_dlg.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \
@@ -46,7 +47,8 @@ HEADERS  += maxtest.h \
     theme_dlg.h \
     stud_dlg.h \
     encryption.h \
-    email.h
+    email.h \
+    email_dlg.h
 
 FORMS    += maxtest.ui \
     second.ui \
@@ -60,7 +62,8 @@ FORMS    += maxtest.ui \
     change_admin_pw_dialog.ui \
     question_mod_dialog.ui \
     theme_dlg.ui \
-    stud_dlg.ui
+    stud_dlg.ui \
+    email_dlg.ui
 
 DISTFILES += \
     muse.zip \
