@@ -193,6 +193,7 @@ void admin_form::on_listWidget_DB_clicked()
         getQuestionList(1);
         getStudentsList();
         getEMailAddrList();
+        ui->groupBox_SendEMail->setChecked(sql->sendEMail());
     }
     else{
 
@@ -879,6 +880,11 @@ void admin_form::on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int c
 }
 //  !!!! --- tab students --- !!!! }}
 //  !!!! --- tab options --- !!!! {{
+void admin_form::on_groupBox_SendEMail_clicked()
+{
+    sql->set_sendEMail(ui->groupBox_SendEMail->isChecked());
+}
+//
 void admin_form::getEMailAddrList()
 {
     this->setCursor(Qt::BusyCursor);
@@ -909,3 +915,5 @@ void admin_form::on_action_addAddr_triggered()
 }
 
 //  !!!! --- tab options --- !!!! {{
+
+

@@ -82,7 +82,8 @@ public:
     QList<QMap<QString,QVariant> > getEMailAddreses();
     bool uniqEMailAddr(QString new_addr, QString new_recipient);
     bool addEMailAddr(QString new_addr, QString new_recipient);
-
+    //
+    bool options_hasRecords();
 };
 #endif // DBFUNC
 

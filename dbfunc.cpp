@@ -599,6 +599,24 @@ bool sql_cl::studUnique(const QString Surname, const QString Name, const QString
     return result;
 }
 // **** STUDENTS **** }}
+// **** OPTIONS **** {{
+bool sql_cl::options_hasRecords()
+{
+    bool result = false;
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT count(*) row_cnt FROM "+crypt->mdEncrypt("options",options_crypt_key),options_crypt_key);
+
+    if(q_res.q_result){
+        if(q_res.sel_data.at(0)["row_cnt"].toInt() > 0){
+            result = true;
+        }
+        else{
+            result = false;
+        }
+    }
+    return result;
+}
+
+// **** OPTIONS **** }}
 // **** EMAIL **** {{
 bool sql_cl::sendEMail()
 {
@@ -619,6 +637,7 @@ bool sql_cl::sendEMail()
 //
 bool set_sendEMail(QVariant value)
 {
+
    return false;
 }
 //

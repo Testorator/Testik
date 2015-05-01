@@ -52,6 +52,8 @@ private slots:
     // email
     void on_action_addAddr_triggered();
 
+    void on_groupBox_SendEMail_clicked();
+
 private:
     Ui::admin_form *ui;
     struct st_theme{
