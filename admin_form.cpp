@@ -883,8 +883,9 @@ void admin_form::on_action_addAddr_triggered()
                                                 QObject::tr("Input new address"),
                                                 QObject::tr("Please input e-mail address"));
 
-
-   qDebug() << "addr " <<  new_eaddr << "correct: " << address_correct(new_eaddr);
+   if(address_correct(new_eaddr)){
+     int x =0;
+    }
 
 }
 

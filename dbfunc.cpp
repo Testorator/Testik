@@ -155,7 +155,7 @@ QString sql_cl::convertTypeOfQuestions(int type)
 //**********************************************
 st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
 {
-//    qDebug() << q_str;
+    //    qDebug() << q_str;
     st_qRes result;
 
     result.sel_data.clear();
@@ -407,9 +407,9 @@ bool sql_cl::delAnswer(QString ans_id, QString quest_id)
 QList<QMap<QString,QVariant> > sql_cl::getAnswers(QVariant question_id)
 {
     st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",answers_crypt_key)+", "+crypt->mdEncrypt("question_id",answers_crypt_key)+
-                              +", "+crypt->mdEncrypt("correct",answers_crypt_key)+", "+crypt->mdEncrypt("answer",answers_crypt_key)+
-                              +", "+crypt->mdEncrypt("comment",answers_crypt_key)+" FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
-                              " WHERE "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+question_id.toString()+";",answers_crypt_key);
+                                          +", "+crypt->mdEncrypt("correct",answers_crypt_key)+", "+crypt->mdEncrypt("answer",answers_crypt_key)+
+                                          +", "+crypt->mdEncrypt("comment",answers_crypt_key)+" FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
+                                          " WHERE "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+question_id.toString()+";",answers_crypt_key);
     return result.sel_data;
 }
 
@@ -598,3 +598,58 @@ bool sql_cl::studUnique(const QString Surname, const QString Name, const QString
     return result;
 }
 // **** STUDENTS **** }}
+// **** EMAIL **** {{
+bool sql_cl::sendEMail()
+{
+    bool result = false;
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("send_report_by_email",options_crypt_key)+" FROM "+
+                                         crypt->mdEncrypt("options",options_crypt_key),options_crypt_key);
+
+    if(q_res.q_result){
+        if(q_res.sel_data.at(0)["send_report_by_email"].toInt() == 1){
+            result = true;
+        }
+        else{
+            result = false;
+        }
+    }
+    return result;
+}
+//
+bool set_sendEMail(QVariant value)
+{
+   return false;
+}
+//
+bool sql_cl::uniqEMailAddr(QString new_addr, QString new_recipient)
+{
+    bool result = false;
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT count(*) as addr_exists FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+
+                                         " WHERE "+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_recipient,email_addreses_crypt_key)+
+                                         " AND "+crypt->mdEncrypt("address",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_addr,email_addreses_crypt_key),email_addreses_crypt_key);
+
+    if(q_res.q_result){
+        if(q_res.sel_data.at(0)["addr_exists"].toInt() == 0){
+            result = true;
+        }
+        else{
+            result = false;
+        }
+    }
+
+    return result;
+}
+//
+bool sql_cl::addEMailAddr(QString new_addr, QString new_recipient)
+{
+    bool result = false;
+    if(uniqEMailAddr(new_addr,new_recipient)){
+        result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+"("+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+
+                                    crypt->mdEncrypt("address",email_addreses_crypt_key)+") VALUES("+crypt->valueEncrypt(new_recipient,email_addreses_crypt_key)+","+
+                                    crypt->valueEncrypt(new_addr,email_addreses_crypt_key)+")");
+    }
+
+    return result;
+}
+
+// **** EMAIL **** }}

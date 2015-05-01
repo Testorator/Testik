@@ -75,6 +75,11 @@ public:
 //    bool addAnswer(ans data);
     bool delAnswer(QString ans_id, QString quest_id);
     QList<QMap<QString,QVariant> > getAnswers(QVariant question_id);
+    //
+    bool sendEMail();
+    bool set_sendEMail(QVariant value);
+    bool uniqEMailAddr(QString new_addr, QString new_recipient);
+    bool addEMailAddr(QString new_addr, QString new_recipient);
 
 };
 #endif // DBFUNC
