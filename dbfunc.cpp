@@ -385,16 +385,17 @@ QVariant sql_cl::getQuestIdByName(QString questName)
 //**********************************************
 // **** ANSWERS **** {{
 //
-//bool sql_cl::addAnswer(ans data)
-//{
-//    return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
-//                              "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
-//                              ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+
-//                              crypt->mdEncrypt("correct",answers_crypt_key)+","+
-//                              crypt->mdEncrypt("comment",answers_crypt_key)+" ) VALUES("+
-//                              data.quest_id+","+crypt->valueEncrypt(data.answer,answers_crypt_key)+","+
-//                              crypt->valueEncrypt(data.correct,answers_crypt_key)+");");
-//}
+bool sql_cl::addAnswer(st_answer data)
+{
+    return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
+                              "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
+                              ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+
+                              crypt->mdEncrypt("correct",answers_crypt_key)+","+
+                              crypt->mdEncrypt("comment",answers_crypt_key)+" ) VALUES("+
+                              data.question_id+","+crypt->valueEncrypt(data.ans_text,answers_crypt_key)+","+
+                              crypt->valueEncrypt(QVariant(data.ans_correct).toString(),answers_crypt_key)+");");
+    // не хватает comment
+}
 //
 bool sql_cl::delAnswer(QString ans_id, QString quest_id)
 {

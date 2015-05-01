@@ -9,6 +9,7 @@
 #include <QMap>
 #include <QVariant>
 #include "encryption.h"
+#include "pub_struct.h"
 
 
 struct st_qRes{
@@ -72,7 +73,7 @@ public:
     bool questUnique(const QString questionName, bool silent = 0);
     QVariant getQuestIdByName(QString questName);
     //
-//    bool addAnswer(ans data);
+    bool addAnswer(st_answer data);
     bool delAnswer(QString ans_id, QString quest_id);
     QList<QMap<QString,QVariant> > getAnswers(QVariant question_id);
     //

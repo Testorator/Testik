@@ -48,7 +48,8 @@ HEADERS  += maxtest.h \
     stud_dlg.h \
     encryption.h \
     email.h \
-    email_dlg.h
+    email_dlg.h \
+    pub_struct.h
 
 FORMS    += maxtest.ui \
     second.ui \
