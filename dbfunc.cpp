@@ -621,6 +621,16 @@ bool set_sendEMail(QVariant value)
    return false;
 }
 //
+QList<QMap<QString,QVariant> > sql_cl::getEMailAddreses()
+{
+    st_qRes result;
+
+    result = SendSimpleQueryStrWR("SELECT * FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+";",email_addreses_crypt_key);
+
+    return result.sel_data;
+}
+
+//
 bool sql_cl::uniqEMailAddr(QString new_addr, QString new_recipient)
 {
     bool result = false;
@@ -644,7 +654,7 @@ bool sql_cl::addEMailAddr(QString new_addr, QString new_recipient)
 {
     bool result = false;
     if(uniqEMailAddr(new_addr,new_recipient)){
-        result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+"("+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+
+        result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+"("+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+","+
                                     crypt->mdEncrypt("address",email_addreses_crypt_key)+") VALUES("+crypt->valueEncrypt(new_recipient,email_addreses_crypt_key)+","+
                                     crypt->valueEncrypt(new_addr,email_addreses_crypt_key)+")");
     }

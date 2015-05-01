@@ -77,7 +77,8 @@ private:
     void getQuestionList(int q_type = -1);
     void prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString exclude_id = 0);
     void prepareQuestDlg(question_mod_dialog *dlg);
-
+    // email
+    void getEMailAddrList();
 };
 
 #endif // ADMIN_FORM_H

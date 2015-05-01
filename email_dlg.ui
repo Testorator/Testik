@@ -23,7 +23,7 @@
       <item row="0" column="0">
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
-         <widget class="QLineEdit" name="lineEdit"/>
+         <widget class="QLineEdit" name="lineEdit_recipient"/>
         </item>
        </layout>
       </item>
@@ -49,7 +49,11 @@
       <item row="0" column="0">
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
-         <widget class="QLineEdit" name="lineEdit_2"/>
+         <widget class="QLineEdit" name="lineEdit_addr">
+          <property name="inputMask">
+           <string/>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

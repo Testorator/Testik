@@ -2,6 +2,7 @@
 #include "ui_admin_form.h"
 #include "change_admin_pw_dialog.h"
 #include "email.h"
+#include "email_dlg.h"
 
 #include <QDebug>
 #include <QDir>
@@ -11,6 +12,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QToolBar>
+#include <QHeaderView>
 
 admin_form::admin_form(QWidget *parent) :
     QMainWindow(parent),
@@ -190,6 +192,7 @@ void admin_form::on_listWidget_DB_clicked()
         getQuestionList(0);
         getQuestionList(1);
         getStudentsList();
+        getEMailAddrList();
     }
     else{
 
@@ -403,7 +406,7 @@ void admin_form::on_action_addQuest_triggered()
 
         QString quest_text=queMD_dialog.getQuestion();
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
-//        QVariant ans_type = queMD_dialog.getIndexBox();
+        //        QVariant ans_type = queMD_dialog.getIndexBox();
         if(sql->questUnique(quest_text)){
 
             sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getIndexBox().toString() );
@@ -417,7 +420,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
 {
     QTreeWidget *curQTW = get_curQTW();
     if(curQTW->currentItem()->text(2) == "t"){
-//        qDebug() << "edit theme: " << curQTW->currentItem()->text(0);
+        //        qDebug() << "edit theme: " << curQTW->currentItem()->text(0);
         theme_dlg th_dlg(this);
         th_dlg.setWindowTitle(tr("Edit theme"));
 
@@ -457,7 +460,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
         }
     }
     else{
-//        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
+        //        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
         QList<st_answer> answ_from_db;
         answ_from_db.clear();
         st_answer answer;
@@ -471,7 +474,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             answer.ans_correct = answers.at(i)["correct"].toBool();
 
 
-           answ_from_db.append(answer);
+            answ_from_db.append(answer);
 
         }
 
@@ -485,11 +488,11 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
 
         if(queMD_dialog.exec()){
 
-//            QString quest_text=queMD_dialog.getQuestion();
-//            QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
-//            if(sql->questUnique(quest_text)){
-//                sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString());
-//            }
+            //            QString quest_text=queMD_dialog.getQuestion();
+            //            QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
+            //            if(sql->questUnique(quest_text)){
+            //                sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString());
+            //            }
         }
     }
 
@@ -876,17 +879,33 @@ void admin_form::on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int c
 }
 //  !!!! --- tab students --- !!!! }}
 //  !!!! --- tab options --- !!!! {{
-
+void admin_form::getEMailAddrList()
+{
+    this->setCursor(Qt::BusyCursor);
+    QList<QMap<QString,QVariant> > q_res = sql->getEMailAddreses();
+    if(q_res.count() > 0){
+        ui->tableWidget_email->setRowCount(q_res.count());
+        for(int i = 0; i < q_res.count(); i++){
+            ui->tableWidget_email->setItem(i,0,new QTableWidgetItem(q_res.at(i)["recipient_name"].toString()));
+            ui->tableWidget_email->setItem(i,1,new QTableWidgetItem(q_res.at(i)["address"].toString()));
+        }
+    }
+    ui->tableWidget_email->resizeColumnsToContents();
+    this->setCursor(Qt::ArrowCursor);
+}
+//
 void admin_form::on_action_addAddr_triggered()
 {
-    QString new_eaddr = QInputDialog::getText(this,
-                                                QObject::tr("Input new address"),
-                                                QObject::tr("Please input e-mail address"));
+    email_dlg addr_Data;
 
-   if(address_correct(new_eaddr)){
-     int x =0;
+    if(addr_Data.exec()){
+        if(address_correct(addr_Data.getAdddress())){
+            sql->addEMailAddr(addr_Data.getAdddress(),addr_Data.getRecipient());
+        }
+        else{
+            QMessageBox::critical(this,tr("Error"), tr("Invalid e-mail address.")+"\n"+addr_Data.getAdddress());
+        }
     }
-
 }
 
 //  !!!! --- tab options --- !!!! {{

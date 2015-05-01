@@ -14,6 +14,10 @@ class email_dlg : public QDialog
 public:
     explicit email_dlg(QWidget *parent = 0);
     ~email_dlg();
+    QString getRecipient();
+    void setRecipient(QString value);
+    QString getAdddress();
+    void setAdddress(QString value);
 
 private:
     Ui::email_dlg *ui;
