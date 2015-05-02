@@ -879,7 +879,7 @@ void admin_form::on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int c
     }
 }
 //  !!!! --- tab students --- !!!! }}
-//  !!!! --- tab options --- !!!! {{
+//  !!!! --- tab email --- !!!! {{
 void admin_form::on_groupBox_SendEMail_clicked()
 {
     sql->set_sendEMail(ui->groupBox_SendEMail->isChecked());
@@ -888,12 +888,14 @@ void admin_form::on_groupBox_SendEMail_clicked()
 void admin_form::getEMailAddrList()
 {
     this->setCursor(Qt::BusyCursor);
+    ui->tableWidget_email->setColumnHidden(2,true);
     QList<QMap<QString,QVariant> > q_res = sql->getEMailAddreses();
     if(q_res.count() > 0){
         ui->tableWidget_email->setRowCount(q_res.count());
         for(int i = 0; i < q_res.count(); i++){
             ui->tableWidget_email->setItem(i,0,new QTableWidgetItem(q_res.at(i)["recipient_name"].toString()));
             ui->tableWidget_email->setItem(i,1,new QTableWidgetItem(q_res.at(i)["address"].toString()));
+            ui->tableWidget_email->setItem(i,2,new QTableWidgetItem(q_res.at(i)["id"].toString()));
         }
     }
     ui->tableWidget_email->resizeColumnsToContents();
@@ -914,6 +916,6 @@ void admin_form::on_action_addAddr_triggered()
     }
 }
 
-//  !!!! --- tab options --- !!!! {{
+//  !!!! --- tab email --- !!!! {{
 
 

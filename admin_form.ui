@@ -290,13 +290,13 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_Opt">
+      <widget class="QWidget" name="tab_EMail">
        <attribute name="icon">
         <iconset resource="res.qrc">
-         <normaloff>:/resourse/options</normaloff>:/resourse/options</iconset>
+         <normaloff>:/resourse/email</normaloff>:/resourse/email</iconset>
        </attribute>
        <attribute name="title">
-        <string>Options</string>
+        <string>EMail</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
@@ -341,7 +341,7 @@
                   <bool>true</bool>
                  </property>
                  <property name="columnCount">
-                  <number>2</number>
+                  <number>3</number>
                  </property>
                  <column>
                   <property name="text">
@@ -351,6 +351,11 @@
                  <column>
                   <property name="text">
                    <string>Address</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>id</string>
                   </property>
                  </column>
                 </widget>

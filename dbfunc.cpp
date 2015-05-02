@@ -624,7 +624,7 @@ bool sql_cl::sendEMail()
     st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("send_report_by_email",options_crypt_key)+" FROM "+
                                          crypt->mdEncrypt("options",options_crypt_key),options_crypt_key);
 
-    if(q_res.q_result){
+    if(q_res.q_result && q_res.sel_data.count() > 0 ){
         if(q_res.sel_data.at(0)["send_report_by_email"].toInt() == 1){
             result = true;
         }
@@ -635,10 +635,20 @@ bool sql_cl::sendEMail()
     return result;
 }
 //
-bool set_sendEMail(QVariant value)
+bool sql_cl::set_sendEMail(QVariant value)
 {
-
-   return false;
+   bool result;
+   if(options_hasRecords()){
+       result = SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
+                                   crypt->mdEncrypt("send_report_by_email",options_crypt_key)+"="+
+                                   crypt->valueEncrypt(QVariant(value.toInt()).toString(),options_crypt_key)+";");
+   }
+   else{
+       result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("options",options_crypt_key)+"("+
+                                   crypt->mdEncrypt("send_report_by_email",options_crypt_key)+") VALUES("+
+                                   crypt->valueEncrypt(QVariant(value.toInt()).toString(),options_crypt_key)+");");
+   }
+   return result;
 }
 //
 QList<QMap<QString,QVariant> > sql_cl::getEMailAddreses()
