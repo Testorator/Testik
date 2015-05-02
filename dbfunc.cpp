@@ -430,8 +430,8 @@ bool sql_cl::addAnswer(st_answer data)
                               crypt->mdEncrypt("correct",answers_crypt_key)+","+
                               crypt->mdEncrypt("comment",answers_crypt_key)+" ) VALUES("+
                               data.question_id+","+crypt->valueEncrypt(data.ans_text,answers_crypt_key)+","+
+                              crypt->valueEncrypt(data.ans_comment,answers_crypt_key)+","+
                               crypt->valueEncrypt(QVariant(data.ans_correct).toString(),answers_crypt_key)+");");
-    // не хватает comment
 }
 //
 bool sql_cl::delAnswer(QString ans_id, QString quest_id)
