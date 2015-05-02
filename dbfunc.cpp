@@ -434,12 +434,12 @@ bool sql_cl::addAnswer(st_answer data)
                               crypt->valueEncrypt(QVariant(data.ans_correct).toString(),answers_crypt_key)+");");
 }
 //
-bool sql_cl::delAnswer(QString ans_id, QString quest_id)
+bool sql_cl::delAnswer(QString ans_id, QString question_id)
 {
 
     return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
                               " WHERE "+crypt->mdEncrypt("id",answers_crypt_key)+"="+ans_id+
-                              " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+quest_id+";");
+                              " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+question_id+";");
 }
 //
 QList<QMap<QString,QVariant> > sql_cl::getAnswers(QVariant question_id)
@@ -450,7 +450,36 @@ QList<QMap<QString,QVariant> > sql_cl::getAnswers(QVariant question_id)
                                           " WHERE "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+question_id.toString()+";",answers_crypt_key);
     return result.sel_data;
 }
-
+//
+bool sql_cl::answerUnique(const QString ans_text, bool silent)
+{
+    bool result;
+    if(ans_text.isEmpty() || ans_text.isNull() || ans_text.trimmed().length() < 1){
+        result =false;
+    }
+    else{
+        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("answer",answers_crypt_key)+
+                                             " FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+" WHERE "+
+                                             crypt->mdEncrypt("answer",answers_crypt_key)+"="+
+                                             crypt->valueEncrypt(ans_text,answers_crypt_key)+";",answers_crypt_key);
+        if(q_res.q_result){
+            if(q_res.sel_data.count() > 0){
+                result = false;
+                if(!silent){
+                    QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
+                                          "\""+ans_text+"\""+QObject::tr(" already exists!"));
+                }
+            }
+            else{
+                result = true;
+            }
+        }
+        else{
+            result = false;
+        }
+    }
+    return result;
+}
 //
 // **** ANSWERS **** }}
 //**********************************************

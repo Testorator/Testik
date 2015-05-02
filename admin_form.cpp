@@ -408,8 +408,7 @@ void admin_form::on_action_addQuest_triggered()
 
         QString quest_text=queMD_dialog.getQuestion();
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
-        //        QVariant ans_type = queMD_dialog.getIndexBox();
-        if(sql->questUnique(quest_text)){
+        if(sql->ques=tUnique(quest_text)){
 
             sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getIndexBox().toString() );
             // check answers an add them
