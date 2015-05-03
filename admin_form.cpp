@@ -51,7 +51,8 @@ admin_form::admin_form(QWidget *parent) :
     p_email_tb->setIconSize(QSize(18, 18));
     addAddr = new QAction(QIcon(":/resourse/add"),tr("Add"),p_email_tb);
     connect(this->addAddr,SIGNAL(triggered()),this,SLOT(on_action_addAddr_triggered()));
-    editAddr = new QAction(QIcon(":/resourse/save"),tr("Edit"),p_email_tb);
+    editAddr = new QAction(QIcon(":/resourse/options"),tr("Edit"),p_email_tb);
+    connect(this->editAddr,SIGNAL(triggered()),this,SLOT(on_action_editAddr_triggered()));
     delAddr = new QAction(QIcon(":/resourse/erase"),tr("Delete"),p_email_tb);
     p_email_tb->addAction(addAddr);
     p_email_tb->addSeparator();
@@ -880,6 +881,13 @@ void admin_form::on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int c
 }
 //  !!!! --- tab students --- !!!! }}
 //  !!!! --- tab email --- !!!! {{
+void admin_form::clearEMailTable()
+{
+    for(int r=ui->tableWidget_email->rowCount(); r>0; r--){
+        ui->tableWidget_email->removeRow(r-1);
+    }
+}
+//
 void admin_form::on_groupBox_SendEMail_clicked()
 {
     sql->set_sendEMail(ui->groupBox_SendEMail->isChecked());
@@ -888,14 +896,15 @@ void admin_form::on_groupBox_SendEMail_clicked()
 void admin_form::getEMailAddrList()
 {
     this->setCursor(Qt::BusyCursor);
-    ui->tableWidget_email->setColumnHidden(2,true);
+    clearEMailTable();
+    ui->tableWidget_email->hideColumn(2);
     QList<QMap<QString,QVariant> > q_res = sql->getEMailAddreses();
     if(q_res.count() > 0){
         ui->tableWidget_email->setRowCount(q_res.count());
         for(int i = 0; i < q_res.count(); i++){
             ui->tableWidget_email->setItem(i,0,new QTableWidgetItem(q_res.at(i)["recipient_name"].toString()));
             ui->tableWidget_email->setItem(i,1,new QTableWidgetItem(q_res.at(i)["address"].toString()));
-            ui->tableWidget_email->setItem(i,2,new QTableWidgetItem(q_res.at(i)["id"].toString()));
+            ui->tableWidget_email->setItem(i,2,new QTableWidgetItem(q_res.at(i)["rowid"].toString()));
         }
     }
     ui->tableWidget_email->resizeColumnsToContents();
@@ -907,11 +916,35 @@ void admin_form::on_action_addAddr_triggered()
     email_dlg addr_Data;
 
     if(addr_Data.exec()){
-        if(address_correct(addr_Data.getAdddress())){
-            sql->addEMailAddr(addr_Data.getAdddress(),addr_Data.getRecipient());
+        if(address_correct(addr_Data.getAddress())){
+            st_email new_data;
+            new_data.recipient_name = addr_Data.getRecipient();
+            new_data.address = addr_Data.getAddress();
+            sql->addEMailAddr(&new_data);
         }
         else{
-            QMessageBox::critical(this,tr("Error"), tr("Invalid e-mail address.")+"\n"+addr_Data.getAdddress());
+            QMessageBox::critical(this,tr("Error"), tr("Invalid e-mail address.")+"\n"+addr_Data.getAddress());
+        }
+    }
+}
+//
+void admin_form::on_action_editAddr_triggered()
+{
+    email_dlg addr_Data;
+    addr_Data.setAddress(ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),1)->text().trimmed());
+    addr_Data.setRecipient(ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),0)->text().trimmed());
+    if(addr_Data.exec()){
+        if(address_correct(addr_Data.getAddress())){
+            st_email new_data;
+            new_data.recipient_name = addr_Data.getRecipient();
+            new_data.address = addr_Data.getAddress();
+            new_data.id = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),2)->text().trimmed();
+            if(sql->addEMailAddr(&new_data)){
+                getEMailAddrList();
+            }
+        }
+        else{
+            QMessageBox::critical(this,tr("Error"), tr("Invalid e-mail address.")+"\n"+addr_Data.getAddress());
         }
     }
 }

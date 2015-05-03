@@ -50,9 +50,10 @@ private slots:
     void on_pushButton_Del_Quest_clicked();
 
     // email
-    void on_action_addAddr_triggered();
-
     void on_groupBox_SendEMail_clicked();
+    void on_action_addAddr_triggered();
+    void on_action_editAddr_triggered();
+
 
 private:
     Ui::admin_form *ui;
@@ -80,6 +81,7 @@ private:
     void prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString exclude_id = 0);
     void prepareQuestDlg(question_mod_dialog *dlg);
     // email
+    void clearEMailTable();
     void getEMailAddrList();
 };
 

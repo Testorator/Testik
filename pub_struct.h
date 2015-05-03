@@ -11,5 +11,11 @@ struct st_answer{
     bool ans_correct;
 };
 
+struct st_email{
+    QString id;
+    QString recipient_name;
+    QString address;
+};
+
 #endif // PUB_STRUCT_H
 

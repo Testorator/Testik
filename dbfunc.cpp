@@ -661,12 +661,12 @@ QList<QMap<QString,QVariant> > sql_cl::getEMailAddreses()
 }
 
 //
-bool sql_cl::uniqEMailAddr(QString new_addr, QString new_recipient)
+bool sql_cl::uniqEMailAddr(st_email *new_data)
 {
     bool result = false;
     st_qRes q_res = SendSimpleQueryStrWR("SELECT count(*) as addr_exists FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+
-                                         " WHERE "+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_recipient,email_addreses_crypt_key)+
-                                         " AND "+crypt->mdEncrypt("address",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_addr,email_addreses_crypt_key),email_addreses_crypt_key);
+                                         " WHERE "+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_data->recipient_name,email_addreses_crypt_key)+
+                                         " AND "+crypt->mdEncrypt("address",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_data->address,email_addreses_crypt_key),email_addreses_crypt_key);
 
     if(q_res.q_result){
         if(q_res.sel_data.at(0)["addr_exists"].toInt() == 0){
@@ -680,13 +680,50 @@ bool sql_cl::uniqEMailAddr(QString new_addr, QString new_recipient)
     return result;
 }
 //
-bool sql_cl::addEMailAddr(QString new_addr, QString new_recipient)
+bool sql_cl::addEMailAddr(st_email *new_data)
 {
     bool result = false;
-    if(uniqEMailAddr(new_addr,new_recipient)){
+    if(uniqEMailAddr(new_data)){
         result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+"("+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+","+
-                                    crypt->mdEncrypt("address",email_addreses_crypt_key)+") VALUES("+crypt->valueEncrypt(new_recipient,email_addreses_crypt_key)+","+
-                                    crypt->valueEncrypt(new_addr,email_addreses_crypt_key)+")");
+                                    crypt->mdEncrypt("address",email_addreses_crypt_key)+") VALUES("+crypt->valueEncrypt(new_data->recipient_name,email_addreses_crypt_key)+","+
+                                    crypt->valueEncrypt(new_data->address,email_addreses_crypt_key)+")");
+    }
+
+    return result;
+}
+//
+st_email sql_cl::getEMailAddressDataByRId(QString id)
+{
+    st_email result;
+
+    st_qRes sql_result = SendSimpleQueryStrWR("SELECT * FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+
+                                  "WHERE rowid="+id+";",email_addreses_crypt_key);
+    if(sql_result.sel_data.count() > 0){
+        result.recipient_name = sql_result.sel_data.at(0)["recipient_name"].toString();
+        result.address = sql_result.sel_data.at(0)["address"].toString();
+    }
+
+    return result;
+}
+//
+bool sql_cl::editEMailAddr(st_email *new_data)
+{
+    bool result = false;
+    st_email db_data = getEMailAddressDataByRId(new_data->id);
+    bool upd = false;
+    QString query_str = "UPDATE "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+" SET ";
+    if(new_data->address != db_data.address){
+        upd = true;
+        query_str.append(crypt->mdEncrypt("address",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_data->address,email_addreses_crypt_key));
+    };
+    if(new_data->recipient_name != db_data.recipient_name){
+        upd = true;
+        query_str.append(crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_data->recipient_name,email_addreses_crypt_key));
+    };
+    query_str.append(" WHERE rowid="+new_data->id+";");
+
+    if(upd){
+       result = SendSimpleQueryStr(query_str);
     }
 
     return result;

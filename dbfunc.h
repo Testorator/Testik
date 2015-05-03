@@ -80,8 +80,10 @@ public:
     bool sendEMail();
     bool set_sendEMail(QVariant value);
     QList<QMap<QString,QVariant> > getEMailAddreses();
-    bool uniqEMailAddr(QString new_addr, QString new_recipient);
-    bool addEMailAddr(QString new_addr, QString new_recipient);
+    bool uniqEMailAddr(st_email *new_data);
+    bool addEMailAddr(st_email *new_data);
+    st_email getEMailAddressDataByRId(QString id);
+    bool editEMailAddr(st_email *new_data);
     //
     bool options_hasRecords();
 };

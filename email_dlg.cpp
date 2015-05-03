@@ -23,12 +23,13 @@ void email_dlg::setRecipient(QString value)
     ui->lineEdit_recipient->setText(value.trimmed());
 }
 
-QString email_dlg::getAdddress()
+QString email_dlg::getAddress()
 {
     return ui->lineEdit_addr->text().trimmed().toLower();
 }
 
-void email_dlg::setAdddress(QString value)
+void email_dlg::setAddress(QString value)
 {
     ui->lineEdit_addr->setText(value.trimmed().toLower());
 }
+

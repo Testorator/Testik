@@ -16,8 +16,11 @@ public:
     ~email_dlg();
     QString getRecipient();
     void setRecipient(QString value);
-    QString getAdddress();
-    void setAdddress(QString value);
+    QString getAddress();
+    void setAddress(QString value);
+    QString getId();
+    void setId(QString value);
+
 
 private:
     Ui::email_dlg *ui;
