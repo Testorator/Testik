@@ -57,11 +57,11 @@ private slots:
 
 private:
     Ui::admin_form *ui;
-    struct st_theme{
-        QString theme_parent_id;
-        QString theme_id;
-        QString theme_name;
-    };
+//    struct st_theme{
+//        QString theme_parent_id;
+//        QString theme_id;
+//        QString theme_name;
+//    };
     struct st_QTWI{
         QString parent_id;
         QTreeWidgetItem *qtwi;

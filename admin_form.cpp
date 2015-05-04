@@ -235,8 +235,6 @@ void admin_form::getQuestionList(int q_type)
             newItem_sl.append(q_res.at(i)["name"].toString());
             newItem_sl.append(q_res.at(i)["id"].toString());
             newItem_sl.append("t"); // set mark
-
-            qDebug() << q_res.at(i)["parent_id"].toString();
             newitem_data.parent_id = (q_res.at(i)["parent_id"].toInt() != 0) ? q_res.at(i)["parent_id"].toString().trimmed(): ""; // save theme parent id
             newitem_data.qtwi = new QTreeWidgetItem(newItem_sl); // create theme item
 
@@ -336,14 +334,17 @@ void admin_form::on_action_addTheme_triggered()
         PThemeID = th_dlg.get_PThemeID();
 
         if(new_themeName.trimmed().length() > 0){
+            st_theme new_data;
             bool q_result;
+            new_data.name = new_themeName;
             if(PThemeID.trimmed().length() > 0 && QVariant(PThemeID).toInt() > 0){
-                q_result = sql->addTheme(new_themeName,PThemeID);
+                new_data.parent_id = PThemeID;
             }
             else{
-                q_result = sql->addTheme(new_themeName);
+                new_data.parent_id = "0";
             }
 
+            q_result = sql->addTheme(&new_data);
             if(q_result) {
                 getQuestionList(0);
                 getQuestionList(1);
@@ -355,24 +356,23 @@ void admin_form::on_action_addTheme_triggered()
 //
 void admin_form::on_pushButton_Del_Quest_clicked()
 {
-    QTreeWidgetItem *curItem1 = ui->treeWidget_test_questions->currentItem();
-    // QTreeWidgetItem *curItem2 = ui->treeWidget_learn_questions->currentItem();
-    {
-        //theme test
-        int ret = QMessageBox::question(this, tr("Removing theme"),
-                                        tr("Are you shure want delete theme")+" \n\""+
-                                        curItem1->text(0).trimmed()+"\" \n "+
-                                        tr("and all questions included to this theme")+"?",
-                                        QMessageBox::Yes | QMessageBox::No,
-                                        QMessageBox::No);
-        if(ret == QMessageBox::Yes){
-            if(sql->clearTheme(curItem1->text(1))){
-                sql->delTheme(curItem1->text(1));
-            }
-            getQuestionList(0);
-            getQuestionList(1);
+    QTreeWidget *curQTW = get_curQTW();
+    QTreeWidgetItem *curItem = curQTW->currentItem();
+
+    int ret = QMessageBox::question(this, tr("Removing theme"),
+                                    tr("Are you shure want delete theme")+" \n\""+
+                                    curItem->text(0).trimmed()+"\" \n "+
+                                    tr("and all questions included to this theme")+"?",
+                                    QMessageBox::Yes | QMessageBox::No,
+                                    QMessageBox::No);
+    if(ret == QMessageBox::Yes){
+        if(sql->clearTheme(curItem->text(1))){
+            sql->delTheme(curItem->text(1));
         }
+        getQuestionList(0);
+        getQuestionList(1);
     }
+
 }
 //
 void admin_form::on_toolButton_Add_Quest_clicked()
@@ -422,7 +422,6 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
 {
     QTreeWidget *curQTW = get_curQTW();
     if(curQTW->currentItem()->text(2) == "t"){
-        //        qDebug() << "edit theme: " << curQTW->currentItem()->text(0);
         theme_dlg th_dlg(this);
         th_dlg.setWindowTitle(tr("Edit theme"));
 
@@ -430,31 +429,17 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
         th_dlg.set_current_ThemeName(curQTW->currentItem()->text(0).trimmed());
 
         if(th_dlg.exec() == 1){
-            QString new_themeName, PThemeID, upd_data, q_str;
+            QString new_themeName, PThemeID, upd_data;
             new_themeName = th_dlg.get_ThemeName();
             PThemeID = th_dlg.get_PThemeID();
             upd_data.clear();
             if(new_themeName.trimmed().length() > 0){
-                if(new_themeName.trimmed() != curQTW->currentItem()->text(0).trimmed()){
-                    upd_data.append(sql->crypt->mdEncrypt("name",sql->q_themes_crypt_key)+"="+
-                                    sql->crypt->valueEncrypt(new_themeName,sql->q_themes_crypt_key));
-                }
-                if(PThemeID.trimmed() != ((curQTW->currentItem()->parent()) ? curQTW->currentItem()->parent()->text(1).trimmed() : "0")){
-                    if(upd_data.length() > 0) upd_data.append(", ");
-                    upd_data.append(sql->crypt->mdEncrypt("parent_id",sql->q_themes_crypt_key)+"="+PThemeID.trimmed());
-                }
+                st_theme new_data;
+                new_data.id = curQTW->currentItem()->text(1).trimmed();
+                new_data.name = new_themeName.trimmed();
+                new_data.parent_id = (curQTW->currentItem()->parent()) ? curQTW->currentItem()->parent()->text(1).trimmed() : "0";
 
-                if(upd_data.trimmed().length() > 0){
-                    q_str ="UPDATE "+sql->crypt->mdEncrypt("q_themes",sql->q_themes_crypt_key)+
-                            " SET "+upd_data+" WHERE "+sql->crypt->mdEncrypt("id",sql->q_themes_crypt_key)+"="+
-                            curQTW->currentItem()->text(1).trimmed()+
-                            " AND "+sql->crypt->mdEncrypt("name",sql->q_themes_crypt_key)+"="+
-                            sql->crypt->valueEncrypt(curQTW->currentItem()->text(0).trimmed(),sql->q_themes_crypt_key)+
-                            " AND "+sql->crypt->mdEncrypt("parent_id",sql->q_themes_crypt_key)+"="+
-                            ((curQTW->currentItem()->parent()) ? curQTW->currentItem()->parent()->text(1).trimmed() : "0")+";";
-                }
-
-                if(sql->SendSimpleQueryStr(q_str)){
+                if(sql->updTheme(&new_data)){
                     getQuestionList(0);
                     getQuestionList(1);
                 }
@@ -689,7 +674,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                                                    curItem->text(0)).trimmed();
             if(in_grp.length() > 0){
                 if(sql->grpUnique(in_grp)){
-                    bool q_res = sql->SendSimpleQueryStr("UPDATE "+sql->crypt->mdEncrypt("groups",sql->groups_crypt_key)+
+                    bool q_res = sql->SendSimpleQueryStr(" "+sql->crypt->mdEncrypt("groups",sql->groups_crypt_key)+
                                                          " SET "+sql->crypt->mdEncrypt("code",sql->groups_crypt_key)+"="+
                                                          sql->crypt->valueEncrypt(in_grp,sql->groups_crypt_key)+" WHERE "+
                                                          sql->crypt->mdEncrypt("code",sql->groups_crypt_key)+
@@ -745,7 +730,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                         }
 
                         if(updFields.length() > 0){
-                            if(sql->SendSimpleQueryStr("UPDATE "+sql->crypt->mdEncrypt("students",sql->students_crypt_key)+
+                            if(sql->SendSimpleQueryStr(" "+sql->crypt->mdEncrypt("students",sql->students_crypt_key)+
                                                        " SET "+updFields+" WHERE "+sql->crypt->mdEncrypt("id",sql->students_crypt_key)+
                                                        "="+curItem->text(1)+" AND "+
                                                        sql->crypt->mdEncrypt("group_id",sql->students_crypt_key)+"="+
@@ -939,7 +924,7 @@ void admin_form::on_action_editAddr_triggered()
             new_data.recipient_name = addr_Data.getRecipient();
             new_data.address = addr_Data.getAddress();
             new_data.id = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),2)->text().trimmed();
-            if(sql->addEMailAddr(&new_data)){
+            if(sql->updEMailAddr(&new_data)){
                 getEMailAddrList();
             }
         }

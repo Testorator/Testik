@@ -62,9 +62,10 @@ public:
     QString convertTypeOfQuestions(int type);
     QList<QMap<QString,QVariant> > getThemes();
     QList<QMap<QString,QVariant> > getThemeChild(QVariant parent_id);
-    QList<QMap<QString,QVariant> > getThemeByID(QVariant theme_id);
+    st_theme getThemeByID(QVariant theme_id);
     bool themeUnique(const QString themeName, bool silent = 0);
-    bool addTheme(const QString themeName, QString parent_id = 0);
+    bool addTheme(st_theme *new_data);
+    bool updTheme(st_theme *new_data);
     bool delTheme(const QVariant theme_id);
     bool clearTheme(const QVariant theme_id);
     QList<QMap<QString,QVariant> > getQuestionsWithThemes(int questions_type);
@@ -83,7 +84,7 @@ public:
     bool uniqEMailAddr(st_email *new_data);
     bool addEMailAddr(st_email *new_data);
     st_email getEMailAddressDataByRId(QString id);
-    bool editEMailAddr(st_email *new_data);
+    bool updEMailAddr(st_email *new_data);
     //
     bool options_hasRecords();
 };

@@ -178,8 +178,13 @@ st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
         QString f_name,f_value;
         while(query->next()){
             for(int counter=0; counter < query->record().count() ;counter++){
-                f_name = crypt->stringDecrypt(query->record().fieldName(counter),crypt_key);
-                if(f_name == "id" || f_name.contains("_id")){
+                if(query->record().fieldName(counter) != "rowid"){
+                    f_name = crypt->stringDecrypt(query->record().fieldName(counter),crypt_key);
+                }
+                else{
+                    f_name = query->record().fieldName(counter);
+                }
+                if(f_name == "rowid" || f_name == "id" || f_name.contains("_id")){
                     f_value = query->value(counter).toString();
                 }
                 else{
@@ -229,17 +234,23 @@ bool sql_cl::themeUnique(const QString themeName, bool silent)
     return result;
 }
 //
-QList<QMap<QString, QVariant> > sql_cl::getThemeByID(QVariant theme_id)
+st_theme sql_cl::getThemeByID(QVariant theme_id)
 {
+    st_theme result;
     QString q_themes_crypted = crypt->mdEncrypt("q_themes",q_themes_crypt_key);
     QString q_themes_id_crypted = crypt->mdEncrypt("id",q_themes_crypt_key);
-    st_qRes result = SendSimpleQueryStrWR("SELECT "+q_themes_crypted+"."+q_themes_id_crypted+", "+
-                                          q_themes_crypted+"."+crypt->mdEncrypt("parent_id",q_themes_crypt_key)+", "+
-                                          q_themes_crypted+"."+crypt->mdEncrypt("name",q_themes_crypt_key)+
-                                          " FROM "+q_themes_crypted+" WHERE "+q_themes_id_crypted+"="+theme_id.toString()+
-                                          " ORDER BY "+q_themes_crypted+"."+q_themes_id_crypted,q_themes_crypt_key);
-    return result.sel_data;
 
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+q_themes_crypted+"."+q_themes_id_crypted+", "+
+                                         q_themes_crypted+"."+crypt->mdEncrypt("parent_id",q_themes_crypt_key)+", "+
+                                         q_themes_crypted+"."+crypt->mdEncrypt("name",q_themes_crypt_key)+
+                                         " FROM "+q_themes_crypted+" WHERE "+q_themes_id_crypted+"="+theme_id.toString()+";",q_themes_crypt_key);
+
+    if(q_res.q_result){
+        result.id = q_res.sel_data.at(0)["id"].toString();
+        result.name = q_res.sel_data.at(0)["name"].toString();
+        result.parent_id = q_res.sel_data.at(0)["parent_id"].toString();
+    }
+    return result;
 }
 //
 QList<QMap<QString, QVariant> > sql_cl::getThemes()
@@ -255,18 +266,44 @@ QList<QMap<QString, QVariant> > sql_cl::getThemes()
 }
 
 //
-bool sql_cl::addTheme(const QString themeName, QString parent_id)
+bool sql_cl::addTheme(st_theme *new_data)
 {
     bool result = false;
-    result = themeUnique(themeName.trimmed());
+    result = themeUnique(new_data->name);
     if(result){
         QString q_str = "INSERT INTO "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+" (";
-        if(parent_id > 0) q_str.append(crypt->mdEncrypt("parent_id",q_themes_crypt_key)).append(",");
+        if(new_data->parent_id > 0) q_str.append(crypt->mdEncrypt("parent_id",q_themes_crypt_key)).append(",");
         q_str.append(crypt->mdEncrypt("name",q_themes_crypt_key)+") VALUES(");
-        if(parent_id > 0) q_str.append(parent_id+",");
-        q_str.append(crypt->valueEncrypt(themeName.trimmed(),q_themes_crypt_key)+");");
+        if(new_data->parent_id > 0) q_str.append(new_data->parent_id+",");
+        q_str.append(crypt->valueEncrypt(new_data->name,q_themes_crypt_key)+");");
         result = SendSimpleQueryStr(q_str);
     }
+    return result;
+}
+//
+bool sql_cl::updTheme(st_theme *new_data)
+{
+    bool result = false;
+    st_theme db_data;
+    db_data = getThemeByID(new_data->id);
+    QString q_str = "UPDATE "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+" SET ";
+    QString upd_data;
+
+    if(new_data->name != db_data.name){
+        upd_data.append(crypt->mdEncrypt("name",q_themes_crypt_key)+"="+crypt->valueEncrypt(new_data->name,q_themes_crypt_key));
+    }
+    if(new_data->parent_id != db_data.parent_id){
+        if(upd_data.length() > 0) upd_data.append(", ");
+        upd_data.append(crypt->mdEncrypt("parent_id",q_themes_crypt_key)+"="+new_data->parent_id);
+    }
+
+    if(upd_data.trimmed().length() > 0){
+        q_str +=upd_data+" WHERE "+crypt->mdEncrypt("id",q_themes_crypt_key)+"="+db_data.id+
+                " AND "+crypt->mdEncrypt("name",q_themes_crypt_key)+"="+crypt->valueEncrypt(db_data.name,q_themes_crypt_key)+
+                " AND "+crypt->mdEncrypt("parent_id",q_themes_crypt_key)+"="+db_data.parent_id+";";
+        result = SendSimpleQueryStr(q_str);
+    }
+
     return result;
 }
 //
@@ -637,25 +674,27 @@ bool sql_cl::sendEMail()
 //
 bool sql_cl::set_sendEMail(QVariant value)
 {
-   bool result;
-   if(options_hasRecords()){
-       result = SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
-                                   crypt->mdEncrypt("send_report_by_email",options_crypt_key)+"="+
-                                   crypt->valueEncrypt(QVariant(value.toInt()).toString(),options_crypt_key)+";");
-   }
-   else{
-       result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("options",options_crypt_key)+"("+
-                                   crypt->mdEncrypt("send_report_by_email",options_crypt_key)+") VALUES("+
-                                   crypt->valueEncrypt(QVariant(value.toInt()).toString(),options_crypt_key)+");");
-   }
-   return result;
+    bool result;
+    if(options_hasRecords()){
+        result = SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
+                                    crypt->mdEncrypt("send_report_by_email",options_crypt_key)+"="+
+                                    crypt->valueEncrypt(QVariant(value.toInt()).toString(),options_crypt_key)+";");
+    }
+    else{
+        result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("options",options_crypt_key)+"("+
+                                    crypt->mdEncrypt("send_report_by_email",options_crypt_key)+") VALUES("+
+                                    crypt->valueEncrypt(QVariant(value.toInt()).toString(),options_crypt_key)+");");
+    }
+    return result;
 }
 //
 QList<QMap<QString,QVariant> > sql_cl::getEMailAddreses()
 {
     st_qRes result;
 
-    result = SendSimpleQueryStrWR("SELECT * FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+";",email_addreses_crypt_key);
+    result = SendSimpleQueryStrWR("SELECT rowid,"+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+","+
+                                  crypt->mdEncrypt("address",email_addreses_crypt_key)+
+                                  " FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+";",email_addreses_crypt_key);
 
     return result.sel_data;
 }
@@ -664,16 +703,18 @@ QList<QMap<QString,QVariant> > sql_cl::getEMailAddreses()
 bool sql_cl::uniqEMailAddr(st_email *new_data)
 {
     bool result = false;
-    st_qRes q_res = SendSimpleQueryStrWR("SELECT count(*) as addr_exists FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT * FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+
                                          " WHERE "+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_data->recipient_name,email_addreses_crypt_key)+
-                                         " AND "+crypt->mdEncrypt("address",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_data->address,email_addreses_crypt_key),email_addreses_crypt_key);
+                                         " OR "+crypt->mdEncrypt("address",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_data->address,email_addreses_crypt_key),email_addreses_crypt_key);
 
     if(q_res.q_result){
-        if(q_res.sel_data.at(0)["addr_exists"].toInt() == 0){
+        if(q_res.sel_data.count() == 0){
             result = true;
         }
         else{
             result = false;
+            QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("Address")+" "+new_data->address+" "+QObject::tr("or")+" "+
+                                  QObject::tr("recipient with name")+"\" "+new_data->recipient_name+"\" "+QObject::tr("already exists")+"!");
         }
     }
 
@@ -697,7 +738,7 @@ st_email sql_cl::getEMailAddressDataByRId(QString id)
     st_email result;
 
     st_qRes sql_result = SendSimpleQueryStrWR("SELECT * FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+
-                                  "WHERE rowid="+id+";",email_addreses_crypt_key);
+                                              "WHERE rowid="+id+";",email_addreses_crypt_key);
     if(sql_result.sel_data.count() > 0){
         result.recipient_name = sql_result.sel_data.at(0)["recipient_name"].toString();
         result.address = sql_result.sel_data.at(0)["address"].toString();
@@ -706,26 +747,30 @@ st_email sql_cl::getEMailAddressDataByRId(QString id)
     return result;
 }
 //
-bool sql_cl::editEMailAddr(st_email *new_data)
+bool sql_cl::updEMailAddr(st_email *new_data)
 {
     bool result = false;
+    st_email upd_data;
     st_email db_data = getEMailAddressDataByRId(new_data->id);
     bool upd = false;
     QString query_str = "UPDATE "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+" SET ";
     if(new_data->address != db_data.address){
         upd = true;
+        upd_data.address = new_data->address;
         query_str.append(crypt->mdEncrypt("address",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_data->address,email_addreses_crypt_key));
     };
     if(new_data->recipient_name != db_data.recipient_name){
         upd = true;
+        upd_data.recipient_name = new_data->recipient_name;
         query_str.append(crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+"="+crypt->valueEncrypt(new_data->recipient_name,email_addreses_crypt_key));
     };
     query_str.append(" WHERE rowid="+new_data->id+";");
 
-    if(upd){
-       result = SendSimpleQueryStr(query_str);
+    if(uniqEMailAddr(&upd_data)){
+        if(upd){
+            result = SendSimpleQueryStr(query_str);
+        }
     }
-
     return result;
 }
 

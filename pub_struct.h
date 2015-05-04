@@ -3,6 +3,12 @@
 
 #include <QString>
 
+struct st_theme{
+    QString id;
+    QString parent_id;
+    QString name;
+};
+
 struct st_answer{
     QString question_id;
     QString ans_id;
