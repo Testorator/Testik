@@ -717,15 +717,25 @@ bool sql_cl::set_sendEMail(QVariant value)
     return result;
 }
 //
-QList<QMap<QString,QVariant> > sql_cl::getEMailAddreses()
+QList<st_email> sql_cl::getEMailAddreses()
 {
-    st_qRes result;
+    QList<st_email> result;
 
-    result = SendSimpleQueryStrWR("SELECT rowid,"+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+","+
-                                  crypt->mdEncrypt("address",email_addreses_crypt_key)+
-                                  " FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+";",email_addreses_crypt_key);
+    st_qRes sql_res = SendSimpleQueryStrWR("SELECT rowid,"+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+","+
+                                            crypt->mdEncrypt("address",email_addreses_crypt_key)+
+                                            " FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+";",email_addreses_crypt_key);
 
-    return result.sel_data;
+    if(sql_res.q_result){
+        for(int i=0; i<sql_res.sel_data.count(); i++){
+            st_email addr;
+            addr.id = sql_res.sel_data.at(i)["rowid"].toString();
+            addr.address = sql_res.sel_data.at(i)["address"].toString();
+            addr.recipient_name = sql_res.sel_data.at(i)["recipient_name"].toString();
+            result.append(addr);
+        }
+    }
+
+    return result;
 }
 
 //

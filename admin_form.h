@@ -54,22 +54,19 @@ private slots:
     void on_action_addAddr_triggered();
     void on_action_editAddr_triggered();
     void on_action_delAddr_trigered();
+    void on_action_sendTestMsg_triggered();
 
 
 private:
     Ui::admin_form *ui;
-//    struct st_theme{
-//        QString theme_parent_id;
-//        QString theme_id;
-//        QString theme_name;
-//    };
+
     struct st_QTWI{
         QString parent_id;
         QTreeWidgetItem *qtwi;
     };
 
     QString DBPath = QApplication::applicationDirPath()+"/data/";
-    QAction *act_addGroup, *act_addStud, *act_addTheme, *act_addQuest, *addAddr, *editAddr, *delAddr;
+    QAction *act_addGroup, *act_addStud, *act_addTheme, *act_addQuest, *addAddr, *editAddr, *delAddr, *sendTestMsg;
     void getDataBases();
     // students
     void getStudentsList();
@@ -84,6 +81,7 @@ private:
     // email
     void clearEMailTable();
     void getEMailAddrList();
+
 };
 
 #endif // ADMIN_FORM_H

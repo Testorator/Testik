@@ -5,7 +5,6 @@
         <file alias="save">img/disk.png</file>
         <file alias="settings">img/setting_tools.png</file>
         <file alias="options">img/cog.png</file>
-        <file alias="email">img/email.png</file>
     </qresource>
     <qresource prefix="/stud">
         <file alias="edit_stud">img/user_edit.png</file>
@@ -26,5 +25,9 @@
     </qresource>
     <qresource prefix="/questions">
         <file alias="question">img/help.png</file>
+    </qresource>
+    <qresource prefix="/mail">
+        <file alias="send_test_msg">img/email_to_friend.png</file>
+        <file alias="email">img/email.png</file>
     </qresource>
 </RCC>

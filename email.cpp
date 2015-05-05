@@ -24,4 +24,10 @@ email::~email()
 {
 
 }
+//
+bool email::sendMessage(QStringList *addreses, QString *msg)
+{
+    bool result = false;
 
+    return result;
+}

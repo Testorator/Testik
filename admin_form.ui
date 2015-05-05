@@ -293,7 +293,7 @@
       <widget class="QWidget" name="tab_EMail">
        <attribute name="icon">
         <iconset resource="res.qrc">
-         <normaloff>:/resourse/email</normaloff>:/resourse/email</iconset>
+         <normaloff>:/mail/email</normaloff>:/mail/email</iconset>
        </attribute>
        <attribute name="title">
         <string>EMail</string>

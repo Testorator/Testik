@@ -55,11 +55,16 @@ admin_form::admin_form(QWidget *parent) :
     connect(this->editAddr,SIGNAL(triggered()),this,SLOT(on_action_editAddr_triggered()));
     delAddr = new QAction(QIcon(":/resourse/erase"),tr("Delete"),p_email_tb);
     connect(this->delAddr,SIGNAL(triggered()),this,SLOT(on_action_delAddr_trigered()));
+    sendTestMsg = new QAction(QIcon(":/mail/send_test_msg"),tr("Send test message"),p_email_tb);
+    connect(this->sendTestMsg,SIGNAL(triggered()),this,SLOT(on_action_sendTestMsg_triggered()));
     p_email_tb->addAction(addAddr);
     p_email_tb->addSeparator();
     p_email_tb->addAction(editAddr);
     p_email_tb->addSeparator();
     p_email_tb->addAction(delAddr);
+    p_email_tb->addSeparator();
+    p_email_tb->addAction(sendTestMsg);
+
     ui->gridLayout_email->addWidget(p_email_tb,0,0,0,0,Qt::AlignTop);
 
     sql = new sql_cl();
@@ -883,13 +888,13 @@ void admin_form::getEMailAddrList()
     this->setCursor(Qt::BusyCursor);
     clearEMailTable();
     ui->tableWidget_email->hideColumn(2);
-    QList<QMap<QString,QVariant> > q_res = sql->getEMailAddreses();
-    if(q_res.count() > 0){
-        ui->tableWidget_email->setRowCount(q_res.count());
-        for(int i = 0; i < q_res.count(); i++){
-            ui->tableWidget_email->setItem(i,0,new QTableWidgetItem(q_res.at(i)["recipient_name"].toString()));
-            ui->tableWidget_email->setItem(i,1,new QTableWidgetItem(q_res.at(i)["address"].toString()));
-            ui->tableWidget_email->setItem(i,2,new QTableWidgetItem(q_res.at(i)["rowid"].toString()));
+    QList<st_email> addr_list = sql->getEMailAddreses();
+    if(addr_list.count() > 0){
+        ui->tableWidget_email->setRowCount(addr_list.count());
+        for(int i = 0; i < addr_list.count(); i++){
+            ui->tableWidget_email->setItem(i,0,new QTableWidgetItem(addr_list.at(i).recipient_name));
+            ui->tableWidget_email->setItem(i,1,new QTableWidgetItem(addr_list.at(i).address));
+            ui->tableWidget_email->setItem(i,2,new QTableWidgetItem(addr_list.at(i).id));
         }
     }
     ui->tableWidget_email->resizeColumnsToContents();
@@ -950,6 +955,15 @@ void admin_form::on_action_delAddr_trigered()
             getEMailAddrList();
         }
     }
+}
+//
+void admin_form::on_action_sendTestMsg_triggered()
+{
+    email *em = new email;
+//    QList<QMap<QString,QVariant> > addreses_from_db = getEMailAddreses();
+
+
+    delete em;
 }
 
 //  !!!! --- tab email --- !!!! {{

@@ -81,7 +81,7 @@ public:
     //
     bool sendEMail();
     bool set_sendEMail(QVariant value);
-    QList<QMap<QString,QVariant> > getEMailAddreses();
+    QList<st_email> getEMailAddreses();
     bool uniqEMailAddr(st_email *new_data);
     bool addEMailAddr(st_email *new_data);
     st_email getEMailAddressDataByRId(QString id);

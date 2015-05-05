@@ -12,6 +12,7 @@ class email : public QObject
 public:
     explicit email(QObject *parent = 0);
     ~email();
+     bool sendMessage(QStringList *addreses, QString *msg);
 
 signals:
 
