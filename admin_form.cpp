@@ -4,6 +4,7 @@
 #include "email.h"
 #include "email_dlg.h"
 
+#include <QDateTime>
 #include <QDebug>
 #include <QDir>
 #include <QInputDialog>
@@ -960,8 +961,13 @@ void admin_form::on_action_delAddr_trigered()
 void admin_form::on_action_sendTestMsg_triggered()
 {
     email *em = new email;
-//    QList<QMap<QString,QVariant> > addreses_from_db = getEMailAddreses();
-
+    QList<st_email> addreses_from_db = sql->getEMailAddreses();
+    QStringList addreses;
+    for(int i=0; i<addreses_from_db.count();i++) addreses.append(addreses_from_db.at(i).address);
+    QString msg = "TEST message!";
+    QString subj = "Test messsage from testorator ["+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"]";
+    QString send_result = (em->sendMessage(&subj,&addreses,&msg)) ? tr("Success") : tr("Failed");
+    QMessageBox::information(this,tr("Sending email"),tr("Sending email")+": "+send_result);
 
     delete em;
 }
