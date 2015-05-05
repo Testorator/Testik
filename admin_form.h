@@ -53,6 +53,7 @@ private slots:
     void on_groupBox_SendEMail_clicked();
     void on_action_addAddr_triggered();
     void on_action_editAddr_triggered();
+    void on_action_delAddr_trigered();
 
 
 private:

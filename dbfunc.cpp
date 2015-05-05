@@ -802,5 +802,13 @@ bool sql_cl::updEMailAddr(st_email *new_data)
     }
     return result;
 }
+//
+bool sql_cl::delEMailAddr(st_email *del_data)
+{
+    return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+
+                              " WHERE "+crypt->mdEncrypt("address",email_addreses_crypt_key)+"="+crypt->valueEncrypt(del_data->address,email_addreses_crypt_key)+
+                              " AND "+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+"="+crypt->valueEncrypt(del_data->recipient_name,email_addreses_crypt_key)+
+                              " AND rowid="+del_data->id);
+}
 
 // **** EMAIL **** }}

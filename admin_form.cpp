@@ -54,6 +54,7 @@ admin_form::admin_form(QWidget *parent) :
     editAddr = new QAction(QIcon(":/resourse/options"),tr("Edit"),p_email_tb);
     connect(this->editAddr,SIGNAL(triggered()),this,SLOT(on_action_editAddr_triggered()));
     delAddr = new QAction(QIcon(":/resourse/erase"),tr("Delete"),p_email_tb);
+    connect(this->delAddr,SIGNAL(triggered()),this,SLOT(on_action_delAddr_trigered()));
     p_email_tb->addAction(addAddr);
     p_email_tb->addSeparator();
     p_email_tb->addAction(editAddr);
@@ -915,8 +916,8 @@ void admin_form::on_action_addAddr_triggered()
 void admin_form::on_action_editAddr_triggered()
 {
     email_dlg addr_Data;
-    addr_Data.setAddress(ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),1)->text().trimmed());
     addr_Data.setRecipient(ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),0)->text().trimmed());
+    addr_Data.setAddress(ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),1)->text().trimmed());
     if(addr_Data.exec()){
         if(address_correct(addr_Data.getAddress())){
             st_email new_data;
@@ -929,6 +930,24 @@ void admin_form::on_action_editAddr_triggered()
         }
         else{
             QMessageBox::critical(this,tr("Error"), tr("Invalid e-mail address.")+"\n"+addr_Data.getAddress());
+        }
+    }
+}
+//
+void admin_form::on_action_delAddr_trigered()
+{
+    st_email del_data;
+    del_data.recipient_name=ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),0)->text().trimmed();
+    del_data.address = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),1)->text().trimmed();
+    del_data.id = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),2)->text().trimmed();
+    int ret = QMessageBox::question(this, tr("Removing address"),
+                                    tr("Are you shure want delete address")+" \""+del_data.address+"\" \n "+
+                                    tr("for recipient")+" "+del_data.recipient_name+"?",
+                                    QMessageBox::Yes | QMessageBox::No,
+                                    QMessageBox::No);
+    if(ret == QMessageBox::Yes){
+        if(sql->delEMailAddr(&del_data)){
+            getEMailAddrList();
         }
     }
 }

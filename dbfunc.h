@@ -86,6 +86,7 @@ public:
     bool addEMailAddr(st_email *new_data);
     st_email getEMailAddressDataByRId(QString id);
     bool updEMailAddr(st_email *new_data);
+    bool delEMailAddr(st_email *del_data);
     //
     bool options_hasRecords();
 };
