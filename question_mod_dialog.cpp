@@ -1,6 +1,6 @@
 #include "question_mod_dialog.h"
 #include "ui_question_mod_dialog.h"
-
+#include "dbfunc.h"
 #include <QToolBar>
 
 question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *parent) :
@@ -76,9 +76,24 @@ void question_mod_dialog::on_addAns_triggered()
 {
     bool ok = true;
     if(ui->textEdit_Answer->toPlainText().trimmed().length() == 0) ok = false;
+    else {
+
+
+
+
+        }
+
 
 }
+//
 QVariant question_mod_dialog::getIndexBox()
  {
    return ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex());
  }
+//
+QString question_mod_dialog::getAnswer(QList<st_answer> *answers)
+{
+    ui->tableWidget_Andwers->setColumnCount(answers->count());
+   for(int i=0;i<answers->count() ;i++)
+   ui->tableWidget_Andwers->item(0,i);
+}
