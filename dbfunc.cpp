@@ -669,10 +669,10 @@ bool sql_cl::studUnique(const QString Surname, const QString Name, const QString
 bool sql_cl::options_hasRecords()
 {
     bool result = false;
-    st_qRes q_res = SendSimpleQueryStrWR("SELECT count(*) row_cnt FROM "+crypt->mdEncrypt("options",options_crypt_key),options_crypt_key);
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT * FROM "+crypt->mdEncrypt("options",options_crypt_key),options_crypt_key);
 
     if(q_res.q_result){
-        if(q_res.sel_data.at(0)["row_cnt"].toInt() > 0){
+        if(q_res.sel_data.count() > 0){
             result = true;
         }
         else{
