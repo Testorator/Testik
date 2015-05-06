@@ -57,6 +57,8 @@ private slots:
     void on_action_sendTestMsg_triggered();
 
 
+    void on_label_smtp_server_linkActivated(const QString &link);
+
 private:
     Ui::admin_form *ui;
 

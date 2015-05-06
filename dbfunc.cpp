@@ -59,7 +59,7 @@ bool sql_cl::createNewDB()
                    " TEXT NOT NULL UNIQUE, FOREIGN KEY ("+crypt->valueEncrypt("parent_id",q_themes_crypt_key)+") REFERENCES "+
                    crypt->valueEncrypt("q_themes",q_themes_crypt_key)+" ("+crypt->valueEncrypt("id",q_themes_crypt_key)+") );");
     queries.append("CREATE TABLE "+crypt->valueEncrypt("options",options_crypt_key)+"("+crypt->valueEncrypt("send_report_by_email",options_crypt_key)+
-                   "INTEGER NOT NULL DEFAULT 0);");
+                   "INTEGER NOT NULL DEFAULT 0, "+crypt->valueEncrypt("smtp_server",options_crypt_key)+" TEXT, "+crypt->valueEncrypt("smtp_port",options_crypt_key)+" TEXT);");
     queries.append("CREATE TABLE "+crypt->valueEncrypt("groups",groups_crypt_key)+" ("+crypt->valueEncrypt("id",groups_crypt_key)+
                    " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->valueEncrypt("code",groups_crypt_key)+" TEXT NOT NULL UNIQUE);");
     queries.append("CREATE TABLE "+crypt->valueEncrypt("answers",answers_crypt_key)+" ("+crypt->valueEncrypt("id",answers_crypt_key)+
@@ -819,6 +819,20 @@ bool sql_cl::delEMailAddr(st_email *del_data)
                               " WHERE "+crypt->mdEncrypt("address",email_addreses_crypt_key)+"="+crypt->valueEncrypt(del_data->address,email_addreses_crypt_key)+
                               " AND "+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+"="+crypt->valueEncrypt(del_data->recipient_name,email_addreses_crypt_key)+
                               " AND rowid="+del_data->id);
+}
+//
+st_smtp sql_cl::getSMTP()
+{
+    st_smtp result;
+
+    st_qRes sql_result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("smtp_server",options_crypt_key)+", "+
+                                              crypt->valueEncrypt("smtp_port",options_crypt_key)+" FROM "+
+                                              crypt->mdEncrypt("options",options_crypt_key)+";",options_crypt_key);
+    if(sql_result.sel_data.count() > 0){
+        result.server = sql_result.sel_data.at(0)["smtp_server"].toString();
+        result.port = sql_result.sel_data.at(0)["smtp_port"].toString();
+    }
+    return result;
 }
 
 // **** EMAIL **** }}

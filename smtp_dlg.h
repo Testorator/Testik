@@ -14,6 +14,10 @@ class smtp_dlg : public QDialog
 public:
     explicit smtp_dlg(QWidget *parent = 0);
     ~smtp_dlg();
+    void setPort(QVariant value);
+    void setServer(QVariant value);
+    QVariant getPort();
+    QVariant getServer();
 
 private:
     Ui::smtp_dlg *ui;

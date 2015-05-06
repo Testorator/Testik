@@ -202,6 +202,8 @@ void admin_form::on_listWidget_DB_clicked()
         getStudentsList();
         getEMailAddrList();
         ui->groupBox_SendEMail->setChecked(sql->sendEMail());
+        st_smtp smtp = sql->getSMTP();
+        ui->label_smtp_server->setText("SMTP "+tr("server")+":"+smtp.server+":"+smtp.port);
     }
     else{
 
@@ -912,6 +914,7 @@ void admin_form::on_action_addAddr_triggered()
             new_data.recipient_name = addr_Data.getRecipient();
             new_data.address = addr_Data.getAddress();
             sql->addEMailAddr(&new_data);
+            getEMailAddrList();
         }
         else{
             QMessageBox::critical(this,tr("Error"), tr("Invalid e-mail address.")+"\n"+addr_Data.getAddress());
@@ -975,3 +978,9 @@ void admin_form::on_action_sendTestMsg_triggered()
 //  !!!! --- tab email --- !!!! {{
 
 
+
+
+void admin_form::on_label_smtp_server_linkActivated(const QString &link)
+{
+
+}

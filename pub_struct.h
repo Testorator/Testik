@@ -23,5 +23,9 @@ struct st_email{
     QString address;
 };
 
+struct st_smtp{
+    QString server;
+    QString port;
+};
 #endif // PUB_STRUCT_H
 
