@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     stud_dlg.cpp \
     encryption.cpp \
     email.cpp \
-    email_dlg.cpp
+    email_dlg.cpp \
+    smtp_dlg.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \
@@ -49,7 +50,8 @@ HEADERS  += maxtest.h \
     encryption.h \
     email.h \
     email_dlg.h \
-    pub_struct.h
+    pub_struct.h \
+    smtp_dlg.h
 
 FORMS    += maxtest.ui \
     second.ui \
@@ -64,7 +66,8 @@ FORMS    += maxtest.ui \
     question_mod_dialog.ui \
     theme_dlg.ui \
     stud_dlg.ui \
-    email_dlg.ui
+    email_dlg.ui \
+    smtp_dlg.ui
 
 DISTFILES += \
     muse.zip \
