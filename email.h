@@ -34,7 +34,7 @@ private slots:
     void stateChanged(QTcpSocket::SocketState socketState);
     void errorReceived(QTcpSocket::SocketError socketError);
     void disconnected();
-    void connected();
+//    void connected();
     void readyRead();
 };
 

@@ -2,7 +2,7 @@
 #include "ui_question_mod_dialog.h"
 #include "dbfunc.h"
 #include <QToolBar>
-
+#include <qmessagebox.h>
 question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::question_mod_dialog)
@@ -78,12 +78,18 @@ void question_mod_dialog::on_addAns_triggered()
     if(ui->textEdit_Answer->toPlainText().trimmed().length() == 0) ok = false;
     else {
 
-
-
-
+if( ui->tableWidget_Andwers->findItems(getAnswer(), Qt::MatchExactly).isEmpty())
+{
+int i = ui->tableWidget_Andwers->rowCount();
+ui->tableWidget_Andwers->insertRow(i);
+ui->tableWidget_Andwers->setItem(i,0,new QTableWidgetItem(getAnswer()));
+}
+else
+{
+    QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
+                                              "\""+getAnswer()+"\""+QObject::tr(" already exists!"));
+}
         }
-
-
 }
 //
 QVariant question_mod_dialog::getIndexBox()
@@ -91,9 +97,7 @@ QVariant question_mod_dialog::getIndexBox()
    return ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex());
  }
 //
-QString question_mod_dialog::getAnswer(QList<st_answer> *answers)
+QString question_mod_dialog::getAnswer()
 {
-    ui->tableWidget_Andwers->setColumnCount(answers->count());
-   for(int i=0;i<answers->count() ;i++)
-   ui->tableWidget_Andwers->item(0,i);
+    return ui->textEdit_Answer->toPlainText().trimmed();
 }

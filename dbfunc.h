@@ -77,7 +77,7 @@ public:
     bool addAnswer(st_answer data);
     bool delAnswer(QString ans_id, QString question_id);
     QList<QMap<QString,QVariant> > getAnswers(QVariant question_id);
-    bool answerUnique(const QString ans_text, bool silent);
+//   bool answerUnique(const QString ans_text, bool silent);
     //
     bool sendEMail();
     bool set_sendEMail(QVariant value);

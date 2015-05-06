@@ -109,6 +109,26 @@
             <property name="sortingEnabled">
              <bool>true</bool>
             </property>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <column>
+             <property name="text">
+              <string>Text of answer</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Comment</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Correct</string>
+             </property>
+            </column>
            </widget>
           </item>
           <item row="1" column="1">

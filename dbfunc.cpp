@@ -451,35 +451,35 @@ QList<QMap<QString,QVariant> > sql_cl::getAnswers(QVariant question_id)
     return result.sel_data;
 }
 //
-bool sql_cl::answerUnique(const QString ans_text, bool silent)
-{
-    bool result;
-    if(ans_text.isEmpty() || ans_text.isNull() || ans_text.trimmed().length() < 1){
-        result =false;
-    }
-    else{
-        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("answer",answers_crypt_key)+
-                                             " FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+" WHERE "+
-                                             crypt->mdEncrypt("answer",answers_crypt_key)+"="+
-                                             crypt->valueEncrypt(ans_text,answers_crypt_key)+";",answers_crypt_key);
-        if(q_res.q_result){
-            if(q_res.sel_data.count() > 0){
-                result = false;
-                if(!silent){
-                    QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
-                                          "\""+ans_text+"\""+QObject::tr(" already exists!"));
-                }
-            }
-            else{
-                result = true;
-            }
-        }
-        else{
-            result = false;
-        }
-    }
-    return result;
-}
+//bool sql_cl::answerUnique(const QString ans_text, bool silent)
+//{
+//    bool result;
+//    if(ans_text.isEmpty() || ans_text.isNull() || ans_text.trimmed().length() < 1){
+//        result =false;
+//    }
+//    else{
+//        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("answer",answers_crypt_key)+
+//                                             " FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+" WHERE "+
+//                                             crypt->mdEncrypt("answer",answers_crypt_key)+"="+
+//                                             crypt->valueEncrypt(ans_text,answers_crypt_key)+";",answers_crypt_key);
+//        if(q_res.q_result){
+//            if(q_res.sel_data.count() > 0){
+//                result = false;
+//                if(!silent){
+//                    QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
+//                                          "\""+ans_text+"\""+QObject::tr(" already exists!"));
+//                }
+//            }
+//            else{
+//                result = true;
+//            }
+//        }
+//        else{
+//            result = false;
+//        }
+//    }
+//    return result;
+//}
 //
 // **** ANSWERS **** }}
 //**********************************************

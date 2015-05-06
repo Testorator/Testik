@@ -22,7 +22,8 @@ public:
     QString getQuestion();
     QVariant getQuestionTheme();
     QVariant getIndexBox();
-    QString getAnswer(QList<st_answer> *answers);
+    QString getAnswer();
+    bool uniqueAns();
 private:
     Ui::question_mod_dialog *ui;
     QList<st_answer> *answers_from_db;

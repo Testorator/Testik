@@ -85,12 +85,12 @@ void email::disconnected()
     qDebug() << "error "  << socket->errorString();
 }
 //
-void email::connected()
-{
-    output->append("connected");
-    qDebug() << "Connected ";
-}
-
+//void email::connected()
+//{
+//    output->append("connected");
+//    qDebug() << "Connected ";
+//}
+//
 void email::readyRead()
 {
 
