@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include "pub_struct.h"
-
+#include <QTableWidgetItem>
 
 namespace Ui {
 class question_mod_dialog;
@@ -34,6 +34,9 @@ private:
 
 private slots:
     void on_addAns_triggered();
+    void on_saveAns_triggered();
+    void on_delAns_triggered();
+    void on_tableWidget_Andwers_itemClicked(QTableWidgetItem *item);
 };
 
 #endif // QUESTION_MOD_DIALOG_H

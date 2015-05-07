@@ -14,8 +14,10 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ptb->setIconSize(QSize(24, 24));
     addAns = new QAction(QIcon(":/resourse/add"),tr("Add"),ptb);
     connect(this->addAns,SIGNAL(triggered()),this,SLOT(on_addAns_triggered()));
-    saveAns = new QAction(QIcon(":/resourse/edit"),tr("Edit"),ptb);
+    saveAns = new QAction(QIcon(":/resourse/save"),tr("Save"),ptb);
+    connect(this->saveAns,SIGNAL(triggered()),this,SLOT(on_saveAns_triggered()));
     delAns = new QAction(QIcon(":/resourse/erase"),tr("Del"),ptb);
+    connect(this->delAns,SIGNAL(triggered()),this,SLOT(on_delAns_triggered()));
     ptb->addAction(addAns);
     ptb->addSeparator();
     ptb->addAction(saveAns);
@@ -23,7 +25,7 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ptb->addAction(delAns);
     ui->gridLayout_Answers_tb->addWidget(ptb,0,0,0,2,Qt::AlignTop);
     ui->comboBox_Themes->clear();
-    ui->tableWidget_Andwers->setColumnCount(3);
+    ui->tableWidget_Andwers->setColumnCount(2);
     loadAnswers(answers_from_db);
     ui->comboBox_Type->addItem(tr("text entry"), 1);
     ui->comboBox_Type->addItem(tr("one correct answer"), 2);
@@ -77,18 +79,28 @@ void question_mod_dialog::on_addAns_triggered()
     if(ui->textEdit_Answer->toPlainText().trimmed().length() == 0) ok = false;
     else {
 
-if( ui->tableWidget_Andwers->findItems(getAnswer(), Qt::MatchExactly).isEmpty())
-{
-int i = ui->tableWidget_Andwers->rowCount();
-ui->tableWidget_Andwers->insertRow(i);
-ui->tableWidget_Andwers->setItem(i,0,new QTableWidgetItem(getAnswer()));
-}
-else
+                if( ui->tableWidget_Andwers->findItems(getAnswer(), Qt::MatchExactly).isEmpty())
+                    {
+                        int i = ui->tableWidget_Andwers->rowCount();
+                        ui->tableWidget_Andwers->insertRow(i);
+                        ui->tableWidget_Andwers->setItem(i,0,new QTableWidgetItem(getAnswer()));
+                            if(ui->checkBox_AnsCorrect->isChecked()==true)
+                                    {
+                                        ui->tableWidget_Andwers->setItem(i,1, new QTableWidgetItem("X"));
+                                        ui->tableWidget_Andwers->minimumWidth();
+                            }
+                            else
+                                    {
+                                         ui->tableWidget_Andwers->setItem(i,1, new QTableWidgetItem(" "));
+                           }
+                    }
+    else
 {
     QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
                                               "\""+getAnswer()+"\""+QObject::tr(" already exists!"));
 }
         }
+    ui->textEdit_Answer->clear();
 }
 //
 QVariant question_mod_dialog::getIndexBox()
@@ -104,4 +116,22 @@ QString question_mod_dialog::getAnswer()
 QString question_mod_dialog::getComment()
 {
     return ui->textEdit_AnsComment->toPlainText().trimmed();
+}
+//
+void question_mod_dialog::on_saveAns_triggered()
+{
+QTableWidgetItem *itm = ui->tableWidget_Andwers->currentItem();
+ui->textEdit_Answer->setText(itm->text());
+}
+//
+void question_mod_dialog::on_delAns_triggered()
+{
+
+    ui->tableWidget_Andwers->removeRow(ui->tableWidget_Andwers->currentRow());
+}
+
+
+void question_mod_dialog::on_tableWidget_Andwers_itemClicked(QTableWidgetItem *item)
+{
+    ui->textEdit_Answer->setText(item->text());
 }
