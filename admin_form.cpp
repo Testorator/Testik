@@ -417,9 +417,10 @@ void admin_form::on_action_addQuest_triggered()
 
         QString quest_text=queMD_dialog.getQuestion();
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
+        QString comment = queMD_dialog.getComment();
         if(sql->questUnique(quest_text)){
 
-            sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getIndexBox().toString() );
+            sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getIndexBox().toString(), comment);
             // check answers an add them
         }
     }
@@ -465,7 +466,6 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             answer.question_id = answers.at(i)["question_id"].toString();
             answer.ans_id = answers.at(i)["id"].toString();
             answer.ans_text = answers.at(i)["answer"].toString();
-            answer.ans_comment = answers.at(i)["comment"].toString();
             answer.ans_correct = answers.at(i)["correct"].toBool();
 
 

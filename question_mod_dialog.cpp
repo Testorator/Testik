@@ -14,7 +14,7 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ptb->setIconSize(QSize(24, 24));
     addAns = new QAction(QIcon(":/resourse/add"),tr("Add"),ptb);
     connect(this->addAns,SIGNAL(triggered()),this,SLOT(on_addAns_triggered()));
-    saveAns = new QAction(QIcon(":/resourse/save"),tr("Save"),ptb);
+    saveAns = new QAction(QIcon(":/resourse/edit"),tr("Edit"),ptb);
     delAns = new QAction(QIcon(":/resourse/erase"),tr("Del"),ptb);
     ptb->addAction(addAns);
     ptb->addSeparator();
@@ -68,7 +68,6 @@ void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
     for(int a=0;a<answers->count();a++){
         ui->tableWidget_Andwers->setItem(a,0,new QTableWidgetItem(answers->at(a).ans_text));
         ui->tableWidget_Andwers->setItem(a,1,new QTableWidgetItem(answers->at(a).ans_correct));
-        ui->tableWidget_Andwers->setItem(a,2,new QTableWidgetItem(answers->at(a).ans_comment));
     }
 }
 //
@@ -100,4 +99,9 @@ QVariant question_mod_dialog::getIndexBox()
 QString question_mod_dialog::getAnswer()
 {
     return ui->textEdit_Answer->toPlainText().trimmed();
+}
+//
+QString question_mod_dialog::getComment()
+{
+    return ui->textEdit_AnsComment->toPlainText().trimmed();
 }

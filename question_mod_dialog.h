@@ -23,6 +23,7 @@ public:
     QVariant getQuestionTheme();
     QVariant getIndexBox();
     QString getAnswer();
+    QString getComment();
     bool uniqueAns();
 private:
     Ui::question_mod_dialog *ui;
