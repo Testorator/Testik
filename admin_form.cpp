@@ -202,8 +202,10 @@ void admin_form::on_listWidget_DB_clicked()
         getStudentsList();
         getEMailAddrList();
         ui->groupBox_SendEMail->setChecked(sql->sendEMail());
+        ui->label_smtp_server->setEnabled(ui->groupBox_SendEMail->isChecked());
         st_smtp smtp = sql->getSMTP();
-        ui->label_smtp_server->setText("SMTP "+tr("server")+":"+smtp.server+":"+smtp.port);
+        ui->lineEdit_smtp->setText(smtp.server+":"+smtp.port);
+
     }
     else{
 
@@ -884,6 +886,7 @@ void admin_form::clearEMailTable()
 void admin_form::on_groupBox_SendEMail_clicked()
 {
     sql->set_sendEMail(ui->groupBox_SendEMail->isChecked());
+    ui->label_smtp_server->setEnabled(ui->groupBox_SendEMail->isChecked());
 }
 //
 void admin_form::getEMailAddrList()
@@ -974,13 +977,26 @@ void admin_form::on_action_sendTestMsg_triggered()
 
     delete em;
 }
-
+//
+void admin_form::on_toolButton_save_smtp_clicked()
+{
+    QStringList strl = ui->lineEdit_smtp->text().split(":");
+    if(strl.at(0).length() != 0 && strl.at(1).length() != 0){
+        st_smtp new_data;
+        new_data.server = strl.at(0);
+        new_data.port = strl.at(1);
+        sql->updSMTP(&new_data);
+    }
+    else{
+        qDebug() << "SMTP: No data for save!";
+        QMessageBox::critical(this,tr("SMTP Error"),tr("No data for save!"));
+    }
+}
 //  !!!! --- tab email --- !!!! {{
 
 
 
 
-void admin_form::on_label_smtp_server_linkActivated(const QString &link)
-{
 
-}
+
+

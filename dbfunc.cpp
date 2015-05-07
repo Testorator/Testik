@@ -827,7 +827,7 @@ st_smtp sql_cl::getSMTP()
     st_smtp result;
 
     st_qRes sql_result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("smtp_server",options_crypt_key)+", "+
-                                              crypt->valueEncrypt("smtp_port",options_crypt_key)+" FROM "+
+                                              crypt->mdEncrypt("smtp_port",options_crypt_key)+" FROM "+
                                               crypt->mdEncrypt("options",options_crypt_key)+";",options_crypt_key);
     if(sql_result.sel_data.count() > 0){
         result.server = sql_result.sel_data.at(0)["smtp_server"].toString();
@@ -835,5 +835,12 @@ st_smtp sql_cl::getSMTP()
     }
     return result;
 }
+//
+ bool sql_cl::updSMTP(st_smtp *new_data)
+ {
+     return SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
+                               crypt->mdEncrypt("smtp_server",options_crypt_key)+"="+crypt->valueEncrypt(new_data->server,options_crypt_key)+", "+
+                               crypt->mdEncrypt("smtp_port",options_crypt_key)+"="+crypt->valueEncrypt(new_data->port,options_crypt_key)+";");
+ }
 
 // **** EMAIL **** }}

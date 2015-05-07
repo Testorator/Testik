@@ -315,20 +315,6 @@
             <layout class="QGridLayout" name="gridLayout_11">
              <item row="0" column="0">
               <layout class="QGridLayout" name="gridLayout_email">
-               <item row="0" column="0">
-                <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>Recipients:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_2">
-                 <property name="text">
-                  <string>TextLabel</string>
-                 </property>
-                </widget>
-               </item>
                <item row="3" column="0">
                 <widget class="QLabel" name="label_smtp_server">
                  <property name="enabled">
@@ -337,12 +323,35 @@
                  <property name="cursor">
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
+                 <property name="mouseTracking">
+                  <bool>true</bool>
+                 </property>
+                 <property name="focusPolicy">
+                  <enum>Qt::ClickFocus</enum>
+                 </property>
                  <property name="text">
-                  <string>TextLabel</string>
+                  <string>SMTP server:</string>
+                 </property>
+                 <property name="openExternalLinks">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0" colspan="2">
+               <item row="3" column="1">
+                <widget class="QLineEdit" name="lineEdit_smtp"/>
+               </item>
+               <item row="3" column="2">
+                <widget class="QToolButton" name="toolButton_save_smtp">
+                 <property name="text">
+                  <string>...</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="res.qrc">
+                   <normaloff>:/resourse/save</normaloff>:/resourse/save</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0" colspan="3">
                 <widget class="QTableWidget" name="tableWidget_email">
                  <property name="alternatingRowColors">
                   <bool>true</bool>
@@ -371,6 +380,20 @@
                    <string>id</string>
                   </property>
                  </column>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="3">
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Recipients:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="3">
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
                 </widget>
                </item>
               </layout>
