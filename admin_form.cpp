@@ -968,12 +968,14 @@ void admin_form::on_action_sendTestMsg_triggered()
 {
     email *em = new email;
     QList<st_email> addreses_from_db = sql->getEMailAddreses();
-    QStringList addreses;
-    for(int i=0; i<addreses_from_db.count();i++) addreses.append(addreses_from_db.at(i).address);
+    QString addreses;
+    for(int i=0; i<addreses_from_db.count();i++){
+        if(i>0) addreses.append("; ");
+        addreses.append(addreses_from_db.at(i).address);
+    }
     QString msg = "TEST message!";
     QString subj = "Test messsage from testorator ["+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"]";
-    QString send_result = (em->sendMessage(&subj,&addreses,&msg)) ? tr("Success") : tr("Failed");
-    QMessageBox::information(this,tr("Sending email"),tr("Sending email")+": "+send_result);
+    em->sendMessage(&subj,&addreses,&msg);
 
     delete em;
 }
