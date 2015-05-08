@@ -30,7 +30,19 @@ SOURCES += main.cpp\
     stud_dlg.cpp \
     encryption.cpp \
     email.cpp \
-    email_dlg.cpp
+    email_dlg.cpp \
+    smtpclient/emailaddress.cpp \
+    smtpclient/mimeattachment.cpp \
+    smtpclient/mimecontentformatter.cpp \
+    smtpclient/mimefile.cpp \
+    smtpclient/mimehtml.cpp \
+    smtpclient/mimeinlinefile.cpp \
+    smtpclient/mimemessage.cpp \
+    smtpclient/mimemultipart.cpp \
+    smtpclient/mimepart.cpp \
+    smtpclient/mimetext.cpp \
+    smtpclient/quotedprintable.cpp \
+    smtpclient/smtpclient.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \
@@ -49,7 +61,20 @@ HEADERS  += maxtest.h \
     encryption.h \
     email.h \
     email_dlg.h \
-    pub_struct.h
+    pub_struct.h \
+    smtpclient/emailaddress.h \
+    smtpclient/mimeattachment.h \
+    smtpclient/mimecontentformatter.h \
+    smtpclient/mimefile.h \
+    smtpclient/mimehtml.h \
+    smtpclient/mimeinlinefile.h \
+    smtpclient/mimemessage.h \
+    smtpclient/mimemultipart.h \
+    smtpclient/mimepart.h \
+    smtpclient/mimetext.h \
+    smtpclient/quotedprintable.h \
+    smtpclient/smtpclient.h \
+    smtpclient/smtpexports.h
 
 FORMS    += maxtest.ui \
     second.ui \
@@ -77,7 +102,8 @@ DISTFILES += \
     drivers/mac_os_x64/libqsqlibase_debug.dylib \
     drivers/mac_os_x64/libqsqlibase.dylib \
     data/QSLITE_BLANK.QLT \
-    data/db_ddl.sql
+    data/db_ddl.sql \
+    smtpclient/readme.txt
 
 RESOURCES += \
     res.qrc
