@@ -59,8 +59,8 @@ bool sql_cl::createNewDB()
                    " INTEGER NOT NULL DEFAULT 0, "+crypt->valueEncrypt("name",q_themes_crypt_key)+
                    " TEXT NOT NULL UNIQUE, FOREIGN KEY ("+crypt->valueEncrypt("parent_id",q_themes_crypt_key)+") REFERENCES "+
                    crypt->valueEncrypt("q_themes",q_themes_crypt_key)+" ("+crypt->valueEncrypt("id",q_themes_crypt_key)+") );");
-    queries.append("CREATE TABLE "+crypt->valueEncrypt("options",options_crypt_key)+"("+crypt->valueEncrypt("send_report_by_email",options_crypt_key)+
-                   "INTEGER NOT NULL DEFAULT 0, "+crypt->valueEncrypt("smtp_server",options_crypt_key)+" TEXT, "+crypt->valueEncrypt("smtp_port",options_crypt_key)+" TEXT);");
+    queries.append("CREATE TABLE "+crypt->valueEncrypt("options",options_crypt_key)+"("+crypt->valueEncrypt("opt_name",options_crypt_key)+
+                   " TEXT, "+crypt->valueEncrypt("value",options_crypt_key)+" TEXT );");
     queries.append("CREATE TABLE "+crypt->valueEncrypt("groups",groups_crypt_key)+" ("+crypt->valueEncrypt("id",groups_crypt_key)+
                    " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, "+crypt->valueEncrypt("code",groups_crypt_key)+" TEXT NOT NULL UNIQUE);");
     queries.append("CREATE TABLE "+crypt->valueEncrypt("answers",answers_crypt_key)+" ("+crypt->valueEncrypt("id",answers_crypt_key)+
@@ -156,7 +156,7 @@ QString sql_cl::convertTypeOfQuestions(int type)
 //**********************************************
 st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
 {
-    //    qDebug() << q_str;
+    qDebug() << q_str;
     st_qRes result;
 
     result.sel_data.clear();
@@ -667,10 +667,13 @@ bool sql_cl::studUnique(const QString Surname, const QString Name, const QString
 }
 // **** STUDENTS **** }}
 // **** OPTIONS **** {{
-bool sql_cl::options_hasRecords()
+bool sql_cl::options_hasRecord(QString option_name)
 {
     bool result = false;
-    st_qRes q_res = SendSimpleQueryStrWR("SELECT * FROM "+crypt->mdEncrypt("options",options_crypt_key),options_crypt_key);
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("opt_name",options_crypt_key)+
+                                         " FROM "+crypt->mdEncrypt("options",options_crypt_key)+
+                                         " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+
+                                          crypt->valueEncrypt(option_name,options_crypt_key),options_crypt_key);
 
     if(q_res.q_result){
         if(q_res.sel_data.count() > 0){
@@ -688,11 +691,14 @@ bool sql_cl::options_hasRecords()
 bool sql_cl::sendEMail()
 {
     bool result = false;
-    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("send_report_by_email",options_crypt_key)+" FROM "+
-                                         crypt->mdEncrypt("options",options_crypt_key),options_crypt_key);
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("opt_name",options_crypt_key)+", "+
+                                         crypt->mdEncrypt("value",options_crypt_key)+" FROM "+
+                                         crypt->mdEncrypt("options",options_crypt_key)+
+                                        " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+
+                                        crypt->valueEncrypt("smtp_send_mail",options_crypt_key),options_crypt_key);
 
     if(q_res.q_result && q_res.sel_data.count() > 0 ){
-        if(q_res.sel_data.at(0)["send_report_by_email"].toInt() == 1){
+        if(q_res.sel_data.at(0)["value"].toInt() == 1){
             result = true;
         }
         else{
@@ -705,14 +711,18 @@ bool sql_cl::sendEMail()
 bool sql_cl::set_sendEMail(QVariant value)
 {
     bool result;
-    if(options_hasRecords()){
+    if(options_hasRecord("smtp_send_mail")){
         result = SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
-                                    crypt->mdEncrypt("send_report_by_email",options_crypt_key)+"="+
-                                    crypt->valueEncrypt(QVariant(value.toInt()).toString(),options_crypt_key)+";");
+                                    crypt->mdEncrypt("value",options_crypt_key)+"="+
+                                    crypt->valueEncrypt(QVariant(value.toInt()).toString(),options_crypt_key)+
+                                    " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+
+                                    crypt->valueEncrypt("smtp_send_mail",options_crypt_key)+";");
     }
     else{
         result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("options",options_crypt_key)+"("+
-                                    crypt->mdEncrypt("send_report_by_email",options_crypt_key)+") VALUES("+
+                                    crypt->mdEncrypt("opt_name",options_crypt_key)+","+
+                                    crypt->mdEncrypt("value",options_crypt_key)+") VALUES("+
+                                    crypt->valueEncrypt("smtp_send_mail",options_crypt_key)+","+
                                     crypt->valueEncrypt(QVariant(value.toInt()).toString(),options_crypt_key)+");");
     }
     return result;
@@ -723,8 +733,8 @@ QList<st_email> sql_cl::getEMailAddreses()
     QList<st_email> result;
 
     st_qRes sql_res = SendSimpleQueryStrWR("SELECT rowid,"+crypt->mdEncrypt("recipient_name",email_addreses_crypt_key)+","+
-                                            crypt->mdEncrypt("address",email_addreses_crypt_key)+
-                                            " FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+";",email_addreses_crypt_key);
+                                           crypt->mdEncrypt("address",email_addreses_crypt_key)+
+                                           " FROM "+crypt->mdEncrypt("email_addreses",email_addreses_crypt_key)+";",email_addreses_crypt_key);
 
     if(sql_res.q_result){
         for(int i=0; i<sql_res.sel_data.count(); i++){
@@ -826,21 +836,94 @@ st_smtp sql_cl::getSMTP()
 {
     st_smtp result;
 
-    st_qRes sql_result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("smtp_server",options_crypt_key)+", "+
-                                              crypt->mdEncrypt("smtp_port",options_crypt_key)+" FROM "+
-                                              crypt->mdEncrypt("options",options_crypt_key)+";",options_crypt_key);
-    if(sql_result.sel_data.count() > 0){
-        result.server = sql_result.sel_data.at(0)["smtp_server"].toString();
-        result.port = sql_result.sel_data.at(0)["smtp_port"].toString();
+    st_qRes sql_result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("opt_name",options_crypt_key)+", "+crypt->mdEncrypt("value",options_crypt_key)+
+                                              " FROM "+crypt->mdEncrypt("options",options_crypt_key)+
+                                              " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+crypt->valueEncrypt("smtp_server",options_crypt_key)+
+                                              " OR "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+crypt->valueEncrypt("smtp_port",options_crypt_key)+
+                                              " OR "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+crypt->valueEncrypt("smtp_username",options_crypt_key)+
+                                              " OR "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+crypt->valueEncrypt("smtp_password",options_crypt_key)+
+                                              " OR "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+crypt->valueEncrypt("smtp_ssl",options_crypt_key)+
+                                              ";",options_crypt_key);
+    for(int i=0; i<sql_result.sel_data.count(); i++){
+        if(sql_result.sel_data.at(i)["opt_name"].toString() == "smtp_server"){
+            result.server = sql_result.sel_data.at(i)["value"].toString();
+        }
+        else if(sql_result.sel_data.at(i)["opt_name"].toString() == "smtp_port"){
+            result.port = sql_result.sel_data.at(i)["value"].toString();
+        }
+        else if(sql_result.sel_data.at(i)["opt_name"].toString() == "smtp_username"){
+            result.username = sql_result.sel_data.at(i)["value"].toString();
+        }
+        else if(sql_result.sel_data.at(i)["opt_name"].toString() == "smtp_password"){
+            result.password = sql_result.sel_data.at(i)["value"].toString();
+        }
+        else if(sql_result.sel_data.at(i)["opt_name"].toString() == "smtp_ssl"){
+            result.ssl = sql_result.sel_data.at(i)["value"].toBool();
+        }
     }
     return result;
 }
 //
- bool sql_cl::updSMTP(st_smtp *new_data)
- {
-     return SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
-                               crypt->mdEncrypt("smtp_server",options_crypt_key)+"="+crypt->valueEncrypt(new_data->server,options_crypt_key)+", "+
-                               crypt->mdEncrypt("smtp_port",options_crypt_key)+"="+crypt->valueEncrypt(new_data->port,options_crypt_key)+";");
- }
+bool sql_cl::updSMTP(st_smtp *new_data)
+{
+    bool result = false;
+
+    if(options_hasRecord("smtp_server")){
+        result = SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
+                                    crypt->mdEncrypt("value",options_crypt_key)+"="+crypt->valueEncrypt(new_data->server,options_crypt_key)+
+                                    " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+crypt->valueEncrypt("smtp_server",options_crypt_key)+";");
+    }
+    else{
+        result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("options",options_crypt_key)+"("+crypt->mdEncrypt("opt_name",options_crypt_key)+","+
+                                    crypt->mdEncrypt("value",options_crypt_key)+") VALUES("+crypt->valueEncrypt("smtp_server",options_crypt_key)+","+
+                                    crypt->valueEncrypt(new_data->server,options_crypt_key)+");");
+    }
+
+    if(options_hasRecord("smtp_port")){
+        result = SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
+                                    crypt->mdEncrypt("value",options_crypt_key)+"="+crypt->valueEncrypt(new_data->port,options_crypt_key)+
+                                    " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+crypt->valueEncrypt("smtp_port",options_crypt_key)+";");
+    }
+    else{
+        result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("options",options_crypt_key)+"("+crypt->mdEncrypt("opt_name",options_crypt_key)+","+
+                                    crypt->mdEncrypt("value",options_crypt_key)+") VALUES("+crypt->valueEncrypt("smtp_port",options_crypt_key)+","+
+                                    crypt->valueEncrypt(new_data->port,options_crypt_key)+");");
+    }
+
+    if(options_hasRecord("smtp_username")){
+        result = SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
+                                    crypt->mdEncrypt("value",options_crypt_key)+"="+crypt->valueEncrypt(new_data->username,options_crypt_key)+
+                                    " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+crypt->valueEncrypt("smtp_username",options_crypt_key)+";");
+    }
+    else{
+        result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("options",options_crypt_key)+"("+crypt->mdEncrypt("opt_name",options_crypt_key)+","+
+                                    crypt->mdEncrypt("value",options_crypt_key)+") VALUES("+crypt->valueEncrypt("smtp_username",options_crypt_key)+","+
+                                    crypt->valueEncrypt(new_data->username,options_crypt_key)+");");
+    }
+
+    if(options_hasRecord("smtp_password")){
+        result = SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
+                                    crypt->mdEncrypt("value",options_crypt_key)+"="+crypt->valueEncrypt(new_data->password,options_crypt_key)+
+                                    " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+crypt->valueEncrypt("smtp_password",options_crypt_key)+";");
+    }
+    else{
+        result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("options",options_crypt_key)+"("+crypt->mdEncrypt("opt_name",options_crypt_key)+","+
+                                    crypt->mdEncrypt("value",options_crypt_key)+") VALUES("+crypt->valueEncrypt("smtp_password",options_crypt_key)+","+
+                                    crypt->valueEncrypt(new_data->password,options_crypt_key)+");");
+    }
+
+    if(options_hasRecord("smtp_ssl")){
+        result = SendSimpleQueryStr("UPDATE "+crypt->mdEncrypt("options",options_crypt_key)+" SET "+
+                                    crypt->mdEncrypt("value",options_crypt_key)+"="+crypt->valueEncrypt(QVariant(new_data->ssl).toString(),options_crypt_key)+
+                                    " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+crypt->valueEncrypt("smtp_ssl",options_crypt_key)+";");
+    }
+    else{
+        result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("options",options_crypt_key)+"("+crypt->mdEncrypt("opt_name",options_crypt_key)+","+
+                                    crypt->mdEncrypt("value",options_crypt_key)+") VALUES("+crypt->valueEncrypt("smtp_ssl",options_crypt_key)+","+
+                                    crypt->valueEncrypt(QVariant(new_data->ssl).toString(),options_crypt_key)+");");
+    }
+
+    return result;
+}
 
 // **** EMAIL **** }}

@@ -25,6 +25,9 @@ struct st_email{
 struct st_smtp{
     QString server;
     QString port;
+    QString username;
+    QString password;
+    bool ssl;
 };
 #endif // PUB_STRUCT_H
 

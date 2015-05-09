@@ -90,7 +90,7 @@ public:
     st_smtp getSMTP();
     bool updSMTP(st_smtp *new_data);
     //
-    bool options_hasRecords();
+    bool options_hasRecord(QString option_name);
 };
 #endif // DBFUNC
 
