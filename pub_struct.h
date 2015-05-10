@@ -19,12 +19,17 @@ struct st_answer{
 struct st_email{
     QString id;
     QString recipient_name;
-    QString address;
+    QString recipient_address;
+    QString sender_name;
+    QString sender_address;
+    QString msg_subj;
+    QString msg_body;
+
 };
 
 struct st_smtp{
     QString server;
-    QString port;
+    int port;
     QString username;
     QString password;
     bool ssl;

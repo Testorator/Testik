@@ -29,44 +29,53 @@ email::~email()
 
 }
 //
-bool email::sendMessage(QString *subject, QString *addreses, QString *msg)
+bool email::sendMessage(st_email *msg_data, st_smtp *smtp_data)
 {
     bool result = false;
 
-    SmtpClient smtp("smtp.yandex.ru",465,SmtpClient::SslConnection);
+    SmtpClient smtp(smtp_data->server,smtp_data->port,SmtpClient::SslConnection);
 
-    smtp.setUser("akva-ymail@yandex.ru");
-    smtp.setPassword("");
+    if(smtp_data->username.trimmed().length() > 0){
+        smtp.setUser(smtp_data->username);
+        smtp.setPassword(smtp_data->password);
+    }
 
     MimeMessage message;
-    message.setSender(new EmailAddress("akva-ymail@yandex.ru"));
-    message.addRecipient(new EmailAddress(*addreses));
-    message.setSubject(*subject);
+    message.setSender(new EmailAddress(msg_data->sender_address, msg_data->sender_name));
+    message.addRecipient(new EmailAddress(msg_data->recipient_address, msg_data->recipient_name));
+    message.setSubject(msg_data->msg_subj);
 
     MimeText text;
-    text.setText(*msg);
+    text.setText(msg_data->msg_body);
 
     message.addPart(&text);
 
     result = smtp.connectToHost();
+    bool connected = false;
     if(!result){
         qDebug() << smtp.getResponseText();
         QMessageBox::critical(0,tr("Error"),(smtp.getResponseText().trimmed().length() == 0) ? "Connection error" : smtp.getResponseText());
     }
     else{
+        connected = true;
+    }
+
+    if(result && smtp_data->username.trimmed().length() >0){
         result = smtp.login();
         if(!result){
             qDebug() << smtp.getResponseText();
             QMessageBox::critical(0,tr("Error"),(smtp.getResponseText().trimmed().length() == 0) ? "Login error" : smtp.getResponseText());
         }
-        else{
-            result = smtp.sendMail(message);
-            if(!result){
-                qDebug() << smtp.getResponseText();
-                QMessageBox::critical(0,tr("Error"),(smtp.getResponseText().trimmed().length() == 0) ? "Send message error" : smtp.getResponseText());
-            }
-        }
-        smtp.quit();
     }
-    return result;
+    if(result){
+        result = smtp.sendMail(message);
+        if(!result){
+            qDebug() << smtp.getResponseText();
+            QMessageBox::critical(0,tr("Error"),(smtp.getResponseText().trimmed().length() == 0) ? "Send message error" : smtp.getResponseText());
+        }
+    }
+
+    if(connected) smtp.quit();
+
+return result;
 }

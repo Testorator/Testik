@@ -3,6 +3,7 @@
 #include "change_admin_pw_dialog.h"
 #include "email.h"
 #include "email_dlg.h"
+#include "smtp_set.h"
 
 #include <QDateTime>
 #include <QDebug>
@@ -50,21 +51,21 @@ admin_form::admin_form(QWidget *parent) :
 
     QToolBar* p_email_tb = new QToolBar("EMail toolbar");
     p_email_tb->setIconSize(QSize(18, 18));
-    addAddr = new QAction(QIcon(":/resourse/add"),tr("Add"),p_email_tb);
+    addAddr = new QAction(QIcon(":/resource/add"),tr("Add"),p_email_tb);
     connect(this->addAddr,SIGNAL(triggered()),this,SLOT(on_action_addAddr_triggered()));
-    editAddr = new QAction(QIcon(":/resourse/options"),tr("Edit"),p_email_tb);
+    editAddr = new QAction(QIcon(":/resource/edit"),tr("Edit"),p_email_tb);
     connect(this->editAddr,SIGNAL(triggered()),this,SLOT(on_action_editAddr_triggered()));
-    delAddr = new QAction(QIcon(":/resourse/erase"),tr("Delete"),p_email_tb);
+    delAddr = new QAction(QIcon(":/resource/erase"),tr("Delete"),p_email_tb);
     connect(this->delAddr,SIGNAL(triggered()),this,SLOT(on_action_delAddr_trigered()));
-    sendTestMsg = new QAction(QIcon(":/mail/send_test_msg"),tr("Send test message"),p_email_tb);
-    connect(this->sendTestMsg,SIGNAL(triggered()),this,SLOT(on_action_sendTestMsg_triggered()));
+    SMTP_settings = new QAction(QIcon(":/resource/options"),tr("SMTP settings"),p_email_tb);
+    connect(this->SMTP_settings,SIGNAL(triggered()),this,SLOT(on_action_SMTP_settings_triggered()));
     p_email_tb->addAction(addAddr);
     p_email_tb->addSeparator();
     p_email_tb->addAction(editAddr);
     p_email_tb->addSeparator();
     p_email_tb->addAction(delAddr);
     p_email_tb->addSeparator();
-    p_email_tb->addAction(sendTestMsg);
+    p_email_tb->addAction(SMTP_settings);
 
     ui->gridLayout_email->addWidget(p_email_tb,0,0,0,0,Qt::AlignTop);
 
@@ -202,10 +203,6 @@ void admin_form::on_listWidget_DB_clicked()
         getStudentsList();
         getEMailAddrList();
         ui->groupBox_SendEMail->setChecked(sql->sendEMail());
-        ui->label_smtp_server->setEnabled(ui->groupBox_SendEMail->isChecked());
-        st_smtp smtp = sql->getSMTP();
-        ui->lineEdit_smtp->setText(smtp.server+":"+smtp.port);
-
     }
     else{
 
@@ -567,7 +564,7 @@ void admin_form::on_treeWidget_students_customContextMenuRequested(const QPoint 
         else{
             QAction *act_EditGroup = new QAction(QIcon(":/stud/edit_group"),tr("Edit group"), this);
             connect(act_EditGroup,SIGNAL(triggered()),this,SLOT(on_pushButton_Edit_Stud_clicked()));
-            QAction *act_ClearGroup = new QAction(QIcon(":/resourse/erase"),tr("Clear group"),this);
+            QAction *act_ClearGroup = new QAction(QIcon(":/resource/erase"),tr("Clear group"),this);
             connect(act_ClearGroup,SIGNAL(triggered()),this,SLOT(on_action_clearGroup_clicked()));
             QAction *act_DelGroup = new QAction(QIcon(":/stud/del_group"),tr("Delete group"),this);
             connect(act_DelGroup,SIGNAL(triggered()),this,SLOT(on_pushButton_Delete_Stud_clicked()));
@@ -886,7 +883,6 @@ void admin_form::clearEMailTable()
 void admin_form::on_groupBox_SendEMail_clicked()
 {
     sql->set_sendEMail(ui->groupBox_SendEMail->isChecked());
-    ui->label_smtp_server->setEnabled(ui->groupBox_SendEMail->isChecked());
 }
 //
 void admin_form::getEMailAddrList()
@@ -899,12 +895,20 @@ void admin_form::getEMailAddrList()
         ui->tableWidget_email->setRowCount(addr_list.count());
         for(int i = 0; i < addr_list.count(); i++){
             ui->tableWidget_email->setItem(i,0,new QTableWidgetItem(addr_list.at(i).recipient_name));
-            ui->tableWidget_email->setItem(i,1,new QTableWidgetItem(addr_list.at(i).address));
+            ui->tableWidget_email->setItem(i,1,new QTableWidgetItem(addr_list.at(i).recipient_address));
             ui->tableWidget_email->setItem(i,2,new QTableWidgetItem(addr_list.at(i).id));
         }
     }
     ui->tableWidget_email->resizeColumnsToContents();
+    editAddr->setEnabled(false);
+    delAddr->setEnabled(false);
     this->setCursor(Qt::ArrowCursor);
+}
+//
+void admin_form::on_tableWidget_email_clicked(const QModelIndex &index)
+{
+    editAddr->setEnabled(true);
+    delAddr->setEnabled(true);
 }
 //
 void admin_form::on_action_addAddr_triggered()
@@ -915,7 +919,7 @@ void admin_form::on_action_addAddr_triggered()
         if(address_correct(addr_Data.getAddress())){
             st_email new_data;
             new_data.recipient_name = addr_Data.getRecipient();
-            new_data.address = addr_Data.getAddress();
+            new_data.recipient_address = addr_Data.getAddress();
             sql->addEMailAddr(&new_data);
             getEMailAddrList();
         }
@@ -934,7 +938,7 @@ void admin_form::on_action_editAddr_triggered()
         if(address_correct(addr_Data.getAddress())){
             st_email new_data;
             new_data.recipient_name = addr_Data.getRecipient();
-            new_data.address = addr_Data.getAddress();
+            new_data.recipient_address = addr_Data.getAddress();
             new_data.id = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),2)->text().trimmed();
             if(sql->updEMailAddr(&new_data)){
                 getEMailAddrList();
@@ -950,10 +954,10 @@ void admin_form::on_action_delAddr_trigered()
 {
     st_email del_data;
     del_data.recipient_name=ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),0)->text().trimmed();
-    del_data.address = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),1)->text().trimmed();
+    del_data.recipient_address = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),1)->text().trimmed();
     del_data.id = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),2)->text().trimmed();
     int ret = QMessageBox::question(this, tr("Removing address"),
-                                    tr("Are you shure want delete address")+" \""+del_data.address+"\" \n "+
+                                    tr("Are you shure want delete address")+" \""+del_data.recipient_address+"\" \n "+
                                     tr("for recipient")+" "+del_data.recipient_name+"?",
                                     QMessageBox::Yes | QMessageBox::No,
                                     QMessageBox::No);
@@ -964,37 +968,32 @@ void admin_form::on_action_delAddr_trigered()
     }
 }
 //
-void admin_form::on_action_sendTestMsg_triggered()
+void admin_form::on_action_SMTP_settings_triggered()
 {
-    email *em = new email;
     QList<st_email> addreses_from_db = sql->getEMailAddreses();
-    QString addreses;
-    for(int i=0; i<addreses_from_db.count();i++){
-        if(i>0) addreses.append("; ");
-        addreses.append(addreses_from_db.at(i).address);
-    }
-    QString msg = "TEST message!";
-    QString subj = "Test messsage from testorator ["+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"]";
-    em->sendMessage(&subj,&addreses,&msg);
+    smtp_set *smtp_settings = new smtp_set(&addreses_from_db);
 
-    delete em;
+    st_smtp db_data = sql->getSMTP();
+    smtp_settings->setServer(db_data.server);
+    smtp_settings->setPort(db_data.port);
+    smtp_settings->setUseSSL(db_data.ssl);
+    smtp_settings->setLogin(db_data.username);
+    smtp_settings->setPassword(db_data.password);
+
+    if(smtp_settings->exec()){
+        db_data.server = smtp_settings->getServer().trimmed();
+        db_data.port = smtp_settings->getPort();
+        db_data.ssl = smtp_settings->getUseSSL();
+        db_data.username = smtp_settings->getLogin().trimmed();
+        db_data.password = smtp_settings->getPassword().trimmed();
+        sql->updSMTP(&db_data);
+    }
 }
+
 //
-void admin_form::on_toolButton_save_smtp_clicked()
-{
-    QStringList strl = ui->lineEdit_smtp->text().split(":");
-    if(strl.at(0).length() != 0 && strl.at(1).length() != 0){
-        st_smtp new_data;
-        new_data.server = strl.at(0);
-        new_data.port = strl.at(1);
-        sql->updSMTP(&new_data);
-    }
-    else{
-        qDebug() << "SMTP: No data for save!";
-        QMessageBox::critical(this,tr("SMTP Error"),tr("No data for save!"));
-    }
-}
 //  !!!! --- tab email --- !!!! {{
+
+
 
 
 

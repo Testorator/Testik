@@ -12,11 +12,11 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
 
     QToolBar* ptb = new QToolBar("answers toolbar");
     ptb->setIconSize(QSize(24, 24));
-    addAns = new QAction(QIcon(":/resourse/add"),tr("Add"),ptb);
+    addAns = new QAction(QIcon(":/resource/add"),tr("Add"),ptb);
     connect(this->addAns,SIGNAL(triggered()),this,SLOT(on_addAns_triggered()));
-    saveAns = new QAction(QIcon(":/resourse/save"),tr("Save"),ptb);
+    saveAns = new QAction(QIcon(":/resource/save"),tr("Save"),ptb);
     connect(this->saveAns,SIGNAL(triggered()),this,SLOT(on_saveAns_triggered()));
-    delAns = new QAction(QIcon(":/resourse/erase"),tr("Del"),ptb);
+    delAns = new QAction(QIcon(":/resource/erase"),tr("Del"),ptb);
     connect(this->delAns,SIGNAL(triggered()),this,SLOT(on_delAns_triggered()));
     ptb->addAction(addAns);
     ptb->addSeparator();

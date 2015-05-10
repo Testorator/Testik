@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/resourse">
+    <qresource prefix="/resource">
         <file alias="add">img/add.png</file>
         <file alias="erase">img/delete.png</file>
         <file alias="save">img/disk.png</file>

@@ -1,16 +1,21 @@
 #include "smtp_set.h"
 #include "ui_smtp_set.h"
+#include "email.h"
 
-smtp_set::smtp_set(QWidget *parent) :
+#include <QDateTime>
+
+smtp_set::smtp_set(QList<st_email> *addreses, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::smtp_set)
 {
     ui->setupUi(this);
+    addr_list = addreses;
 }
 //
 smtp_set::~smtp_set()
 {
     delete ui;
+    delete addr_list;
 }
 //
 QString smtp_set::getServer()
@@ -61,4 +66,30 @@ QString smtp_set::getPassword()
 void smtp_set::setPassword(QString value)
 {
     ui->lineEdit_Password->setText(value);
+}
+//
+void smtp_set::on_toolButton_SendTestMsg_clicked()
+{
+    email *em = new email;
+
+    st_email msg_data;
+    for(int i=0; i<addr_list->count();i++){
+        if(i>0) msg_data.recipient_address.append("; ");
+        msg_data.recipient_address.append(addr_list->at(i).recipient_address);
+    }
+
+    msg_data.sender_address="akva-ymail@yandex.ru";
+
+    msg_data.msg_body = "TEST message!";
+    msg_data.msg_subj = "Test messsage from testorator ["+QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")+"]";
+
+    st_smtp smtp_data;
+    smtp_data.server = getServer();
+    smtp_data.port = getPort();
+    smtp_data.ssl = getUseSSL();
+    smtp_data.username = getLogin();
+    smtp_data.password = getPassword();
+    em->sendMessage(&msg_data, &smtp_data);
+
+    delete em;
 }

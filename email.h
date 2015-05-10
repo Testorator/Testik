@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QTextStream>
+#include "pub_struct.h"
 
 
 bool address_correct(QString addr);
@@ -14,7 +15,7 @@ class email : public QObject
 public:
     explicit email(QObject *parent = 0);
     ~email();
-    bool sendMessage(QString *subject, QString *addreses, QString *msg);
+    bool sendMessage(st_email *msg_data, st_smtp *smtp_data );
 
 signals:
 
