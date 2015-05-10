@@ -74,7 +74,8 @@ HEADERS  += maxtest.h \
     smtpclient/mimetext.h \
     smtpclient/quotedprintable.h \
     smtpclient/smtpclient.h \
-    smtpclient/smtpexports.h
+    smtpclient/smtpexports.h \
+    smtpclient/SmtpMime
 
 FORMS    += maxtest.ui \
     second.ui \
