@@ -84,24 +84,26 @@ void question_mod_dialog::on_addAns_triggered()
                         int i = ui->tableWidget_Andwers->rowCount();
                         ui->tableWidget_Andwers->insertRow(i);
                         ui->tableWidget_Andwers->setItem(i,0,new QTableWidgetItem(getAnswer()));
-                            if(ui->checkBox_AnsCorrect->isChecked()==true)
-                                    {
-                                        ui->tableWidget_Andwers->setItem(i,1, new QTableWidgetItem("X"));
-                                        ui->tableWidget_Andwers->minimumWidth();
+                        if(ui->checkBox_AnsCorrect->isChecked()==true){
+                            ui->tableWidget_Andwers->setCellWidget(i,1,new QCheckBox(ui->tableWidget_Andwers));
+                                QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Andwers->cellWidget(i, 1)));
+                                    pCheckB->setChecked(true);
+                                    pCheckB->setDisabled(true);
+                                }
                             }
-                            else
-                                    {
-                                         ui->tableWidget_Andwers->setItem(i,1, new QTableWidgetItem(" "));
-                           }
+
+                else
+            {
+                QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
+                                                          "\""+getAnswer()+"\""+QObject::tr(" already exists!"));
+            }
                     }
-    else
-{
-    QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
-                                              "\""+getAnswer()+"\""+QObject::tr(" already exists!"));
-}
+
+     ui->textEdit_Answer->clear();
         }
-    ui->textEdit_Answer->clear();
-}
+
+
+
 //
 QVariant question_mod_dialog::getIndexBox()
  {

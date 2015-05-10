@@ -3,7 +3,9 @@
 #include <QRegExpValidator>
 #include <QMessageBox>
 
-#include "smtpclient/SmtpMime"
+#include "smtpclient/smtpclient.h"
+#include "smtpclient/emailaddress.h"
+#include "smtpclient/mimetext.h"
 
 bool address_correct(QString addr)
 {
