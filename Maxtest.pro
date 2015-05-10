@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     smtpclient/mimepart.cpp \
     smtpclient/mimetext.cpp \
     smtpclient/quotedprintable.cpp \
-    smtpclient/smtpclient.cpp
+    smtpclient/smtpclient.cpp \
+    smtp_set.cpp
 
 HEADERS  += maxtest.h \
     test_results.h \
@@ -75,7 +76,8 @@ HEADERS  += maxtest.h \
     smtpclient/quotedprintable.h \
     smtpclient/smtpclient.h \
     smtpclient/smtpexports.h \
-    smtpclient/SmtpMime
+    smtpclient/SmtpMime \
+    smtp_set.h
 
 FORMS    += maxtest.ui \
     second.ui \
@@ -91,7 +93,7 @@ FORMS    += maxtest.ui \
     theme_dlg.ui \
     stud_dlg.ui \
     email_dlg.ui \
-    smtp_dlg.ui
+    smtp_set.ui
 
 DISTFILES += \
     muse.zip \
