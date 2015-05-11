@@ -36,7 +36,7 @@ private slots:
     void on_addAns_triggered();
     void on_saveAns_triggered();
     void on_delAns_triggered();
-    void on_tableWidget_Andwers_itemClicked(QTableWidgetItem *item);
+    void on_tableWidget_Answers_itemClicked(QTableWidgetItem *item);
 };
 
 #endif // QUESTION_MOD_DIALOG_H

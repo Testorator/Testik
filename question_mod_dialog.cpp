@@ -25,7 +25,7 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ptb->addAction(delAns);
     ui->gridLayout_Answers_tb->addWidget(ptb,0,0,0,2,Qt::AlignTop);
     ui->comboBox_Themes->clear();
-    ui->tableWidget_Andwers->setColumnCount(2);
+    ui->tableWidget_Answers->setColumnCount(2);
     loadAnswers(answers_from_db);
     ui->comboBox_Type->addItem(tr("text entry"), 1);
     ui->comboBox_Type->addItem(tr("one correct answer"), 2);
@@ -65,33 +65,32 @@ void question_mod_dialog::setQuestionText(QString text)
 //
 void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
 {
-    ui->tableWidget_Andwers->clear();
-    ui->tableWidget_Andwers->setRowCount(answers->count());
+    ui->tableWidget_Answers->clear();
+    ui->tableWidget_Answers->setRowCount(answers->count());
     for(int a=0;a<answers->count();a++){
-        ui->tableWidget_Andwers->setItem(a,0,new QTableWidgetItem(answers->at(a).ans_text));
-        ui->tableWidget_Andwers->setItem(a,1,new QTableWidgetItem(answers->at(a).ans_correct));
+        ui->tableWidget_Answers->setItem(a,0,new QTableWidgetItem(answers->at(a).ans_text));
+        ui->tableWidget_Answers->setItem(a,1,new QTableWidgetItem(answers->at(a).ans_correct));
     }
 }
 //
 void question_mod_dialog::on_addAns_triggered()
 {
-    bool ok = true;
-    if(ui->textEdit_Answer->toPlainText().trimmed().length() == 0) ok = false;
-    else {
-
-        if( ui->tableWidget_Andwers->findItems(getAnswer(), Qt::MatchExactly).isEmpty())
+    bool ok = false;
+    if(ui->textEdit_Answer->toPlainText().trimmed().length() > 0){
+        ok = true;
+        if( ui->tableWidget_Answers->findItems(getAnswer(), Qt::MatchExactly).count() == 0)
         {
-            int i = ui->tableWidget_Andwers->rowCount();
-            ui->tableWidget_Andwers->insertRow(i);
-            ui->tableWidget_Andwers->setItem(i,0,new QTableWidgetItem(getAnswer()));
-            if(ui->comboBox_Type->currentData()==2)
+            int i = ui->tableWidget_Answers->rowCount();
+            ui->tableWidget_Answers->insertRow(i);
+            ui->tableWidget_Answers->setItem(i,0,new QTableWidgetItem(getAnswer()));
+            if(ui->comboBox_Type->currentData() == 2)
             {
-                ui->tableWidget_Andwers->setCellWidget(i,1,new QCheckBox(ui->tableWidget_Andwers));
-                QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Andwers->cellWidget(i, 1)));
+                ui->tableWidget_Answers->setCellWidget(i,1,new QCheckBox);
+                QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Answers->cellWidget(i, 1)));
 
-                for(int l=0;l<ui->tableWidget_Andwers->rowCount();l++)
+                for(int l=0;l<ui->tableWidget_Answers->rowCount();l++)
                 {
-                    QString  bb=ui->tableWidget_Andwers->item(l,1)->text();
+                    QString  bb=ui->tableWidget_Answers->item(l,1)->text();
                 }
 
 
@@ -132,18 +131,18 @@ QString question_mod_dialog::getComment()
 //
 void question_mod_dialog::on_saveAns_triggered()
 {
-    QTableWidgetItem *itm = ui->tableWidget_Andwers->currentItem();
+    QTableWidgetItem *itm = ui->tableWidget_Answers->currentItem();
     ui->textEdit_Answer->setText(itm->text());
 }
 //
 void question_mod_dialog::on_delAns_triggered()
 {
 
-    ui->tableWidget_Andwers->removeRow(ui->tableWidget_Andwers->currentRow());
+    ui->tableWidget_Answers->removeRow(ui->tableWidget_Answers->currentRow());
 }
 
 
-void question_mod_dialog::on_tableWidget_Andwers_itemClicked(QTableWidgetItem *item)
+void question_mod_dialog::on_tableWidget_Answers_itemClicked(QTableWidgetItem *item)
 {
     ui->textEdit_Answer->setText(item->text());
 }

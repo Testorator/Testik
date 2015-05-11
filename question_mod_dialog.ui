@@ -96,7 +96,7 @@
            </widget>
           </item>
           <item row="1" column="0" rowspan="3">
-           <widget class="QTableWidget" name="tableWidget_Andwers">
+           <widget class="QTableWidget" name="tableWidget_Answers">
             <property name="editTriggers">
              <set>QAbstractItemView::SelectedClicked</set>
             </property>
