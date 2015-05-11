@@ -84,23 +84,34 @@ void question_mod_dialog::on_addAns_triggered()
                         int i = ui->tableWidget_Andwers->rowCount();
                         ui->tableWidget_Andwers->insertRow(i);
                         ui->tableWidget_Andwers->setItem(i,0,new QTableWidgetItem(getAnswer()));
-                        if(ui->checkBox_AnsCorrect->isChecked()==true){
+                        if(ui->comboBox_Type->currentData()==2)
+                      {
                             ui->tableWidget_Andwers->setCellWidget(i,1,new QCheckBox(ui->tableWidget_Andwers));
                                 QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Andwers->cellWidget(i, 1)));
+
+                        for(int l=0;l<ui->tableWidget_Andwers->rowCount();l++)
+                        {
+                        QString  bb;
+                        bb.append(ui->tableWidget_Andwers->item(l,1));
+                             }
+
+
+                        if(ui->checkBox_AnsCorrect->isChecked()==true){                            
                                     pCheckB->setChecked(true);
-                                    pCheckB->setDisabled(true);
                                 }
                             }
+                        }
+
+
 
                 else
             {
                 QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
                                                           "\""+getAnswer()+"\""+QObject::tr(" already exists!"));
             }
+    ui->textEdit_Answer->clear();
                     }
-
-     ui->textEdit_Answer->clear();
-        }
+}
 
 
 
