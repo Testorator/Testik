@@ -890,12 +890,12 @@ void admin_form::getEMailAddrList()
     this->setCursor(Qt::BusyCursor);
     clearEMailTable();
     ui->tableWidget_email->hideColumn(2);
-    QList<st_email> addr_list = sql->getEMailAddreses();
+    QList<st_recipient> addr_list = sql->getEMailAddreses();
     if(addr_list.count() > 0){
         ui->tableWidget_email->setRowCount(addr_list.count());
         for(int i = 0; i < addr_list.count(); i++){
-            ui->tableWidget_email->setItem(i,0,new QTableWidgetItem(addr_list.at(i).recipient_name));
-            ui->tableWidget_email->setItem(i,1,new QTableWidgetItem(addr_list.at(i).recipient_address));
+            ui->tableWidget_email->setItem(i,0,new QTableWidgetItem(addr_list.at(i).name));
+            ui->tableWidget_email->setItem(i,1,new QTableWidgetItem(addr_list.at(i).address));
             ui->tableWidget_email->setItem(i,2,new QTableWidgetItem(addr_list.at(i).id));
         }
     }
@@ -917,9 +917,9 @@ void admin_form::on_action_addAddr_triggered()
 
     if(addr_Data.exec()){
         if(address_correct(addr_Data.getAddress())){
-            st_email new_data;
-            new_data.recipient_name = addr_Data.getRecipient();
-            new_data.recipient_address = addr_Data.getAddress();
+            st_recipient new_data;
+            new_data.name = addr_Data.getRecipient();
+            new_data.address = addr_Data.getAddress();
             sql->addEMailAddr(&new_data);
             getEMailAddrList();
         }
@@ -936,9 +936,9 @@ void admin_form::on_action_editAddr_triggered()
     addr_Data.setAddress(ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),1)->text().trimmed());
     if(addr_Data.exec()){
         if(address_correct(addr_Data.getAddress())){
-            st_email new_data;
-            new_data.recipient_name = addr_Data.getRecipient();
-            new_data.recipient_address = addr_Data.getAddress();
+            st_recipient new_data;
+            new_data.name = addr_Data.getRecipient();
+            new_data.address = addr_Data.getAddress();
             new_data.id = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),2)->text().trimmed();
             if(sql->updEMailAddr(&new_data)){
                 getEMailAddrList();
@@ -952,13 +952,13 @@ void admin_form::on_action_editAddr_triggered()
 //
 void admin_form::on_action_delAddr_trigered()
 {
-    st_email del_data;
-    del_data.recipient_name=ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),0)->text().trimmed();
-    del_data.recipient_address = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),1)->text().trimmed();
+    st_recipient del_data;
+    del_data.name=ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),0)->text().trimmed();
+    del_data.address = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),1)->text().trimmed();
     del_data.id = ui->tableWidget_email->item(ui->tableWidget_email->currentItem()->row(),2)->text().trimmed();
     int ret = QMessageBox::question(this, tr("Removing address"),
-                                    tr("Are you shure want delete address")+" \""+del_data.recipient_address+"\" \n "+
-                                    tr("for recipient")+" "+del_data.recipient_name+"?",
+                                    tr("Are you shure want delete address")+" \""+del_data.address+"\" \n "+
+                                    tr("for recipient")+" "+del_data.name+"?",
                                     QMessageBox::Yes | QMessageBox::No,
                                     QMessageBox::No);
     if(ret == QMessageBox::Yes){
@@ -970,13 +970,14 @@ void admin_form::on_action_delAddr_trigered()
 //
 void admin_form::on_action_SMTP_settings_triggered()
 {
-    QList<st_email> addreses_from_db = sql->getEMailAddreses();
+    QList<st_recipient> addreses_from_db = sql->getEMailAddreses();
     smtp_set *smtp_settings = new smtp_set(&addreses_from_db);
 
     st_smtp db_data = sql->getSMTP();
     smtp_settings->setServer(db_data.server);
     smtp_settings->setPort(db_data.port);
     smtp_settings->setUseSSL(db_data.ssl);
+    smtp_settings->setMailFrom(db_data.mail_from);
     smtp_settings->setLogin(db_data.username);
     smtp_settings->setPassword(db_data.password);
 
@@ -984,6 +985,7 @@ void admin_form::on_action_SMTP_settings_triggered()
         db_data.server = smtp_settings->getServer().trimmed();
         db_data.port = smtp_settings->getPort();
         db_data.ssl = smtp_settings->getUseSSL();
+        db_data.mail_from = smtp_settings->getMailFrom();
         db_data.username = smtp_settings->getLogin().trimmed();
         db_data.password = smtp_settings->getPassword().trimmed();
         sql->updSMTP(&db_data);

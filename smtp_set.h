@@ -13,7 +13,7 @@ class smtp_set : public QDialog
     Q_OBJECT
 
 public:
-    explicit smtp_set(QList<st_email> *addreses, QWidget *parent = 0);
+    explicit smtp_set(QList<st_recipient> *addreses, QWidget *parent = 0);
     ~smtp_set();
     QString getServer();
     void setServer(QString value);
@@ -21,6 +21,8 @@ public:
     void setPort(int value);
     bool getUseSSL();
     void setUseSSL(bool value);
+    QString getMailFrom();
+    void setMailFrom(QString value);
     QString getLogin();
     void setLogin(QString value);
     QString getPassword();
@@ -29,9 +31,11 @@ public:
 private slots:
     void on_toolButton_SendTestMsg_clicked();
 
+    void on_lineEdit_mailFrom_editingFinished();
+
 private:
     Ui::smtp_set *ui;
-    QList<st_email> *addr_list;
+    QList<st_recipient> *addr_list;
 };
 
 #endif // SMTP_SET_H

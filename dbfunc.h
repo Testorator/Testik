@@ -81,12 +81,12 @@ public:
     //
     bool sendEMail();
     bool set_sendEMail(QVariant value);
-    QList<st_email> getEMailAddreses();
-    bool uniqEMailAddr(st_email *new_data);
-    bool addEMailAddr(st_email *new_data);
-    st_email getEMailAddressDataByRId(QString id);
-    bool updEMailAddr(st_email *new_data);
-    bool delEMailAddr(st_email *del_data);
+    QList<st_recipient> getEMailAddreses();
+    bool uniqEMailAddr(st_recipient *new_data);
+    bool addEMailAddr(st_recipient *new_data);
+    st_recipient getEMailAddressDataByRId(QString id);
+    bool updEMailAddr(st_recipient *new_data);
+    bool delEMailAddr(st_recipient *del_data);
     st_smtp getSMTP();
     bool updSMTP(st_smtp *new_data);
     //

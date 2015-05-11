@@ -41,8 +41,10 @@ bool email::sendMessage(st_email *msg_data, st_smtp *smtp_data)
     }
 
     MimeMessage message;
-    message.setSender(new EmailAddress(msg_data->sender_address, msg_data->sender_name));
-    message.addRecipient(new EmailAddress(msg_data->recipient_address, msg_data->recipient_name));
+    message.setSender(new EmailAddress(smtp_data->mail_from));
+    for(int r=0; r<msg_data->recipient.count(); r++){
+        message.addRecipient(new EmailAddress(msg_data->recipient.at(r).address, msg_data->recipient.at(r).name));
+    }
     message.setSubject(msg_data->msg_subj);
 
     MimeText text;
@@ -77,5 +79,5 @@ bool email::sendMessage(st_email *msg_data, st_smtp *smtp_data)
 
     if(connected) smtp.quit();
 
-return result;
+    return result;
 }

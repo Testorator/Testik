@@ -16,12 +16,14 @@ struct st_answer{
     bool ans_correct;
 };
 
-struct st_email{
+struct st_recipient{
     QString id;
-    QString recipient_name;
-    QString recipient_address;
-    QString sender_name;
-    QString sender_address;
+    QString name;
+    QString address;
+};
+
+struct st_email{
+    QList<st_recipient> recipient;
     QString msg_subj;
     QString msg_body;
 
@@ -30,6 +32,7 @@ struct st_email{
 struct st_smtp{
     QString server;
     int port;
+    QString mail_from;
     QString username;
     QString password;
     bool ssl;

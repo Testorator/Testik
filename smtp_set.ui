@@ -7,14 +7,17 @@
     <x>0</x>
     <y>0</y>
     <width>452</width>
-    <height>280</height>
+    <height>327</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="1">
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="lineEdit_mailFrom"/>
+   </item>
+   <item row="5" column="1">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -24,8 +27,11 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="5" column="0">
     <widget class="QToolButton" name="toolButton_SendTestMsg">
+     <property name="toolTip">
+      <string>Send test message</string>
+     </property>
      <property name="text">
       <string>...</string>
      </property>
@@ -35,7 +41,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
+   <item row="4" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox_Login">
      <property name="title">
       <string>Login</string>
@@ -68,13 +74,20 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="0" colspan="2">
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Mail from:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox_server">
      <property name="title">
       <string>Smtp server</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
+      <item row="2" column="0">
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="2">
          <widget class="QLabel" name="label_2">

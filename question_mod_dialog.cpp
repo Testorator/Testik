@@ -79,47 +79,46 @@ void question_mod_dialog::on_addAns_triggered()
     if(ui->textEdit_Answer->toPlainText().trimmed().length() == 0) ok = false;
     else {
 
-                if( ui->tableWidget_Andwers->findItems(getAnswer(), Qt::MatchExactly).isEmpty())
-                    {
-                        int i = ui->tableWidget_Andwers->rowCount();
-                        ui->tableWidget_Andwers->insertRow(i);
-                        ui->tableWidget_Andwers->setItem(i,0,new QTableWidgetItem(getAnswer()));
-                        if(ui->comboBox_Type->currentData()==2)
-                      {
-                            ui->tableWidget_Andwers->setCellWidget(i,1,new QCheckBox(ui->tableWidget_Andwers));
-                                QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Andwers->cellWidget(i, 1)));
-
-                        for(int l=0;l<ui->tableWidget_Andwers->rowCount();l++)
-                        {
-                        QString  bb;
-                        bb.append(ui->tableWidget_Andwers->item(l,1));
-                             }
-
-
-                        if(ui->checkBox_AnsCorrect->isChecked()==true){                            
-                                    pCheckB->setChecked(true);
-                                }
-                            }
-                        }
-
-
-
-                else
+        if( ui->tableWidget_Andwers->findItems(getAnswer(), Qt::MatchExactly).isEmpty())
+        {
+            int i = ui->tableWidget_Andwers->rowCount();
+            ui->tableWidget_Andwers->insertRow(i);
+            ui->tableWidget_Andwers->setItem(i,0,new QTableWidgetItem(getAnswer()));
+            if(ui->comboBox_Type->currentData()==2)
             {
-                QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
-                                                          "\""+getAnswer()+"\""+QObject::tr(" already exists!"));
+                ui->tableWidget_Andwers->setCellWidget(i,1,new QCheckBox(ui->tableWidget_Andwers));
+                QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Andwers->cellWidget(i, 1)));
+
+                for(int l=0;l<ui->tableWidget_Andwers->rowCount();l++)
+                {
+                    QString  bb=ui->tableWidget_Andwers->item(l,1)->text();
+                }
+
+
+                if(ui->checkBox_AnsCorrect->isChecked()==true){
+                    pCheckB->setChecked(true);
+                }
             }
-    ui->textEdit_Answer->clear();
-                    }
+        }
+
+
+
+        else
+        {
+            QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
+                                  "\""+getAnswer()+"\""+QObject::tr(" already exists!"));
+        }
+        ui->textEdit_Answer->clear();
+    }
 }
 
 
 
 //
 QVariant question_mod_dialog::getIndexBox()
- {
-   return ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex());
- }
+{
+    return ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex());
+}
 //
 QString question_mod_dialog::getAnswer()
 {
@@ -133,8 +132,8 @@ QString question_mod_dialog::getComment()
 //
 void question_mod_dialog::on_saveAns_triggered()
 {
-QTableWidgetItem *itm = ui->tableWidget_Andwers->currentItem();
-ui->textEdit_Answer->setText(itm->text());
+    QTableWidgetItem *itm = ui->tableWidget_Andwers->currentItem();
+    ui->textEdit_Answer->setText(itm->text());
 }
 //
 void question_mod_dialog::on_delAns_triggered()
