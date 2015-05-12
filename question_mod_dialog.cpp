@@ -92,9 +92,6 @@ void question_mod_dialog::on_addAns_triggered()
                 }
             }
         }
-
-
-
         else
         {
             QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
@@ -103,9 +100,6 @@ void question_mod_dialog::on_addAns_triggered()
         ui->textEdit_Answer->clear();
     }
 }
-
-
-
 //
 QVariant question_mod_dialog::getIndexBox()
 {
