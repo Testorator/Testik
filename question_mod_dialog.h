@@ -1,9 +1,10 @@
 #ifndef QUESTION_MOD_DIALOG_H
 #define QUESTION_MOD_DIALOG_H
 
-#include <QDialog>
 #include "pub_struct.h"
+#include <QDialog>
 #include <QTableWidgetItem>
+#include <QCheckBox>
 
 namespace Ui {
 class question_mod_dialog;
@@ -22,13 +23,14 @@ public:
     QString getQuestion();
     QVariant getQuestionTheme();
     QVariant getIndexBox();
-    QString getAnswer();
+//    QString getAnswer(QString answerText);
     QString getComment();
     bool uniqueAns();
 private:
     Ui::question_mod_dialog *ui;
     QList<st_answer> *answers_from_db;
     QList<st_answer> answers;
+    QList< QCheckBox* > answersChecks;
     QAction *addAns, *saveAns, *delAns;
     void loadAnswers(QList<st_answer> *answers);
 

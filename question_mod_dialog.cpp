@@ -1,8 +1,12 @@
 #include "question_mod_dialog.h"
 #include "ui_question_mod_dialog.h"
 #include "dbfunc.h"
+#include "answer_mod_dlg.h"
 #include <QToolBar>
-#include <qmessagebox.h>
+#include <QMessageBox>
+
+
+
 question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::question_mod_dialog)
@@ -14,7 +18,7 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ptb->setIconSize(QSize(24, 24));
     addAns = new QAction(QIcon(":/resource/add"),tr("Add"),ptb);
     connect(this->addAns,SIGNAL(triggered()),this,SLOT(on_addAns_triggered()));
-    saveAns = new QAction(QIcon(":/resource/save"),tr("Save"),ptb);
+    saveAns = new QAction(QIcon(":/resource/edit"),tr("Edit"),ptb);
     connect(this->saveAns,SIGNAL(triggered()),this,SLOT(on_saveAns_triggered()));
     delAns = new QAction(QIcon(":/resource/erase"),tr("Del"),ptb);
     connect(this->delAns,SIGNAL(triggered()),this,SLOT(on_delAns_triggered()));
@@ -25,11 +29,11 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ptb->addAction(delAns);
     ui->gridLayout_Answers_tb->addWidget(ptb,0,0,0,2,Qt::AlignTop);
     ui->comboBox_Themes->clear();
-    ui->tableWidget_Answers->setColumnCount(2);
     loadAnswers(answers_from_db);
     ui->comboBox_Type->addItem(tr("text entry"), 1);
     ui->comboBox_Type->addItem(tr("one correct answer"), 2);
     ui->comboBox_Type->addItem(tr("many correct answers"), 3);
+    answersChecks.clear();
 }
 //
 question_mod_dialog::~question_mod_dialog()
@@ -76,29 +80,45 @@ void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
 void question_mod_dialog::on_addAns_triggered()
 {
     bool ok = false;
-    if(ui->textEdit_Answer->toPlainText().trimmed().length() > 0){
-        ok = true;
-        if( ui->tableWidget_Answers->findItems(getAnswer(), Qt::MatchExactly).count() == 0)
-        {
-            int i = ui->tableWidget_Answers->rowCount();
-            ui->tableWidget_Answers->insertRow(i);
-            ui->tableWidget_Answers->setItem(i,0,new QTableWidgetItem(getAnswer()));
-            ui->tableWidget_Answers->setCellWidget(i,1,new QCheckBox);
-            QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Answers->cellWidget(i, 1)));
-            if(ui->comboBox_Type->currentData() == 2)
+    int answer_type = ui->comboBox_Type->currentData().toInt();
+    bool check_available = false;
+    if(answer_type == 3) {
+        check_available = true;
+    }
+    else if(answer_type == 2){
+        // FIXME: добавить проверку наличия в списке ответов метки корректного ответа
+    }
+    answer_mod_dlg *dlg = new answer_mod_dlg(answer_type,check_available);
+    dlg->setWindowTitle(tr("Add answer")+"...");
+    if(dlg->exec()){
+        if(dlg->getAnswerText().length() > 0){
+            ok = true;
+            if( ui->tableWidget_Answers->findItems(dlg->getAnswerText(), Qt::MatchExactly).count() == 0)
             {
-                if(ui->checkBox_AnsCorrect->isChecked()==true){
-                    pCheckB->setChecked(true);
+                int i = ui->tableWidget_Answers->rowCount();
+                ui->tableWidget_Answers->insertRow(i);
+                ui->tableWidget_Answers->setItem(i,0,new QTableWidgetItem(dlg->getAnswerText()));
+
+                answersChecks.insert(i,new QCheckBox(this));
+                answersChecks.at(i)->setChecked(dlg->getAnswerCorrectFlag());
+                ui->tableWidget_Answers->setCellWidget(i,1,answersChecks.at(i));
+//                QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Answers->cellWidget(i, 1)));
+//                if(answer_type > 1){
+//                        pCheckB->setChecked(dlg->getAnswerCorrectFlag());
+//                }
+            }
+            else
+            {
+                QString answerText = dlg->getAnswerText();
+                if(answerText.length() > 30){
+                    answerText = dlg->getAnswerText().left(20)+"....."+dlg->getAnswerText().right(10);
                 }
+                QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
+                                      "\""+answerText+"\""+QObject::tr(" already exists!"));
             }
         }
-        else
-        {
-            QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
-                                  "\""+getAnswer()+"\""+QObject::tr(" already exists!"));
-        }
-        ui->textEdit_Answer->clear();
     }
+    delete dlg;
 }
 //
 QVariant question_mod_dialog::getIndexBox()
@@ -106,10 +126,10 @@ QVariant question_mod_dialog::getIndexBox()
     return ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex());
 }
 //
-QString question_mod_dialog::getAnswer()
-{
-    return ui->textEdit_Answer->toPlainText().trimmed();
-}
+//QString question_mod_dialog::getAnswer(QString answerText)
+//{
+//    //    return ui->textEdit_Answer->toPlainText().trimmed();
+//}
 //
 QString question_mod_dialog::getComment()
 {
@@ -119,7 +139,7 @@ QString question_mod_dialog::getComment()
 void question_mod_dialog::on_saveAns_triggered()
 {
     QTableWidgetItem *itm = ui->tableWidget_Answers->currentItem();
-    ui->textEdit_Answer->setText(itm->text());
+    //    ui->textEdit_Answer->setText(itm->text());
 }
 //
 void question_mod_dialog::on_delAns_triggered()
@@ -131,5 +151,5 @@ void question_mod_dialog::on_delAns_triggered()
 
 void question_mod_dialog::on_tableWidget_Answers_itemClicked(QTableWidgetItem *item)
 {
-    ui->textEdit_Answer->setText(item->text());
+    //    ui->textEdit_Answer->setText(item->text());
 }

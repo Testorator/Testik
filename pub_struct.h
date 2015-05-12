@@ -2,6 +2,7 @@
 #define PUB_STRUCT_H
 
 #include <QString>
+#include <QList>
 
 struct st_theme{
     QString id;
