@@ -83,17 +83,10 @@ void question_mod_dialog::on_addAns_triggered()
             int i = ui->tableWidget_Answers->rowCount();
             ui->tableWidget_Answers->insertRow(i);
             ui->tableWidget_Answers->setItem(i,0,new QTableWidgetItem(getAnswer()));
+            ui->tableWidget_Answers->setCellWidget(i,1,new QCheckBox);
+            QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Answers->cellWidget(i, 1)));
             if(ui->comboBox_Type->currentData() == 2)
             {
-                ui->tableWidget_Answers->setCellWidget(i,1,new QCheckBox);
-                QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Answers->cellWidget(i, 1)));
-
-                for(int l=0;l<ui->tableWidget_Answers->rowCount();l++)
-                {
-                    QString  bb=ui->tableWidget_Answers->item(l,1)->text();
-                }
-
-
                 if(ui->checkBox_AnsCorrect->isChecked()==true){
                     pCheckB->setChecked(true);
                 }
