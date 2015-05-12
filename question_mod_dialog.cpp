@@ -86,7 +86,8 @@ void question_mod_dialog::on_addAns_triggered()
         check_available = true;
     }
     else if(answer_type == 2){
-        // FIXME: добавить проверку наличия в списке ответов метки корректного ответа
+// FIXME: добавить проверку наличия в списке ответов метки корректного ответа
+        check_available = true; //false
     }
     answer_mod_dlg *dlg = new answer_mod_dlg(answer_type,check_available);
     dlg->setWindowTitle(tr("Add answer")+"...");
@@ -101,11 +102,9 @@ void question_mod_dialog::on_addAns_triggered()
 
                 answersChecks.insert(i,new QCheckBox(this));
                 answersChecks.at(i)->setChecked(dlg->getAnswerCorrectFlag());
+// FIXME: сделать выравнивание чекбоксов в ячейке
                 ui->tableWidget_Answers->setCellWidget(i,1,answersChecks.at(i));
-//                QCheckBox* pCheckB(qobject_cast<QCheckBox*>(ui->tableWidget_Answers->cellWidget(i, 1)));
-//                if(answer_type > 1){
-//                        pCheckB->setChecked(dlg->getAnswerCorrectFlag());
-//                }
+
             }
             else
             {
