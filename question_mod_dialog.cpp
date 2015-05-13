@@ -88,7 +88,7 @@ void question_mod_dialog::on_addAns_triggered()
     else if(answer_type == 2){
         bool flag = true;
         for(int i=0; i<ui->tableWidget_Answers->rowCount();i++){
-            if(ui->tableWidget_Answers->isWidgetType()==QCheckBox){
+            if(answersChecks.at(i)->isChecked()){
                 flag = false;
                      break;
                 }
@@ -98,7 +98,7 @@ void question_mod_dialog::on_addAns_triggered()
          check_available = true;
         }
         else{
-            QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("For this type of answer it is possible to indicate only one correct"));
+         check_available = false;
         }
 
     }
