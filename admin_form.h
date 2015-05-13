@@ -46,7 +46,6 @@ private slots:
     void on_action_addTheme_triggered();
     void on_pushButton_Edit_Quest_clicked();
     void set_questions_buttons_availablity(QTreeWidgetItem *item);
-
     void on_pushButton_Del_Quest_clicked();
 
     // email
@@ -55,7 +54,6 @@ private slots:
     void on_action_editAddr_triggered();
     void on_action_delAddr_trigered();
     void on_action_SMTP_settings_triggered();
-
     void on_tableWidget_email_clicked(const QModelIndex &index);
 
 private:

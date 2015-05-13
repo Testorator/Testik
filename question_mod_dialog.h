@@ -35,6 +35,8 @@ private:
     void loadAnswers(QList<st_answer> *answers);
 
 private slots:
+    void saveCheckState(bool state);
+    void clear_AnswerList();
     void on_addAns_triggered();
     void on_saveAns_triggered();
     void on_delAns_triggered();

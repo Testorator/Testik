@@ -67,9 +67,17 @@ void question_mod_dialog::setQuestionText(QString text)
     ui->textEdit_Question->setText(text);
 }
 //
+void question_mod_dialog::clear_AnswerList()
+{
+    for(int r=ui->tableWidget_Answers->rowCount(); r>0; r--){
+        ui->tableWidget_Answers->removeRow(r-1);
+    }
+}
+//
 void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
 {
-    ui->tableWidget_Answers->clear();
+
+    clear_AnswerList();
     ui->tableWidget_Answers->setRowCount(answers->count());
     for(int a=0;a<answers->count();a++){
         ui->tableWidget_Answers->setItem(a,0,new QTableWidgetItem(answers->at(a).ans_text));
@@ -90,15 +98,15 @@ void question_mod_dialog::on_addAns_triggered()
         for(int i=0; i<ui->tableWidget_Answers->rowCount();i++){
             if(answersChecks.at(i)->isChecked()){
                 flag = false;
-                     break;
-                }
+                break;
+            }
         }
 
         if(flag){
-         check_available = true;
+            check_available = true;
         }
         else{
-         check_available = false;
+            check_available = false;
         }
 
     }
@@ -111,12 +119,25 @@ void question_mod_dialog::on_addAns_triggered()
             {
                 int i = ui->tableWidget_Answers->rowCount();
                 ui->tableWidget_Answers->insertRow(i);
+
                 ui->tableWidget_Answers->setItem(i,0,new QTableWidgetItem(dlg->getAnswerText()));
 
-                answersChecks.insert(i,new QCheckBox(this));
-                answersChecks.at(i)->setChecked(dlg->getAnswerCorrectFlag());
-// FIXME: сделать выравнивание чекбоксов в ячейке
-                ui->tableWidget_Answers->setCellWidget(i,1,answersChecks.at(i));
+                QTableWidgetItem *chkb = new QTableWidgetItem();
+//                chkb->setFlags(chkb->flags() | Qt::ItemIsUserCheckable);
+                chkb->setCheckState(Qt::Checked);
+
+                ui->tableWidget_Answers->setItem(i,1,chkb);
+//                answersChecks.insert(i,new QCheckBox(this));
+//                answersChecks.at(i)->setChecked(dlg->getAnswerCorrectFlag());
+
+//                // FIXME: сделать запрет изменения чека
+
+//                QWidget *_wgt = new QWidget(this);
+//                QHBoxLayout *_hlw = new QHBoxLayout;
+//                _hlw->setMargin(0);
+//                _hlw->addWidget(answersChecks.at(i), 0, Qt::AlignCenter);
+//                _wgt->setLayout(_hlw);
+//                ui->tableWidget_Answers->setCellWidget(i,1,_wgt);
 
             }
             else
@@ -132,6 +153,13 @@ void question_mod_dialog::on_addAns_triggered()
     }
     delete dlg;
 }
+//
+void question_mod_dialog::saveCheckState(bool state)
+{
+    int x= 0;
+}
+//
+
 //
 QVariant question_mod_dialog::getIndexBox()
 {
@@ -163,5 +191,9 @@ void question_mod_dialog::on_delAns_triggered()
 
 void question_mod_dialog::on_tableWidget_Answers_itemClicked(QTableWidgetItem *item)
 {
+
+int x =0;
     //    ui->textEdit_Answer->setText(item->text());
 }
+
+
