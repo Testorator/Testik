@@ -122,22 +122,17 @@ void question_mod_dialog::on_addAns_triggered()
 
                 ui->tableWidget_Answers->setItem(i,0,new QTableWidgetItem(dlg->getAnswerText()));
 
-                QTableWidgetItem *chkb = new QTableWidgetItem();
-//                chkb->setFlags(chkb->flags() | Qt::ItemIsUserCheckable);
-                chkb->setCheckState(Qt::Checked);
+                answersChecks.insert(i,new QCheckBox(this));
+                answersChecks.at(i)->setChecked(dlg->getAnswerCorrectFlag());
 
-                ui->tableWidget_Answers->setItem(i,1,chkb);
-//                answersChecks.insert(i,new QCheckBox(this));
-//                answersChecks.at(i)->setChecked(dlg->getAnswerCorrectFlag());
+                // FIXME: сделать запрет изменения чека
 
-//                // FIXME: сделать запрет изменения чека
-
-//                QWidget *_wgt = new QWidget(this);
-//                QHBoxLayout *_hlw = new QHBoxLayout;
-//                _hlw->setMargin(0);
-//                _hlw->addWidget(answersChecks.at(i), 0, Qt::AlignCenter);
-//                _wgt->setLayout(_hlw);
-//                ui->tableWidget_Answers->setCellWidget(i,1,_wgt);
+                QWidget *_wgt = new QWidget(this);
+                QHBoxLayout *_hlw = new QHBoxLayout;
+                _hlw->setMargin(0);
+                _hlw->addWidget(answersChecks.at(i), 0, Qt::AlignCenter);
+                _wgt->setLayout(_hlw);
+                ui->tableWidget_Answers->setCellWidget(i,1,_wgt);
 
             }
             else
@@ -192,7 +187,7 @@ void question_mod_dialog::on_delAns_triggered()
 void question_mod_dialog::on_tableWidget_Answers_itemClicked(QTableWidgetItem *item)
 {
 
-int x =0;
+    int x =0;
     //    ui->textEdit_Answer->setText(item->text());
 }
 
