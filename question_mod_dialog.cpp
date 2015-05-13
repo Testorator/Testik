@@ -86,8 +86,21 @@ void question_mod_dialog::on_addAns_triggered()
         check_available = true;
     }
     else if(answer_type == 2){
-// FIXME: добавить проверку наличия в списке ответов метки корректного ответа
-        check_available = true; //false
+        bool flag = true;
+        for(int i=0; i<ui->tableWidget_Answers->rowCount();i++){
+            if(ui->tableWidget_Answers->isWidgetType()==QCheckBox){
+                flag = false;
+                     break;
+                }
+        }
+
+        if(flag){
+         check_available = true;
+        }
+        else{
+            QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("For this type of answer it is possible to indicate only one correct"));
+        }
+
     }
     answer_mod_dlg *dlg = new answer_mod_dlg(answer_type,check_available);
     dlg->setWindowTitle(tr("Add answer")+"...");
