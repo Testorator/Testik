@@ -19,7 +19,7 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     addAns = new QAction(QIcon(":/resource/add"),tr("Add"),ptb);
     connect(this->addAns,SIGNAL(triggered()),this,SLOT(on_addAns_triggered()));
     saveAns = new QAction(QIcon(":/resource/edit"),tr("Edit"),ptb);
-    connect(this->saveAns,SIGNAL(triggered()),this,SLOT(on_saveAns_triggered()));
+    connect(this->saveAns,SIGNAL(triggered()),this,SLOT(on_editAns_triggered()));
     delAns = new QAction(QIcon(":/resource/erase"),tr("Del"),ptb);
     connect(this->delAns,SIGNAL(triggered()),this,SLOT(on_delAns_triggered()));
     ptb->addAction(addAns);
@@ -74,6 +74,38 @@ void question_mod_dialog::clear_AnswerList()
     }
 }
 //
+bool question_mod_dialog::getAnswerCheckAvailablity(bool oneCheckException)
+{
+    int answer_type = ui->comboBox_Type->currentData().toInt();
+    bool result = false;
+    if(answer_type == 3) {
+        result = true;
+    }
+    else if(answer_type == 2){
+        if(oneCheckException){
+            result = true;
+        }
+        else{
+            bool flag = true;
+            for(int i=0; i<ui->tableWidget_Answers->rowCount();i++){
+                if(answersChecks.at(i)->isChecked()){
+                    flag = false;
+                    break;
+                }
+            }
+
+            if(flag){
+                result = true;
+            }
+            else{
+                result = false;
+            }
+        }
+    }
+
+    return result;
+}
+//
 void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
 {
 
@@ -87,34 +119,10 @@ void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
 //
 void question_mod_dialog::on_addAns_triggered()
 {
-    bool ok = false;
-    int answer_type = ui->comboBox_Type->currentData().toInt();
-    bool check_available = false;
-    if(answer_type == 3) {
-        check_available = true;
-    }
-    else if(answer_type == 2){
-        bool flag = true;
-        for(int i=0; i<ui->tableWidget_Answers->rowCount();i++){
-            if(answersChecks.at(i)->isChecked()){
-                flag = false;
-                break;
-            }
-        }
-
-        if(flag){
-            check_available = true;
-        }
-        else{
-            check_available = false;
-        }
-
-    }
-    answer_mod_dlg *dlg = new answer_mod_dlg(answer_type,check_available);
+    answer_mod_dlg *dlg = new answer_mod_dlg(getAnswerCheckAvailablity());
     dlg->setWindowTitle(tr("Add answer")+"...");
     if(dlg->exec()){
         if(dlg->getAnswerText().length() > 0){
-            ok = true;
             if( ui->tableWidget_Answers->findItems(dlg->getAnswerText(), Qt::MatchExactly).count() == 0)
             {
                 int i = ui->tableWidget_Answers->rowCount();
@@ -122,7 +130,7 @@ void question_mod_dialog::on_addAns_triggered()
 
                 ui->tableWidget_Answers->setItem(i,0,new QTableWidgetItem(dlg->getAnswerText()));
 
-                answersChecks.insert(i,new QCheckBox(this));                
+                answersChecks.insert(i,new QCheckBox(this));
                 answersChecks.at(i)->setChecked(dlg->getAnswerCorrectFlag());
 
                 answersChecks.at(i)->setEnabled(false);
@@ -140,50 +148,60 @@ void question_mod_dialog::on_addAns_triggered()
                 if(answerText.length() > 30){
                     answerText = dlg->getAnswerText().left(20)+"....."+dlg->getAnswerText().right(10);
                 }
-                QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
-                                      "\""+answerText+"\""+QObject::tr(" already exists!"));
+                QMessageBox::critical(this,tr("Error"),tr("This answer ")+"\""+answerText+"\""+tr(" already exists!"));
             }
         }
     }
     delete dlg;
 }
 //
-void question_mod_dialog::saveCheckState(bool state)
-{
-    int x= 0;
-
-}
-//
-
-//
 QVariant question_mod_dialog::getIndexBox()
 {
     return ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex());
 }
-//
-//QString question_mod_dialog::getAnswer(QString answerText)
-//{
-//    //    return ui->textEdit_Answer->toPlainText().trimmed();
-//}
 //
 QString question_mod_dialog::getComment()
 {
     return ui->textEdit_AnsComment->toPlainText().trimmed();
 }
 //
-void question_mod_dialog::on_saveAns_triggered()
+void question_mod_dialog::on_editAns_triggered()
 {
     QTableWidgetItem *itm = ui->tableWidget_Answers->currentItem();
-    //    ui->textEdit_Answer->setText(itm->text());
+    if(itm){
+        answer_mod_dlg *dlg = new answer_mod_dlg(getAnswerCheckAvailablity(answersChecks.at(itm->row())->isChecked()));
+        dlg->setWindowTitle(tr("Edit answer")+"...");
+        dlg->setAnswerText(ui->tableWidget_Answers->item(itm->row(),0)->text());
+        dlg->setAnswerCorrectFlag(answersChecks.at(itm->row())->isChecked());
+        if(dlg->exec()){
+            if(dlg->getAnswerText().length() == 0){
+                int ret = QMessageBox::question(this, tr("Edit answer"),
+                                                tr("Answer text is empty.")+" \n\""+
+                                                tr("Delete tis answer")+"?",
+                                                QMessageBox::Yes | QMessageBox::No,
+                                                QMessageBox::No);
+                if(ret == QMessageBox::Yes){
+                    // TODO: вызвать функцию удаления ответа, без запроса подтверждения удаления (режим quiet)
+                }
+            }
+            else{
+                ui->tableWidget_Answers->item(itm->row(),0)->setText(dlg->getAnswerText());
+                answersChecks.at(itm->row())->setChecked(dlg->getAnswerCorrectFlag());
+            }
+        }
+        delete dlg;
+    }
+    else{
+        QMessageBox::information(this,tr("Information"),tr("Please, select answer for edit."));
+    }
 }
 //
-void question_mod_dialog::on_delAns_triggered()
+void question_mod_dialog::on_delAns_triggered(bool quiet)
 {
-
     ui->tableWidget_Answers->removeRow(ui->tableWidget_Answers->currentRow());
+    // FIXME: не забыть удалить из answersChecks QCheckBox, соответсвующий удаляемому ответу
 }
-
-
+//
 void question_mod_dialog::on_tableWidget_Answers_itemClicked(QTableWidgetItem *item)
 {
 

@@ -1,7 +1,7 @@
 #include "answer_mod_dlg.h"
 #include "ui_answer_mod_dlg.h"
 
-answer_mod_dlg::answer_mod_dlg(int ans_type, bool chek_available, QWidget *parent) :
+answer_mod_dlg::answer_mod_dlg(bool chek_available, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::answer_mod_dlg)
 {

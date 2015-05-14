@@ -12,7 +12,7 @@ class answer_mod_dlg : public QDialog
     Q_OBJECT
 
 public:
-    explicit answer_mod_dlg(int ans_type, bool chek_available = 0, QWidget *parent = 0);
+    explicit answer_mod_dlg(bool chek_available = 0, QWidget *parent = 0);
     ~answer_mod_dlg();
     QString getAnswerText();
     void setAnswerText(QString value);

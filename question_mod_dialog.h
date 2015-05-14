@@ -23,7 +23,6 @@ public:
     QString getQuestion();
     QVariant getQuestionTheme();
     QVariant getIndexBox();
-//    QString getAnswer(QString answerText);
     QString getComment();
     bool uniqueAns();
 private:
@@ -33,13 +32,13 @@ private:
     QList< QCheckBox* > answersChecks;
     QAction *addAns, *saveAns, *delAns;
     void loadAnswers(QList<st_answer> *answers);
+    bool getAnswerCheckAvailablity(bool oneCheckException=false);
 
 private slots:
-    void saveCheckState(bool state);
     void clear_AnswerList();
     void on_addAns_triggered();
-    void on_saveAns_triggered();
-    void on_delAns_triggered();
+    void on_editAns_triggered();
+    void on_delAns_triggered(bool quiet=false);
     void on_tableWidget_Answers_itemClicked(QTableWidgetItem *item);
 };
 
