@@ -125,7 +125,7 @@ void question_mod_dialog::on_addAns_triggered()
                 answersChecks.insert(i,new QCheckBox(this));
                 answersChecks.at(i)->setChecked(dlg->getAnswerCorrectFlag());
 
-                // FIXME: сделать запрет изменения чека
+                answersChecks.at(i)->setEnabled(false);
 
                 QWidget *_wgt = new QWidget(this);
                 QHBoxLayout *_hlw = new QHBoxLayout;
