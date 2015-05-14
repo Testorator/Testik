@@ -26,6 +26,7 @@ public:
     QString getComment();
     bool uniqueAns();
 private:
+    int lastIndexOfAnswersType;
     Ui::question_mod_dialog *ui;
     QList<st_answer> *answers_from_db;
     QList<st_answer> answers;
@@ -33,6 +34,7 @@ private:
     QAction *addAns, *saveAns, *delAns;
     void loadAnswers(QList<st_answer> *answers);
     bool getAnswerCheckAvailablity(bool oneCheckException=false);
+    int correctAnswersCount();
 
 private slots:
     void clear_AnswerList();
@@ -40,6 +42,7 @@ private slots:
     void on_editAns_triggered();
     void on_delAns_triggered(bool quiet=false);
     void on_tableWidget_Answers_itemClicked(QTableWidgetItem *item);
+    void on_comboBox_Type_currentIndexChanged(int index);
 };
 
 #endif // QUESTION_MOD_DIALOG_H

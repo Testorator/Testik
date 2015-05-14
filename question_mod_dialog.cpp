@@ -4,8 +4,7 @@
 #include "answer_mod_dlg.h"
 #include <QToolBar>
 #include <QMessageBox>
-
-
+#include <QDebug>
 
 question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *parent) :
     QDialog(parent),
@@ -33,6 +32,7 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ui->comboBox_Type->addItem(tr("text entry"), 1);
     ui->comboBox_Type->addItem(tr("one correct answer"), 2);
     ui->comboBox_Type->addItem(tr("many correct answers"), 3);
+    lastIndexOfAnswersType = ui->comboBox_Type->currentIndex();
     answersChecks.clear();
 }
 //
@@ -140,6 +140,7 @@ void question_mod_dialog::on_addAns_triggered()
                 _hlw->addWidget(answersChecks.at(i), 0, Qt::AlignCenter);
                 _wgt->setLayout(_hlw);
                 ui->tableWidget_Answers->setCellWidget(i,1,_wgt);
+                ui->tableWidget_Answers->resizeColumnsToContents();
 
             }
             else
@@ -187,6 +188,7 @@ void question_mod_dialog::on_editAns_triggered()
             else{
                 ui->tableWidget_Answers->item(itm->row(),0)->setText(dlg->getAnswerText());
                 answersChecks.at(itm->row())->setChecked(dlg->getAnswerCorrectFlag());
+                ui->tableWidget_Answers->resizeColumnsToContents();
             }
         }
         delete dlg;
@@ -204,9 +206,55 @@ void question_mod_dialog::on_delAns_triggered(bool quiet)
 //
 void question_mod_dialog::on_tableWidget_Answers_itemClicked(QTableWidgetItem *item)
 {
-
     int x =0;
     //    ui->textEdit_Answer->setText(item->text());
 }
+//
+int question_mod_dialog::correctAnswersCount(){
+    int result = 0;
+    for(int a = 0; a< answersChecks.count(); a++){
+        if(answersChecks.at(a)->isChecked()){
+            result++;
+        }
+    }
+    return result;
+}
+//
+void question_mod_dialog::on_comboBox_Type_currentIndexChanged(int index)
+{
+    if(ui->comboBox_Type->itemData(index) == 1){
+        if(ui->tableWidget_Answers->rowCount() > 1){
+            QTableWidgetItem *itm = ui->tableWidget_Answers->currentItem();
+            if(itm){
+                // предупредить что будут удалены все ответы кроме выбранного и спросить подтверждение
+                // TODO: удалить все ответы кроме выбранного и установить ему флаг, что он корректный
+                lastIndexOfAnswersType = index;
+            }
+            else{
+                QMessageBox::information(this,tr("Information"),tr("Please select one answer will be considered correct, prior to changing the type of response"));
+                ui->comboBox_Type->setCurrentIndex(lastIndexOfAnswersType);
+            }
+        }
+    }
+    else if(ui->comboBox_Type->itemData(index) == 2 && correctAnswersCount() > 1){
+        int ret = QMessageBox::question(this, tr("Change type jf answers"),
+                                        tr("The selected type of answers do not support multiple correct answers.")+" \n\""+
+                                        tr("All flags will be dropped.")+"\n\n"+tr("Are you sure?"),
+                                        QMessageBox::Yes | QMessageBox::No,
+                                        QMessageBox::No);
+        if(ret == QMessageBox::Yes){
 
-
+            for(int a = 0; a< answersChecks.count(); a++){
+                answersChecks.at(a)->setChecked(false);
+            }
+            lastIndexOfAnswersType = index;
+            QMessageBox::information(this,tr("Information"),tr("Please set corret answer."));
+        }
+        else{
+             ui->comboBox_Type->setCurrentIndex(lastIndexOfAnswersType);
+        }
+    }
+    else{
+        lastIndexOfAnswersType = index;
+    }
+}

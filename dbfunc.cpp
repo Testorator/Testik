@@ -118,7 +118,7 @@ void sql_cl::closeDB()
 //**********************************************
 bool sql_cl::SendSimpleQueryStr(const QString& q_str)
 {
-    qDebug() << q_str;
+//    qDebug() << q_str;
     bool result;
     QSqlQuery *query = new QSqlQuery(cur_db);
     cur_db.transaction();
@@ -156,7 +156,7 @@ QString sql_cl::convertTypeOfQuestions(int type)
 //**********************************************
 st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
 {
-    qDebug() << q_str;
+//    qDebug() << q_str;
     st_qRes result;
 
     result.sel_data.clear();
