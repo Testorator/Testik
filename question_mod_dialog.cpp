@@ -122,11 +122,10 @@ void question_mod_dialog::on_addAns_triggered()
 
                 ui->tableWidget_Answers->setItem(i,0,new QTableWidgetItem(dlg->getAnswerText()));
 
-                answersChecks.insert(i,new QCheckBox(this));
+                answersChecks.insert(i,new QCheckBox(this));                
                 answersChecks.at(i)->setChecked(dlg->getAnswerCorrectFlag());
 
                 answersChecks.at(i)->setEnabled(false);
-
                 QWidget *_wgt = new QWidget(this);
                 QHBoxLayout *_hlw = new QHBoxLayout;
                 _hlw->setMargin(0);
@@ -152,6 +151,7 @@ void question_mod_dialog::on_addAns_triggered()
 void question_mod_dialog::saveCheckState(bool state)
 {
     int x= 0;
+
 }
 //
 
