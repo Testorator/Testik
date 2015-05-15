@@ -178,10 +178,11 @@ void question_mod_dialog::on_editAns_triggered()
             if(dlg->getAnswerText().length() == 0){
                 int ret = QMessageBox::question(this, tr("Edit answer"),
                                                 tr("Answer text is empty.")+" \n\""+
-                                                tr("Delete tis answer")+"?",
+                                                tr("Delete this answer")+"?",
                                                 QMessageBox::Yes | QMessageBox::No,
                                                 QMessageBox::No);
                 if(ret == QMessageBox::Yes){
+                    ui->tableWidget_Answers->removeRow(ui->tableWidget_Answers->currentRow()); //?????
                     // TODO: вызвать функцию удаления ответа, без запроса подтверждения удаления (режим quiet)
                 }
             }
@@ -225,8 +226,12 @@ void question_mod_dialog::on_comboBox_Type_currentIndexChanged(int index)
     if(ui->comboBox_Type->itemData(index) == 1){
         if(ui->tableWidget_Answers->rowCount() > 1){
             QTableWidgetItem *itm = ui->tableWidget_Answers->currentItem();
-            if(itm){
-                // предупредить что будут удалены все ответы кроме выбранного и спросить подтверждение
+            if(itm){                
+                QMessageBox::question(this, tr("Type answer"),
+                                                                tr("You actually do want to remove all answers except that selected")+"?",
+                                                                QMessageBox::Yes | QMessageBox::No,
+                                                                QMessageBox::No);
+
                 // TODO: удалить все ответы кроме выбранного и установить ему флаг, что он корректный
                 lastIndexOfAnswersType = index;
             }
