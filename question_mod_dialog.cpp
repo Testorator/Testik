@@ -142,6 +142,11 @@ void question_mod_dialog::on_addAns_triggered()
                 ui->tableWidget_Answers->setCellWidget(i,1,_wgt);
                 ui->tableWidget_Answers->resizeColumnsToContents();
 
+                if(ui->comboBox_Type->currentData().toInt() == 1){
+                    addAns->setEnabled(false);
+                    answersChecks.at(0)->setChecked(true);
+
+                }
             }
             else
             {
@@ -182,8 +187,7 @@ void question_mod_dialog::on_editAns_triggered()
                                                 QMessageBox::Yes | QMessageBox::No,
                                                 QMessageBox::No);
                 if(ret == QMessageBox::Yes){
-                    ui->tableWidget_Answers->removeRow(ui->tableWidget_Answers->currentRow()); //?????
-                    // TODO: вызвать функцию удаления ответа, без запроса подтверждения удаления (режим quiet)
+                    removeAnswer(itm->row(),true);
                 }
             }
             else{
@@ -199,16 +203,18 @@ void question_mod_dialog::on_editAns_triggered()
     }
 }
 //
-void question_mod_dialog::on_delAns_triggered(bool quiet)
+void question_mod_dialog::on_delAns_triggered()
 {
-    ui->tableWidget_Answers->removeRow(ui->tableWidget_Answers->currentRow());
-    // FIXME: не забыть удалить из answersChecks QCheckBox, соответсвующий удаляемому ответу
-}
-//
-void question_mod_dialog::on_tableWidget_Answers_itemClicked(QTableWidgetItem *item)
-{
-    int x =0;
-    //    ui->textEdit_Answer->setText(item->text());
+    QTableWidgetItem *itm = ui->tableWidget_Answers->currentItem();
+    if(itm){
+        removeAnswer(itm->row());
+        if(ui->comboBox_Type->currentData().toInt() == 1){
+            addAns->setEnabled(true);
+        }
+    }
+    else{
+        QMessageBox::information(this,tr("Information"),tr("Please, select answer for remove."));
+    }
 }
 //
 int question_mod_dialog::correctAnswersCount(){
@@ -226,14 +232,34 @@ void question_mod_dialog::on_comboBox_Type_currentIndexChanged(int index)
     if(ui->comboBox_Type->itemData(index) == 1){
         if(ui->tableWidget_Answers->rowCount() > 1){
             QTableWidgetItem *itm = ui->tableWidget_Answers->currentItem();
-            if(itm){                
-                QMessageBox::question(this, tr("Type answer"),
-                                                                tr("You actually do want to remove all answers except that selected")+"?",
-                                                                QMessageBox::Yes | QMessageBox::No,
-                                                                QMessageBox::No);
+            if(itm){
+                int ret = QMessageBox::question(this, tr("Type answer"),
+                                                tr("You actually do want to remove all answers except that selected")+"?",
+                                                QMessageBox::Yes | QMessageBox::No,QMessageBox::No);
+                if(ret == QMessageBox::Yes){
+                    QString itm4save_text = ui->tableWidget_Answers->item(itm->row(),0)->text();
+                    while(ui->tableWidget_Answers->rowCount() > 1){
+                        int i = 0;
+                        begin:
+                        QTableWidgetItem *itm4del = ui->tableWidget_Answers->item(i,0);
 
-                // TODO: удалить все ответы кроме выбранного и установить ему флаг, что он корректный
-                lastIndexOfAnswersType = index;
+                        if(itm4del->text() != itm4save_text){
+                            removeAnswer(i,true);
+                        }
+                        else{
+                            if(ui->tableWidget_Answers->rowCount() > 1){
+                                i++;
+                                goto begin;
+                            }
+                        }
+                    }
+                    if(ui->tableWidget_Answers->rowCount() > 0 ) addAns->setEnabled(false);
+                    answersChecks.at(0)->setChecked(true);
+                    lastIndexOfAnswersType = index;
+                }
+                else{
+                    ui->comboBox_Type->setCurrentIndex(lastIndexOfAnswersType);
+                }
             }
             else{
                 QMessageBox::information(this,tr("Information"),tr("Please select one answer will be considered correct, prior to changing the type of response"));
@@ -242,24 +268,51 @@ void question_mod_dialog::on_comboBox_Type_currentIndexChanged(int index)
         }
     }
     else if(ui->comboBox_Type->itemData(index) == 2 && correctAnswersCount() > 1){
-        int ret = QMessageBox::question(this, tr("Change type jf answers"),
+        int ret = QMessageBox::question(this, tr("Change type of answers"),
                                         tr("The selected type of answers do not support multiple correct answers.")+" \n\""+
                                         tr("All flags will be dropped.")+"\n\n"+tr("Are you sure?"),
-                                        QMessageBox::Yes | QMessageBox::No,
-                                        QMessageBox::No);
+                                        QMessageBox::Yes | QMessageBox::No,QMessageBox::No);
         if(ret == QMessageBox::Yes){
-
             for(int a = 0; a< answersChecks.count(); a++){
                 answersChecks.at(a)->setChecked(false);
             }
             lastIndexOfAnswersType = index;
-            QMessageBox::information(this,tr("Information"),tr("Please set corret answer."));
+            if(!addAns->isEnabled()) addAns->setEnabled(true);
+            QMessageBox::information(this,tr("Information"),tr("Please set correct answer."));
         }
         else{
-             ui->comboBox_Type->setCurrentIndex(lastIndexOfAnswersType);
+            ui->comboBox_Type->setCurrentIndex(lastIndexOfAnswersType);
         }
     }
     else{
+        if(!addAns->isEnabled()) addAns->setEnabled(true);
         lastIndexOfAnswersType = index;
     }
+}
+//
+void question_mod_dialog::removeAnswer(int row, bool quiet)
+{
+    bool ready = false;
+    if(!quiet){
+        QTableWidgetItem *itm = ui->tableWidget_Answers->item(row,0);
+        QString answerText = itm->text().trimmed();
+        if(answerText.length() > 30){
+            answerText = itm->text().trimmed().left(20)+"....."+itm->text().trimmed().right(10);
+        }
+        int ret = QMessageBox::question(this, tr("Remove answer..."),
+                                        tr("Are you sure want delete answer:")+" \n\""+answerText+"\"?",
+                                        QMessageBox::Yes | QMessageBox::No,QMessageBox::No);
+        if(ret == QMessageBox::Yes){
+            ready = true;
+        }
+    }
+    else{
+        ready = true;
+    }
+
+    if(ready){
+        answersChecks.removeAt(row);
+        ui->tableWidget_Answers->removeRow(row);
+    }
+
 }

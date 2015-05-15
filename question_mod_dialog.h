@@ -35,13 +35,13 @@ private:
     void loadAnswers(QList<st_answer> *answers);
     bool getAnswerCheckAvailablity(bool oneCheckException=false);
     int correctAnswersCount();
+    void removeAnswer(int row, bool quiet=false);
 
 private slots:
     void clear_AnswerList();
     void on_addAns_triggered();
     void on_editAns_triggered();
-    void on_delAns_triggered(bool quiet=false);
-    void on_tableWidget_Answers_itemClicked(QTableWidgetItem *item);
+    void on_delAns_triggered();
     void on_comboBox_Type_currentIndexChanged(int index);
 };
 
