@@ -425,14 +425,14 @@ QVariant sql_cl::getQuestIdByName(QString questName)
 //**********************************************
 // **** ANSWERS **** {{
 //
-bool sql_cl::addAnswer(st_answer data)
+bool sql_cl::addAnswer(QString question_id, QString ans_text, int ans_correct)
 {
     return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
                               "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
                               ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+
                               crypt->mdEncrypt("correct",answers_crypt_key)+" ) VALUES("+
-                              data.question_id+","+crypt->valueEncrypt(data.ans_text,answers_crypt_key)+","+
-                              crypt->valueEncrypt(QVariant(data.ans_correct).toString(),answers_crypt_key)+");");
+                              question_id+","+crypt->valueEncrypt(ans_text,answers_crypt_key)+","+
+                              crypt->valueEncrypt(QVariant(ans_correct).toString(),answers_crypt_key)+");");
 }
 //
 bool sql_cl::delAnswer(QString ans_id, QString question_id)

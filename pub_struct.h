@@ -14,7 +14,7 @@ struct st_answer{
     QString question_id;
     QString ans_id;
     QString ans_text;
-    int ans_correct;
+    bool ans_correct;
 };
 
 struct st_recipient{

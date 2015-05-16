@@ -74,7 +74,7 @@ public:
     bool questUnique(const QString questionName, bool silent = 0);
     QVariant getQuestIdByName(QString questName);
     //
-    bool addAnswer(st_answer data);
+    bool addAnswer(QString question_id, QString ans_text, int ans_correct);
     bool delAnswer(QString ans_id, QString question_id);
     QList<QMap<QString,QVariant> > getAnswers(QVariant question_id);
 //   bool answerUnique(const QString ans_text, bool silent);
