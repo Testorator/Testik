@@ -25,6 +25,8 @@ public:
     QVariant getIndexBox();
     QString getComment();
     bool uniqueAns();
+    QString getAnswerstr();
+    int getcheck();
 private:
     int lastIndexOfAnswersType;
     Ui::question_mod_dialog *ui;

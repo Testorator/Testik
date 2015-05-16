@@ -417,10 +417,12 @@ void admin_form::on_action_addQuest_triggered()
         QString quest_text=queMD_dialog.getQuestion();
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
         QString comment = queMD_dialog.getComment();
+        QString ans_text = queMD_dialog.getAnswerstr();
+        int ans_correct = queMD_dialog.getcheck();
         if(sql->questUnique(quest_text)){
 
             sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getIndexBox().toString(), comment);
-            // check answers an add them
+            sql->addAnswer(1,ans_text,ans_correct);
         }
     }
 

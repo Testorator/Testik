@@ -316,3 +316,26 @@ void question_mod_dialog::removeAnswer(int row, bool quiet)
     }
 
 }
+//
+QString question_mod_dialog::getAnswerstr()
+{
+    for(int i=0;i<ui->tableWidget_Answers->rowCount();i++)
+    {
+        return ui->tableWidget_Answers->item(i,0)->text();
+    }
+}
+//
+int question_mod_dialog::getcheck()
+{
+    for(int i=0;i<ui->tableWidget_Answers->rowCount();i++)
+    {
+        if(answersChecks.at(i)->isChecked()==true)
+        {
+            return 1;
+        }
+       else
+        {
+            return 0;
+        }
+    }
+}
