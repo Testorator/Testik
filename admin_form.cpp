@@ -414,14 +414,14 @@ void admin_form::on_action_addQuest_triggered()
 
     if(queMD_dialog.exec()){
 
-        QString quest_text=queMD_dialog.getQuestion();
+        QString quest_text = queMD_dialog.getQuestion();
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
         QString comment = queMD_dialog.getComment();
-        QString ans_text = queMD_dialog.getAnswerstr();
-        int ans_correct = queMD_dialog.getcheck();
         if(sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getIndexBox().toString(), comment)){
-            QString q_id = sql->getQuestIdByName(quest_text,for_learn);
-//            sql->addAnswer(question_id,ans_text,ans_correct);
+            QString q_id = sql->getQuestIdByName(quest_text,for_learn).toString();
+
+            // FIXME: pздесь должен быть QList со списком ответов. Его в цикле перебираем и выполняем
+            //   sql->addAnswer(question_id,ans_text,ans_correct); для каждого ответа.
         }
     }
 }

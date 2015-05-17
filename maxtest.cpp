@@ -18,19 +18,3 @@ Maxtest::~Maxtest()
     delete ui;
 }
 
-void Maxtest::on_pushButton_clicked()
-{
-    QSqlDatabase db = QSqlDatabase::addDatabase("QIBASE");
-   // db.setHostName("localhost");
-    db.setDatabaseName("D:/Maks/project/Testik/data/BLANK.QLT");
-   // db.setDatabaseName("/Users/maksimserbakov/Documents/work/Testik/Testik/data/BLANK.QLT");
-
-
-
-  db.setUserName("USER");
-  db.setPassword("user");
-    db.open();
-    qDebug() << "db is open: " << db.isOpen();
-    qDebug() << "db last error: " << db.lastError().text();
-
-}
