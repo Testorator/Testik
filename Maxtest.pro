@@ -17,7 +17,6 @@ SOURCES += main.cpp\
         maxtest.cpp \
     test_results.cpp \
     test.cpp \
-    begin_first.cpp \
     third.cpp \
     second.cpp \
     admin_form.cpp \
@@ -49,7 +48,6 @@ SOURCES += main.cpp\
 HEADERS  += maxtest.h \
     test_results.h \
     test.h \
-    begin_first.h \
     third.h \
     second.h \
     admin_form.h \
@@ -83,10 +81,8 @@ HEADERS  += maxtest.h \
 
 FORMS    += maxtest.ui \
     second.ui \
-    testendquestion.ui \
     test_results.ui \
     test.ui \
-    begin_first.ui \
     third.ui \
     admin_form.ui \
     test_help.ui \
