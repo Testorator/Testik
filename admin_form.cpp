@@ -421,12 +421,14 @@ void admin_form::on_action_addQuest_triggered()
 
 
         if(sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getIndexBox().toString(), comment)){
-            QVariant q_id = sql->getQuestIdByName(quest_text,for_learn);
-            for(int k=0;k<getanswer().list.size();k++)
-        {
-              QString ans_text = list.at(k);
-            sql->addAnswer(getQuestIdByName(quest_text,for_learn).toString(),ans_text);
-            }
+            QVariant q_id = sql->getQuestIdByNameAndType(quest_text,for_learn);
+            // FIXME: не работает цикл
+//            for(int k=0;k<getanswer().list.size();k++)
+//            {
+//                QString ans_text = list.at(k);
+//                sql->addAnswer(getQuestIdByName(quest_text,for_learn).toString(),ans_text);
+//                sql->addAnswer(q_id,ans_text); // должно быть так
+//            }
         }
     }
 }
