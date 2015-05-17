@@ -14,7 +14,6 @@ TEMPLATE = app
 DESTDIR += ../Testik_bin
 
 SOURCES += main.cpp\
-        maxtest.cpp \
     test_results.cpp \
     test.cpp \
     third.cpp \
@@ -45,7 +44,7 @@ SOURCES += main.cpp\
     smtp_set.cpp \
     answer_mod_dlg.cpp
 
-HEADERS  += maxtest.h \
+HEADERS  += \
     test_results.h \
     test.h \
     third.h \
@@ -79,7 +78,7 @@ HEADERS  += maxtest.h \
     smtp_set.h \
     answer_mod_dlg.h
 
-FORMS    += maxtest.ui \
+FORMS    += \
     second.ui \
     test_results.ui \
     test.ui \

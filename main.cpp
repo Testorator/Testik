@@ -1,4 +1,3 @@
-#include "maxtest.h"
 #include "admin_form.h"
 #include "crypt.h"
 #include <QApplication>
@@ -14,14 +13,13 @@ int main(int argc, char *argv[])
     bool launch_app = true;
 
     admin_form af;
-    Maxtest nf;
+//    Maxtest nf;
 
     if(argc > 1){
         for (int i = 0; i < argc; ++i){
             if(!qstrcmp(argv[i], "-adm")){
                 admin_mode = true;
             }
-           // qDebug() << "argv["<<i<<"]="<<argv[i];
         }
     }
 
@@ -53,7 +51,7 @@ int main(int argc, char *argv[])
     else
     {
         qDebug() << "Start in normal mode";
-        nf.show();
+
     }
 
     if(launch_app){
