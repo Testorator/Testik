@@ -240,7 +240,7 @@ void question_mod_dialog::on_comboBox_Type_currentIndexChanged(int index)
                     QString itm4save_text = ui->tableWidget_Answers->item(itm->row(),0)->text();
                     while(ui->tableWidget_Answers->rowCount() > 1){
                         int i = 0;
-                        begin:
+begin:
                         QTableWidgetItem *itm4del = ui->tableWidget_Answers->item(i,0);
 
                         if(itm4del->text() != itm4save_text){
@@ -317,27 +317,31 @@ void question_mod_dialog::removeAnswer(int row, bool quiet)
 
 }
 //
-QList<st_answer> question_mod_dialog::getAnswerstr()
+QList<st_answer> question_mod_dialog::getAnswers()
 {
-
+    // FIXME: не может быть пустой функция, иначе ошибка
+    int x =0;
 }
 //
 QString question_mod_dialog::getanswer()
 {
+    // TODO: бесполезная функция
     for(int i=0;i<ui->tableWidget_Answers->rowCount();i++)
     {
 
-        QList<QString> answer_text;
+        QList<QString> answer_text; // QStringlist - тоже самое
         answer_text.append(ui->tableWidget_Answers->item(i,0)->text());
-                if(answersChecks.at(i)->isChecked()==true)
-                {
-                    answer_text.append("1");
+        //                if(answersChecks.at(i)->isChecked()==true)
+        //                {
+        //                    answer_text.append("1");
 
-                }
-               else
-                {
-                    answer_text.append("0");
-                }
+        //                }
+        //               else
+        //                {
+        //                    answer_text.append("0");
+        //                }
+        // зачем изобретать велосипед, если уже всё изобретено и дважды написано тебе мною!
+        answer_text.append(QVariant(QVariant(answersChecks.at(i)->isChecked()).toInt()).toString());
 
     }
 }

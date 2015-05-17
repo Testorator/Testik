@@ -25,6 +25,7 @@ public:
     QVariant getIndexBox();
     QString getComment();
     bool uniqueAns();
+    QList<st_answer> getAnswers();
     QString getanswer();
 private:
     int lastIndexOfAnswersType;

@@ -72,7 +72,7 @@ public:
     QList<QMap<QString,QVariant> > getQuestions(int questions_type, QString theme_id = 0);
     bool addQuest(const QString questionName, QVariant for_learn, QString theme_id, QString ans_type, QString comment);
     bool questUnique(const QString questionName, bool silent = 0);
-    QVariant getQuestIdByName(QString questName, QVariant for_learn);
+    QVariant getQuestIdByNameAndType(QString questName, QVariant for_learn);
     //
     bool addAnswer(QString question_id, QString ans_text, int ans_correct);
     bool delAnswer(QString ans_id, QString question_id);

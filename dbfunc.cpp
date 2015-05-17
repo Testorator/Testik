@@ -406,7 +406,7 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString
     return result.sel_data;
 }
 //
-QVariant sql_cl::getQuestIdByName(QString questName,QVariant for_learn)
+QVariant sql_cl::getQuestIdByNameAndType(QString questName,QVariant for_learn)
 {
     QVariant result;
     st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+" FROM "+
