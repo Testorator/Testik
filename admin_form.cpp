@@ -469,7 +469,9 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
 //            queMD_dialog.setQuestionText(curQTW->currentItem()->text(0));
 //            queMD_dialog.setCurrentTheme(curQTW->currentItem()->text(1));
 //            queMD_dialog.setComment(curQTW->currentItem()->text(2));
-            // FIXME: получить из бд id,comment вопроса  b pfgjkybnm ajhve
+
+            // FIXME: получить из бд id,comment,тип_ответов вопроса и заполнить форму
+            // FIXME: перед загрузкой ответов установить нужное значение типа ответов
             QList<st_answer> answ_from_db;
             answ_from_db.clear();
             answ_from_db = sql->getAnswers(curQTW->currentItem()->text(1).trimmed());
