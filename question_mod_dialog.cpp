@@ -6,12 +6,11 @@
 #include <QMessageBox>
 #include <QDebug>
 
-question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *parent) :
+question_mod_dialog::question_mod_dialog( QWidget *parent) :
     QDialog(parent),
     ui(new Ui::question_mod_dialog)
 {
     ui->setupUi(this);
-    answers_from_db  = answers;
 
     QToolBar* ptb = new QToolBar("answers toolbar");
     ptb->setIconSize(QSize(24, 24));
@@ -28,7 +27,6 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ptb->addAction(delAns);
     ui->gridLayout_Answers_tb->addWidget(ptb,0,0,0,2,Qt::AlignTop);
     ui->comboBox_Themes->clear();
-    loadAnswers(answers_from_db);
     ui->tableWidget_Answers->hideColumn(2);
     ui->comboBox_Type->addItem(tr("text entry"), 1);
     ui->comboBox_Type->addItem(tr("one correct answer"), 2);
@@ -66,6 +64,15 @@ void question_mod_dialog::setQuestionText(QString text)
 {
     ui->textEdit_Question->clear();
     ui->textEdit_Question->setText(text);
+}
+//
+QString question_mod_dialog::getComment()
+{
+    return ui->textEdit_AnsComment->toPlainText().trimmed();
+}
+//
+void question_mod_dialog::setComment(QString text){
+    ui->textEdit_AnsComment->setText(text);
 }
 //
 void question_mod_dialog::clear_AnswerList()
@@ -109,6 +116,7 @@ bool question_mod_dialog::getAnswerCheckAvailablity(bool oneCheckException)
 //
 void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
 {
+    // FIXME: скорректировать функцию на использование чекбоксов
     clear_AnswerList();
     ui->tableWidget_Answers->setRowCount(answers->count());
     for(int a=0;a<answers->count();a++){
@@ -166,11 +174,6 @@ void question_mod_dialog::on_addAns_triggered()
 QVariant question_mod_dialog::getIndexBox()
 {
     return ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex());
-}
-//
-QString question_mod_dialog::getComment()
-{
-    return ui->textEdit_AnsComment->toPlainText().trimmed();
 }
 //
 void question_mod_dialog::on_editAns_triggered()
@@ -322,13 +325,18 @@ QList<st_answer> question_mod_dialog::getAnswers()
 {
     QList<st_answer> result;
     result.clear();
-    for(int i; i<ui->tableWidget_Answers->rowCount();i++)
+    for(int i=0; i<ui->tableWidget_Answers->rowCount(); i++)
     {
-       st_answer new_ans;
-       new_ans.ans_id=ui->tableWidget_Answers->item(i,2)->text();
-       new_ans.ans_correct=answersChecks.at(i);
-       new_ans.ans_text=ui->tableWidget_Answers->item(i,0)->text();
-       result.append(new_ans);
+        st_answer new_ans;
+        if(ui->tableWidget_Answers->item(i,2)){
+            new_ans.ans_id = ui->tableWidget_Answers->item(i,2)->text();
+        }
+        else{
+            new_ans.ans_id.clear();
+        }
+        new_ans.ans_correct = answersChecks.at(i)->isChecked();
+        new_ans.ans_text = ui->tableWidget_Answers->item(i,0)->text();
+        result.append(new_ans);
     }
     return result;
 }

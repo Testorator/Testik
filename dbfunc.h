@@ -74,10 +74,10 @@ public:
     bool questUnique(const QString questionName, bool silent = 0);
     QVariant getQuestIdByNameAndType(QString questName, QVariant for_learn);
     //
-    bool addAnswer(st_answer answer);
+    bool addAnswer(st_answer *answer);
     bool delAnswer(QString ans_id, QString question_id);
-    QList<QMap<QString,QVariant> > getAnswers(QVariant question_id);
-//   bool answerUnique(const QString ans_text, bool silent);
+    QList<st_answer> getAnswers(QVariant question_id);
+   bool answerUnique(const st_answer *answer, bool silent = false);
     //
     bool sendEMail();
     bool set_sendEMail(QVariant value);

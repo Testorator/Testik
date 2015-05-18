@@ -118,7 +118,7 @@ void sql_cl::closeDB()
 //**********************************************
 bool sql_cl::SendSimpleQueryStr(const QString& q_str)
 {
-//    qDebug() << q_str;
+//        qDebug() << q_str;
     bool result;
     QSqlQuery *query = new QSqlQuery(cur_db);
     cur_db.transaction();
@@ -156,7 +156,7 @@ QString sql_cl::convertTypeOfQuestions(int type)
 //**********************************************
 st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
 {
-//    qDebug() << q_str;
+//        qDebug() << q_str;
     st_qRes result;
 
     result.sel_data.clear();
@@ -343,14 +343,11 @@ bool sql_cl::addQuest(const QString questionName, QVariant for_learn, QString th
     bool result = false;
     result = questUnique(questionName.trimmed());
     if(result){
-        QString q_str = "INSERT INTO "+crypt->mdEncrypt("questions",questions_crypt_key)+" ("+
-                crypt->mdEncrypt("theme_id",questions_crypt_key)+","+
-                crypt->valueEncrypt("for_learn",questions_crypt_key)+","+
-                crypt->mdEncrypt("question",questions_crypt_key)+","+crypt->valueEncrypt("answer_type",questions_crypt_key)+","+
-                crypt->valueEncrypt("comment",questions_crypt_key)+") VALUES("+theme_id+","+
-                crypt->valueEncrypt(for_learn.toString(),questions_crypt_key)+","+
-                crypt->valueEncrypt(questionName.trimmed(),questions_crypt_key)+","+crypt->valueEncrypt(ans_type,questions_crypt_key)+","+
-                crypt->valueEncrypt(comment.trimmed(),questions_crypt_key)+");";
+        QString q_str = "INSERT INTO "+crypt->mdEncrypt("questions",questions_crypt_key)+" ("+crypt->mdEncrypt("theme_id",questions_crypt_key)+","+
+                crypt->valueEncrypt("for_learn",questions_crypt_key)+","+crypt->mdEncrypt("question",questions_crypt_key)+","+
+                crypt->valueEncrypt("answer_type",questions_crypt_key)+","+crypt->valueEncrypt("comment",questions_crypt_key)+") VALUES("+theme_id+","+
+                crypt->valueEncrypt(for_learn.toString(),questions_crypt_key)+","+crypt->valueEncrypt(questionName.trimmed(),questions_crypt_key)+","+
+                crypt->valueEncrypt(ans_type,questions_crypt_key)+","+ crypt->valueEncrypt(comment.trimmed(),questions_crypt_key)+");";
         result = SendSimpleQueryStr(q_str);
     }
     return result;
@@ -427,14 +424,17 @@ QVariant sql_cl::getQuestIdByNameAndType(QString questName,QVariant for_learn)
 //**********************************************
 // **** ANSWERS **** {{
 //
-bool sql_cl::addAnswer(st_answer answer)
+bool sql_cl::addAnswer(st_answer *answer)
 {
-    return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
-                              "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
-                              ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+
-                              crypt->mdEncrypt("correct",answers_crypt_key)+" ) VALUES("+
-                              answer.question_id+","+crypt->valueEncrypt(answer.ans_text,answers_crypt_key)+","+
-                              crypt->valueEncrypt(QVariant(answer.ans_correct).toString(),answers_crypt_key)+");");
+    bool result = false;
+
+    if(answerUnique(answer)){
+        result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+"("+crypt->mdEncrypt("question_id",answers_crypt_key)+
+                                    ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+crypt->mdEncrypt("correct",answers_crypt_key)+" ) VALUES("+
+                                    answer->question_id+","+crypt->valueEncrypt(answer->ans_text,answers_crypt_key)+","+
+                                    crypt->valueEncrypt(QVariant(answer->ans_correct).toString(),answers_crypt_key)+");");
+    }
+    return result;
 }
 //
 bool sql_cl::delAnswer(QString ans_id, QString question_id)
@@ -445,44 +445,66 @@ bool sql_cl::delAnswer(QString ans_id, QString question_id)
                               " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+question_id+";");
 }
 //
-QList<QMap<QString,QVariant> > sql_cl::getAnswers(QVariant question_id)
+QList<st_answer> sql_cl::getAnswers(QVariant question_id)
 {
-    st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",answers_crypt_key)+", "+crypt->mdEncrypt("question_id",answers_crypt_key)+
-                                          +", "+crypt->mdEncrypt("correct",answers_crypt_key)+", "+crypt->mdEncrypt("answer",answers_crypt_key)+
-                                          +", "+crypt->mdEncrypt("comment",answers_crypt_key)+" FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
+    QList<st_answer> result;
+    st_qRes q_result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",answers_crypt_key)+", "+crypt->mdEncrypt("question_id",answers_crypt_key)
+                                          +", "+crypt->mdEncrypt("correct",answers_crypt_key)+", "+crypt->mdEncrypt("answer",answers_crypt_key)
+                                          +" FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
                                           " WHERE "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+question_id.toString()+";",answers_crypt_key);
-    return result.sel_data;
+
+    if(q_result.q_result){
+        result.clear();
+        for(int i=0; i<q_result.sel_data.count(); i++){
+            st_answer ans_from_db;
+            ans_from_db.question_id = question_id.toString();
+            ans_from_db.ans_id = q_result.sel_data.at(i)["id"].toString();
+            ans_from_db.ans_text = q_result.sel_data.at(i)["answer"].toString();
+            ans_from_db.ans_correct = q_result.sel_data.at(i)["correct"].toBool();
+            result.append(ans_from_db);
+        }
+    }
+
+    return result;
 }
 //
-//bool sql_cl::answerUnique(const QString ans_text, bool silent)
-//{
-//    bool result;
-//    if(ans_text.isEmpty() || ans_text.isNull() || ans_text.trimmed().length() < 1){
-//        result =false;
-//    }
-//    else{
-//        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("answer",answers_crypt_key)+
-//                                             " FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+" WHERE "+
-//                                             crypt->mdEncrypt("answer",answers_crypt_key)+"="+
-//                                             crypt->valueEncrypt(ans_text,answers_crypt_key)+";",answers_crypt_key);
-//        if(q_res.q_result){
-//            if(q_res.sel_data.count() > 0){
-//                result = false;
-//                if(!silent){
-//                    QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
-//                                          "\""+ans_text+"\""+QObject::tr(" already exists!"));
-//                }
-//            }
-//            else{
-//                result = true;
-//            }
-//        }
-//        else{
-//            result = false;
-//        }
-//    }
-//    return result;
-//}
+bool sql_cl::answerUnique(const st_answer *answer, bool silent)
+{
+    bool result;
+    if(answer->ans_text.isEmpty() || answer->ans_text.isNull() || answer->ans_text.trimmed().length() < 1){
+        result =false;
+    }
+    else{
+        st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("answer",answers_crypt_key)+
+                                             " FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+" WHERE "+
+                                             crypt->mdEncrypt("answer",answers_crypt_key)+"="+crypt->valueEncrypt(answer->ans_text,answers_crypt_key)+
+                                             " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+answer->question_id+
+                                             ";",answers_crypt_key);
+        if(q_res.q_result){
+            if(q_res.sel_data.count() > 0){
+                result = false;
+                if(!silent){
+                    QString ans_text;
+                    if(answer->ans_text.trimmed().length()>30){
+                        ans_text=answer->ans_text.left(20)+"...."+answer->ans_text.right(10);
+                    }
+                    else{
+                        ans_text = answer->ans_text;
+                    }
+                    QMessageBox::critical(new QWidget,QObject::tr("Error"),QObject::tr("This answer ")+
+                                          "\""+ans_text+"\""+QObject::tr(" already exists!"));
+                }
+            }
+            else{
+                result = true;
+            }
+        }
+        else{
+            result = false;
+        }
+    }
+    return result;
+}
 //
 // **** ANSWERS **** }}
 //**********************************************
@@ -675,7 +697,7 @@ bool sql_cl::options_hasRecord(QString option_name)
     st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("opt_name",options_crypt_key)+
                                          " FROM "+crypt->mdEncrypt("options",options_crypt_key)+
                                          " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+
-                                          crypt->valueEncrypt(option_name,options_crypt_key),options_crypt_key);
+                                         crypt->valueEncrypt(option_name,options_crypt_key),options_crypt_key);
 
     if(q_res.q_result){
         if(q_res.sel_data.count() > 0){
@@ -696,8 +718,8 @@ bool sql_cl::sendEMail()
     st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("opt_name",options_crypt_key)+", "+
                                          crypt->mdEncrypt("value",options_crypt_key)+" FROM "+
                                          crypt->mdEncrypt("options",options_crypt_key)+
-                                        " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+
-                                        crypt->valueEncrypt("smtp_send_mail",options_crypt_key),options_crypt_key);
+                                         " WHERE "+crypt->mdEncrypt("opt_name",options_crypt_key)+"="+
+                                         crypt->valueEncrypt("smtp_send_mail",options_crypt_key),options_crypt_key);
 
     if(q_res.q_result && q_res.sel_data.count() > 0 ){
         if(q_res.sel_data.at(0)["value"].toInt() == 1){

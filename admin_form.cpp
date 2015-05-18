@@ -394,8 +394,7 @@ void admin_form::prepareQuestDlg(question_mod_dialog *dlg)
 
     if(q_res_themes.count() > 0){
         for(int i = 0;i < q_res_themes.count(); i++){
-            dlg->addThemeToList(q_res_themes.at(i)["name"].toString(),
-                    q_res_themes.at(i)["id"].toString());
+            dlg->addThemeToList(q_res_themes.at(i)["name"].toString(),q_res_themes.at(i)["id"].toString());
         }
     }
 }
@@ -404,8 +403,7 @@ void admin_form::on_action_addQuest_triggered()
 {
     ui->toolButton_Add_Quest->setText(tr("Add question"));
     connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
-    QList<st_answer> answ_from_db;
-    question_mod_dialog queMD_dialog(&answ_from_db);
+    question_mod_dialog queMD_dialog(this);
     prepareQuestDlg(&queMD_dialog);
     QTreeWidget *curQTW = get_curQTW();
     if(curQTW->currentItem()){
@@ -418,18 +416,18 @@ void admin_form::on_action_addQuest_triggered()
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
         QString comment = queMD_dialog.getComment();
 
-
-
         if(sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getIndexBox().toString(), comment)){
             QVariant q_id = sql->getQuestIdByNameAndType(quest_text,for_learn);
             QList<st_answer> newAnswers = queMD_dialog.getAnswers();
             for(int i=0; i<newAnswers.count(); i++){
-             st_answer new_answer = newAnswers.at(i);
-             new_answer.question_id=q_id.toString();
-             sql->addAnswer(new_answer);
+                st_answer new_answer = newAnswers.at(i);
+                new_answer.question_id = q_id.toString();
+                sql->addAnswer(&new_answer);
+            }
         }
-      }
-   }
+        getQuestionList(0);
+        getQuestionList(1);
+    }
 }
 ////
 void admin_form::on_pushButton_Edit_Quest_clicked()
@@ -462,28 +460,20 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
     }
     else{
         //        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
-        QList<st_answer> answ_from_db;
-        answ_from_db.clear();
-        st_answer answer;
-        QList<QMap<QString,QVariant> > answers = sql->getAnswers(curQTW->currentItem()->text(1).trimmed());
-        for(int i = 0; i< answers.count() ;i++)
-        {
-            answer.question_id = answers.at(i)["question_id"].toString();
-            answer.ans_id = answers.at(i)["id"].toString();
-            answer.ans_text = answers.at(i)["answer"].toString();
-            answer.ans_correct = answers.at(i)["correct"].toBool();
 
 
-            answ_from_db.append(answer);
-
-        }
-
-        question_mod_dialog queMD_dialog(&answ_from_db);
+        question_mod_dialog queMD_dialog(this);
         prepareQuestDlg(&queMD_dialog);
         QTreeWidget *curQTW = get_curQTW();
         if(curQTW->currentItem()){
-            queMD_dialog.setQuestionText(curQTW->currentItem()->text(0));
-            queMD_dialog.setCurrentTheme(curQTW->currentItem()->text(1));
+//            queMD_dialog.setQuestionText(curQTW->currentItem()->text(0));
+//            queMD_dialog.setCurrentTheme(curQTW->currentItem()->text(1));
+//            queMD_dialog.setComment(curQTW->currentItem()->text(2));
+            // FIXME: получить из бд id,comment вопроса  b pfgjkybnm ajhve
+            QList<st_answer> answ_from_db;
+            answ_from_db.clear();
+            answ_from_db = sql->getAnswers(curQTW->currentItem()->text(1).trimmed());
+            queMD_dialog.loadAnswers(&answ_from_db);
         }
 
         if(queMD_dialog.exec()){

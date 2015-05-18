@@ -15,11 +15,13 @@ class question_mod_dialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit question_mod_dialog(QList<st_answer> *answers,QWidget *parent = 0);
+    explicit question_mod_dialog(QWidget *parent = 0);
     ~question_mod_dialog();
     void addThemeToList(QString theme_name, QVariant theme_id);
     void setCurrentTheme(QVariant theme_id);
     void setQuestionText(QString text);
+    void setComment(QString text);
+    void loadAnswers(QList<st_answer> *answers);
     QString getQuestion();
     QVariant getQuestionTheme();
     QVariant getIndexBox();
@@ -33,7 +35,6 @@ private:
     QList<st_answer> answers;
     QList< QCheckBox* > answersChecks;
     QAction *addAns, *saveAns, *delAns;
-    void loadAnswers(QList<st_answer> *answers);
     bool getAnswerCheckAvailablity(bool oneCheckException=false);
     int correctAnswersCount();
     void removeAnswer(int row, bool quiet=false);
