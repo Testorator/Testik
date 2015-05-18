@@ -427,14 +427,14 @@ QVariant sql_cl::getQuestIdByNameAndType(QString questName,QVariant for_learn)
 //**********************************************
 // **** ANSWERS **** {{
 //
-bool sql_cl::addAnswer(QString question_id, QString ans_text, int ans_correct)
+bool sql_cl::addAnswer(st_answer answer)
 {
     return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+
                               "("+crypt->mdEncrypt("question_id",answers_crypt_key)+
                               ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+
                               crypt->mdEncrypt("correct",answers_crypt_key)+" ) VALUES("+
-                              question_id+","+crypt->valueEncrypt(ans_text,answers_crypt_key)+","+
-                              crypt->valueEncrypt(QVariant(ans_correct).toString(),answers_crypt_key)+");");
+                              answer.question_id+","+crypt->valueEncrypt(answer.ans_text,answers_crypt_key)+","+
+                              crypt->valueEncrypt(QVariant(answer.ans_correct).toString(),answers_crypt_key)+");");
 }
 //
 bool sql_cl::delAnswer(QString ans_id, QString question_id)

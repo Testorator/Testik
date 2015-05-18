@@ -29,6 +29,7 @@ question_mod_dialog::question_mod_dialog(QList<st_answer> *answers, QWidget *par
     ui->gridLayout_Answers_tb->addWidget(ptb,0,0,0,2,Qt::AlignTop);
     ui->comboBox_Themes->clear();
     loadAnswers(answers_from_db);
+    ui->tableWidget_Answers->hideColumn(2);
     ui->comboBox_Type->addItem(tr("text entry"), 1);
     ui->comboBox_Type->addItem(tr("one correct answer"), 2);
     ui->comboBox_Type->addItem(tr("many correct answers"), 3);
@@ -108,12 +109,13 @@ bool question_mod_dialog::getAnswerCheckAvailablity(bool oneCheckException)
 //
 void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
 {
-
     clear_AnswerList();
     ui->tableWidget_Answers->setRowCount(answers->count());
     for(int a=0;a<answers->count();a++){
         ui->tableWidget_Answers->setItem(a,0,new QTableWidgetItem(answers->at(a).ans_text));
         ui->tableWidget_Answers->setItem(a,1,new QTableWidgetItem(answers->at(a).ans_correct));
+        ui->tableWidget_Answers->setItem(a,2,new QTableWidgetItem(answers->at(a).ans_id));
+        ui->tableWidget_Answers->hideColumn(2);
     }
 }
 //
@@ -314,34 +316,20 @@ void question_mod_dialog::removeAnswer(int row, bool quiet)
         answersChecks.removeAt(row);
         ui->tableWidget_Answers->removeRow(row);
     }
-
 }
 //
 QList<st_answer> question_mod_dialog::getAnswers()
 {
-    // FIXME: не может быть пустой функция, иначе ошибка
-    int x =0;
+    QList<st_answer> result;
+    result.clear();
+    for(int i; i<ui->tableWidget_Answers->rowCount();i++)
+    {
+       st_answer new_ans;
+       new_ans.ans_id=ui->tableWidget_Answers->item(i,2)->text();
+       new_ans.ans_correct=answersChecks.at(i);
+       new_ans.ans_text=ui->tableWidget_Answers->item(i,0)->text();
+       result.append(new_ans);
+    }
+    return result;
 }
 //
-QString question_mod_dialog::getanswer()
-{
-    // TODO: бесполезная функция
-    for(int i=0;i<ui->tableWidget_Answers->rowCount();i++)
-    {
-
-        QList<QString> answer_text; // QStringlist - тоже самое
-        answer_text.append(ui->tableWidget_Answers->item(i,0)->text());
-        //                if(answersChecks.at(i)->isChecked()==true)
-        //                {
-        //                    answer_text.append("1");
-
-        //                }
-        //               else
-        //                {
-        //                    answer_text.append("0");
-        //                }
-        // зачем изобретать велосипед, если уже всё изобретено и дважды написано тебе мною!
-        answer_text.append(QVariant(QVariant(answersChecks.at(i)->isChecked()).toInt()).toString());
-
-    }
-}

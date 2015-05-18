@@ -26,7 +26,6 @@ public:
     QString getComment();
     bool uniqueAns();
     QList<st_answer> getAnswers();
-    QString getanswer();
 private:
     int lastIndexOfAnswersType;
     Ui::question_mod_dialog *ui;
