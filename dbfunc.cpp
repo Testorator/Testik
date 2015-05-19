@@ -403,6 +403,14 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString
     return result.sel_data;
 }
 //
+QList<QMap<QString, QVariant> > sql_cl::getCType()
+{
+st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+" FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+"WHERE"+
+                                     +crypt->valueEncrypt("comment",questions_crypt_key)+"="+crypt->valueEncrypt(comment.trimmed(),questions_crypt_key)+"AND"+
+                                     crypt->valueEncrypt("answer_type",questions_crypt_key)+"="+crypt->valueEncrypt(type.trimmed(),questions_crypt_key)+";",questions_crypt_key);
+return result.sel_data;
+}
+//
 QVariant sql_cl::getQuestIdByNameAndType(QString questName,QVariant for_learn)
 {
     QVariant result;

@@ -123,7 +123,7 @@ void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
         ui->tableWidget_Answers->setItem(a,0,new QTableWidgetItem(answers->at(a).ans_text));
         ui->tableWidget_Answers->setItem(a,1,new QTableWidgetItem(answers->at(a).ans_correct));
         ui->tableWidget_Answers->setItem(a,2,new QTableWidgetItem(answers->at(a).ans_id));
-        ui->tableWidget_Answers->hideColumn(2);
+//        ui->tableWidget_Answers->hideColumn(2);
     }
 }
 //
@@ -136,6 +136,7 @@ void question_mod_dialog::on_addAns_triggered()
             if( ui->tableWidget_Answers->findItems(dlg->getAnswerText(), Qt::MatchExactly).count() == 0)
             {
                 int i = ui->tableWidget_Answers->rowCount();
+
                 ui->tableWidget_Answers->insertRow(i);
 
                 ui->tableWidget_Answers->setItem(i,0,new QTableWidgetItem(dlg->getAnswerText()));

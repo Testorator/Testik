@@ -33,7 +33,7 @@ private:
     Ui::question_mod_dialog *ui;
     QList<st_answer> *answers_from_db;
     QList<st_answer> answers;
-    QList< QCheckBox* > answersChecks;
+    QList<QCheckBox*> answersChecks;
     QAction *addAns, *saveAns, *delAns;
     bool getAnswerCheckAvailablity(bool oneCheckException=false);
     int correctAnswersCount();
