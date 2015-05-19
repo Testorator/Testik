@@ -73,6 +73,7 @@ public:
     bool addQuest(const QString questionName, QVariant for_learn, QString theme_id, QString ans_type, QString comment);
     bool questUnique(const QString questionName, bool silent = 0);
     QVariant getQuestIdByNameAndType(QString questName, QVariant for_learn);
+    QList<QMap<QString,QVariant> > getCType();
     //
     bool addAnswer(st_answer *answer);
     bool delAnswer(QString ans_id, QString question_id);
