@@ -118,7 +118,7 @@ void sql_cl::closeDB()
 //**********************************************
 bool sql_cl::SendSimpleQueryStr(const QString& q_str)
 {
-//        qDebug() << q_str;
+    //        qDebug() << q_str;
     bool result;
     QSqlQuery *query = new QSqlQuery(cur_db);
     cur_db.transaction();
@@ -156,7 +156,7 @@ QString sql_cl::convertTypeOfQuestions(int type)
 //**********************************************
 st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
 {
-//        qDebug() << q_str;
+    //        qDebug() << q_str;
     st_qRes result;
 
     result.sel_data.clear();
@@ -329,15 +329,6 @@ QList<QMap<QString, QVariant> > sql_cl::getThemeChild(QVariant parent_id)
     return result.sel_data;
 }
 //
-QList<QMap<QString, QVariant> > sql_cl::getQuestionsWithThemes(int questions_type)
-{
-    QString _questions_type = convertTypeOfQuestions(questions_type);
-
-    st_qRes result = SendSimpleQueryStrWR("SELECT * FROM vw_"+_questions_type+"_questions_with_themes;","");
-    return result.sel_data;
-}
-
-//
 bool sql_cl::addQuest(const QString questionName, QVariant for_learn, QString theme_id, QString ans_type, QString comment)
 {
     bool result = false;
@@ -403,15 +394,7 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString
     return result.sel_data;
 }
 //
-QList<QMap<QString, QVariant> > sql_cl::getCType()
-{
-st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+" FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+"WHERE"+
-                                     +crypt->valueEncrypt("comment",questions_crypt_key)+"="+crypt->valueEncrypt(comment.trimmed(),questions_crypt_key)+"AND"+
-                                     crypt->valueEncrypt("answer_type",questions_crypt_key)+"="+crypt->valueEncrypt(type.trimmed(),questions_crypt_key)+";",questions_crypt_key);
-return result.sel_data;
-}
-//
-QVariant sql_cl::getQuestIdByNameAndType(QString questName,QVariant for_learn)
+QVariant sql_cl::getQuestIdByNameAndType(QString questName, QVariant for_learn)
 {
     QVariant result;
     st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+" FROM "+
@@ -428,6 +411,26 @@ QVariant sql_cl::getQuestIdByNameAndType(QString questName,QVariant for_learn)
     }
     return result;
 }
+//
+st_quesion sql_cl::getQuestionById(QVariant q_id)
+{
+    st_quesion result;
+
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+","+crypt->mdEncrypt("theme_id",questions_crypt_key)+
+                                         ","+crypt->mdEncrypt("question",questions_crypt_key)+","+crypt->mdEncrypt("answer_type",questions_crypt_key)+
+                                         ","+crypt->mdEncrypt("comment",questions_crypt_key)+" FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+" WHERE "+
+                                         crypt->mdEncrypt("id",questions_crypt_key)+"="+q_id.toString()+";",questions_crypt_key);
+    if(q_res.q_result){
+        result.id = q_res.sel_data.at(0)["id"].toString();
+        result.theme_id = q_res.sel_data.at(0)["theme_id"].toString();
+        result.text = q_res.sel_data.at(0)["question"].toString();
+        result.comment = q_res.sel_data.at(0)["comment"].toString();
+        result.ans_type = q_res.sel_data.at(0)["answer_type"].toInt();
+    }
+
+    return result;
+}
+
 // **** QUESTIONS **** }}
 //**********************************************
 // **** ANSWERS **** {{
@@ -457,9 +460,9 @@ QList<st_answer> sql_cl::getAnswers(QVariant question_id)
 {
     QList<st_answer> result;
     st_qRes q_result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",answers_crypt_key)+", "+crypt->mdEncrypt("question_id",answers_crypt_key)
-                                          +", "+crypt->mdEncrypt("correct",answers_crypt_key)+", "+crypt->mdEncrypt("answer",answers_crypt_key)
-                                          +" FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
-                                          " WHERE "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+question_id.toString()+";",answers_crypt_key);
+                                            +", "+crypt->mdEncrypt("correct",answers_crypt_key)+", "+crypt->mdEncrypt("answer",answers_crypt_key)
+                                            +" FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
+                                            " WHERE "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+question_id.toString()+";",answers_crypt_key);
 
     if(q_result.q_result){
         result.clear();

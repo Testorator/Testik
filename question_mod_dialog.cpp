@@ -75,6 +75,20 @@ void question_mod_dialog::setComment(QString text){
     ui->textEdit_AnsComment->setText(text);
 }
 //
+QVariant question_mod_dialog::getAnswersType()
+{
+    return ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex());
+}
+//
+void question_mod_dialog::setAnswersType(int value)
+{
+    int item_index = ui->comboBox_Type->findData(value);
+    if(item_index < 0){
+        item_index = 0;
+    }
+    ui->comboBox_Type->setCurrentIndex(item_index);
+}
+//
 void question_mod_dialog::clear_AnswerList()
 {
     for(int r=ui->tableWidget_Answers->rowCount(); r>0; r--){
@@ -114,17 +128,30 @@ bool question_mod_dialog::getAnswerCheckAvailablity(bool oneCheckException)
     return result;
 }
 //
+QWidget* question_mod_dialog::createCheckBox(int chb_index, bool isChecked)
+{
+    answersChecks.insert(chb_index,new QCheckBox(this));
+    answersChecks.at(chb_index)->setChecked(isChecked);
+    answersChecks.at(chb_index)->setEnabled(false);
+    QWidget *result = new QWidget(this);
+    QHBoxLayout *_hlw = new QHBoxLayout;
+    _hlw->setMargin(0);
+    _hlw->addWidget(answersChecks.at(chb_index), 0, Qt::AlignCenter);
+    result->setLayout(_hlw);
+    return result;
+}
+//
 void question_mod_dialog::loadAnswers(QList<st_answer> *answers)
 {
-    // FIXME: скорректировать функцию на использование чекбоксов
     clear_AnswerList();
     ui->tableWidget_Answers->setRowCount(answers->count());
     for(int a=0;a<answers->count();a++){
         ui->tableWidget_Answers->setItem(a,0,new QTableWidgetItem(answers->at(a).ans_text));
-        ui->tableWidget_Answers->setItem(a,1,new QTableWidgetItem(answers->at(a).ans_correct));
+        ui->tableWidget_Answers->setCellWidget(a,1,createCheckBox(a,answers->at(a).ans_correct));
         ui->tableWidget_Answers->setItem(a,2,new QTableWidgetItem(answers->at(a).ans_id));
-//        ui->tableWidget_Answers->hideColumn(2);
     }
+    ui->tableWidget_Answers->hideColumn(2);
+    ui->tableWidget_Answers->resizeColumnsToContents();
 }
 //
 void question_mod_dialog::on_addAns_triggered()
@@ -136,21 +163,10 @@ void question_mod_dialog::on_addAns_triggered()
             if( ui->tableWidget_Answers->findItems(dlg->getAnswerText(), Qt::MatchExactly).count() == 0)
             {
                 int i = ui->tableWidget_Answers->rowCount();
-
                 ui->tableWidget_Answers->insertRow(i);
 
                 ui->tableWidget_Answers->setItem(i,0,new QTableWidgetItem(dlg->getAnswerText()));
-
-                answersChecks.insert(i,new QCheckBox(this));
-                answersChecks.at(i)->setChecked(dlg->getAnswerCorrectFlag());
-
-                answersChecks.at(i)->setEnabled(false);
-                QWidget *_wgt = new QWidget(this);
-                QHBoxLayout *_hlw = new QHBoxLayout;
-                _hlw->setMargin(0);
-                _hlw->addWidget(answersChecks.at(i), 0, Qt::AlignCenter);
-                _wgt->setLayout(_hlw);
-                ui->tableWidget_Answers->setCellWidget(i,1,_wgt);
+                ui->tableWidget_Answers->setCellWidget(i,1,createCheckBox(i,dlg->getAnswerCorrectFlag()));
                 ui->tableWidget_Answers->resizeColumnsToContents();
 
                 if(ui->comboBox_Type->currentData().toInt() == 1){
@@ -170,11 +186,6 @@ void question_mod_dialog::on_addAns_triggered()
         }
     }
     delete dlg;
-}
-//
-QVariant question_mod_dialog::getIndexBox()
-{
-    return ui->comboBox_Type->itemData(ui->comboBox_Type->currentIndex());
 }
 //
 void question_mod_dialog::on_editAns_triggered()

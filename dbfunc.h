@@ -67,13 +67,12 @@ public:
     bool addTheme(st_theme *new_data);
     bool updTheme(st_theme *new_data);
     bool delTheme(const QVariant theme_id);
-    bool clearTheme(const QVariant theme_id);
-    QList<QMap<QString,QVariant> > getQuestionsWithThemes(int questions_type);
-    QList<QMap<QString,QVariant> > getQuestions(int questions_type, QString theme_id = 0);
+    bool clearTheme(const QVariant theme_id);   
+    QList<QMap<QString,QVariant> > getQuestions(int questions_type, QString theme_id = 0); // FIXME: переделать чтобы возвращало QList<st_quesion>
+    st_quesion getQuestionById(QVariant q_id);
     bool addQuest(const QString questionName, QVariant for_learn, QString theme_id, QString ans_type, QString comment);
     bool questUnique(const QString questionName, bool silent = 0);
     QVariant getQuestIdByNameAndType(QString questName, QVariant for_learn);
-    QList<QMap<QString,QVariant> > getCType();
     //
     bool addAnswer(st_answer *answer);
     bool delAnswer(QString ans_id, QString question_id);

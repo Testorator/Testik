@@ -21,10 +21,11 @@ public:
     void setCurrentTheme(QVariant theme_id);
     void setQuestionText(QString text);
     void setComment(QString text);
+    void setAnswersType(int value);
     void loadAnswers(QList<st_answer> *answers);
     QString getQuestion();
     QVariant getQuestionTheme();
-    QVariant getIndexBox();
+    QVariant getAnswersType();
     QString getComment();
     bool uniqueAns();
     QList<st_answer> getAnswers();
@@ -33,8 +34,9 @@ private:
     Ui::question_mod_dialog *ui;
     QList<st_answer> *answers_from_db;
     QList<st_answer> answers;
-    QList<QCheckBox*> answersChecks;
+    QList< QCheckBox* > answersChecks;
     QAction *addAns, *saveAns, *delAns;
+    QWidget* createCheckBox(int chb_index, bool isChecked);
     bool getAnswerCheckAvailablity(bool oneCheckException=false);
     int correctAnswersCount();
     void removeAnswer(int row, bool quiet=false);

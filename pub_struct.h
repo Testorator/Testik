@@ -10,6 +10,14 @@ struct st_theme{
     QString name;
 };
 
+struct st_quesion{
+    QString id;
+    QString theme_id;
+    QString text;
+    QString comment;
+    int ans_type;
+};
+
 struct st_answer{
     QString question_id;
     QString ans_id;

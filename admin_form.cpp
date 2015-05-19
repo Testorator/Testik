@@ -416,7 +416,7 @@ void admin_form::on_action_addQuest_triggered()
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
         QString comment = queMD_dialog.getComment();
 
-        if(sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getIndexBox().toString(), comment)){
+        if(sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getAnswersType().toString(), comment)){
             QVariant q_id = sql->getQuestIdByNameAndType(quest_text,for_learn);
             QList<st_answer> newAnswers = queMD_dialog.getAnswers();
             for(int i=0; i<newAnswers.count(); i++){
@@ -466,12 +466,12 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
         prepareQuestDlg(&queMD_dialog);
         QTreeWidget *curQTW = get_curQTW();
         if(curQTW->currentItem()){
-//            queMD_dialog.setQuestionText(curQTW->currentItem()->text(0));
-//            queMD_dialog.setCurrentTheme(curQTW->currentItem()->text(1));
-//            queMD_dialog.setComment(curQTW->currentItem()->text(2));
+            st_quesion question_from_db = sql->getQuestionById(curQTW->currentItem()->text(1));
+            queMD_dialog.setQuestionText(question_from_db.text);
+            queMD_dialog.setCurrentTheme(question_from_db.theme_id);
+            queMD_dialog.setComment(question_from_db.comment);
+            queMD_dialog.setAnswersType(question_from_db.ans_type);
 
-            // FIXME: получить из бд id,comment,тип_ответов вопроса и заполнить форму
-            // FIXME: перед загрузкой ответов установить нужное значение типа ответов
             QList<st_answer> answ_from_db;
             answ_from_db.clear();
             answ_from_db = sql->getAnswers(curQTW->currentItem()->text(1).trimmed());
