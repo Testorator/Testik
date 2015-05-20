@@ -205,7 +205,7 @@ st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
 }
 //**********************************************
 // **** QUESTIONS **** {{
-bool sql_cl::themeUnique(const QString themeName, bool silent)
+bool sql_cl::uniqTheme(const QString themeName, bool silent)
 {
     bool result;
     if(themeName.isEmpty() || themeName.isNull() || themeName.trimmed().length() < 1){
@@ -270,7 +270,7 @@ QList<QMap<QString, QVariant> > sql_cl::getThemes()
 bool sql_cl::addTheme(st_theme *new_data)
 {
     bool result = false;
-    result = themeUnique(new_data->name);
+    result = uniqTheme(new_data->name);
     if(result){
         QString q_str = "INSERT INTO "+crypt->mdEncrypt("q_themes",q_themes_crypt_key)+" (";
         if(new_data->parent_id > 0) q_str.append(crypt->mdEncrypt("parent_id",q_themes_crypt_key)).append(",");
@@ -332,7 +332,7 @@ QList<QMap<QString, QVariant> > sql_cl::getThemeChild(QVariant parent_id)
 bool sql_cl::addQuest(const QString questionName, QVariant for_learn, QString theme_id, QString ans_type, QString comment)
 {
     bool result = false;
-    result = questUnique(questionName.trimmed());
+    result = uniqQuestion(questionName.trimmed());
     if(result){
         QString q_str = "INSERT INTO "+crypt->mdEncrypt("questions",questions_crypt_key)+" ("+crypt->mdEncrypt("theme_id",questions_crypt_key)+","+
                 crypt->valueEncrypt("for_learn",questions_crypt_key)+","+crypt->mdEncrypt("question",questions_crypt_key)+","+
@@ -344,7 +344,7 @@ bool sql_cl::addQuest(const QString questionName, QVariant for_learn, QString th
     return result;
 }
 //
-bool sql_cl::questUnique(const QString questionName, bool silent)
+bool sql_cl::uniqQuestion(const QString questionName, bool silent)
 {
     bool result;
     if(questionName.isEmpty() || questionName.isNull() || questionName.trimmed().length() < 1){
@@ -431,31 +431,28 @@ st_quesion sql_cl::getQuestionById(QVariant q_id)
     return result;
 }
 //
-bool sql_cl::updateQuestions(st_quesion *new_data)
+bool sql_cl::updateQuestion(st_quesion *new_data)
 {
     bool result = false;
-    st_quesion upd_data;
     st_quesion db_data = getQuestionById(new_data->id);
     bool upd = false;
     QString query_str = "UPDATE "+crypt->valueEncrypt("questions",questions_crypt_key)+" SET ";
     if(new_data->text != db_data.text){
         upd = true;
-        upd_data.text = new_data->text;
         query_str.append(crypt->valueEncrypt("question",questions_crypt_key)+"="+crypt->valueEncrypt(new_data->text,questions_crypt_key));
     };
     if(new_data->comment != db_data.comment){
         upd = true;
-        upd_data.comment = new_data->comment;
         query_str.append(crypt->valueEncrypt("comment",questions_crypt_key)+"="+crypt->valueEncrypt(new_data->comment,questions_crypt_key));
     };
     if(new_data->ans_type != db_data.ans_type){
         upd = true;
-        upd_data.ans_type = new_data->ans_type;
         query_str.append(crypt->valueEncrypt("answer_type",questions_crypt_key)+"="+crypt->valueEncrypt(QVariant(new_data->ans_type).toString(),questions_crypt_key));
-        query_str.append(" WHERE rowid="+new_data->id+";");
-}
-    if(questUnique(upd_data.text)){
-        if(upd){
+    }
+
+    if(upd){
+        if(uniqQuestion(new_data->text)){
+            query_str.append(" WHERE "+crypt->mdEncrypt("id",questions_crypt_key)+"="+new_data->id+";");
             result = SendSimpleQueryStr(query_str);
         }
     }
@@ -470,7 +467,7 @@ bool sql_cl::addAnswer(st_answer *answer)
 {
     bool result = false;
 
-    if(answerUnique(answer)){
+    if(uniqAnswer(answer)){
         result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("answers",answers_crypt_key)+"("+crypt->mdEncrypt("question_id",answers_crypt_key)+
                                     ","+crypt->mdEncrypt("answer",answers_crypt_key)+","+crypt->mdEncrypt("correct",answers_crypt_key)+" ) VALUES("+
                                     answer->question_id+","+crypt->valueEncrypt(answer->ans_text,answers_crypt_key)+","+
@@ -510,7 +507,7 @@ QList<st_answer> sql_cl::getAnswers(QVariant question_id)
     return result;
 }
 //
-bool sql_cl::answerUnique(const st_answer *answer, bool silent)
+bool sql_cl::uniqAnswer(const st_answer *answer, bool silent)
 {
     bool result;
     if(answer->ans_text.isEmpty() || answer->ans_text.isNull() || answer->ans_text.trimmed().length() < 1){
@@ -593,7 +590,7 @@ QVariant sql_cl::getGroupIdByCode(QString grpCode)
 bool sql_cl::addGroup(QString grpCode)
 {
     bool result;
-    if(sql_cl::grpUnique(grpCode)){
+    if(sql_cl::uniqGroup(grpCode)){
         result = SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("groups",groups_crypt_key)+" ("+
                                     crypt->mdEncrypt("code",groups_crypt_key)+") VALUES("+
                                     crypt->valueEncrypt(grpCode,groups_crypt_key)+");");
@@ -617,7 +614,7 @@ bool sql_cl::delGroup(const QVariant grpId)
 }
 
 //
-bool sql_cl::grpUnique(const QString grpCode, bool silent)
+bool sql_cl::uniqGroup(const QString grpCode, bool silent)
 {
     bool result;
     if(grpCode.isEmpty() || grpCode.isNull() || grpCode.trimmed().length() < 1){
@@ -697,7 +694,7 @@ bool sql_cl::delStudent(QString studId, QString grpId)
                               " WHERE "+crypt->mdEncrypt("id",students_crypt_key)+"="+studId+cond_grpId+";");
 }
 //
-bool sql_cl::studUnique(const QString Surname, const QString Name, const QString Patronymic, QString grpId, bool silent)
+bool sql_cl::uniqStudent(const QString Surname, const QString Name, const QString Patronymic, QString grpId, bool silent)
 {
     bool result = false;
     QString cond_grpId, msg_grpId;

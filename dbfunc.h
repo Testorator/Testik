@@ -51,19 +51,19 @@ public:
     bool addGroup(const QString grpCode);
     bool clearGroup(const QVariant grpId);
     bool delGroup(const QVariant grpId);
-    bool grpUnique(const QString grpCode, bool silent = 0);
+    bool uniqGroup(const QString grpCode, bool silent = 0);
     //
     QList<QMap<QString,QVariant> > getStudents(QString groupID = 0 );
     st_qRes getStudent(QString studId, QString groupID);
     bool addStudent(st_stud data);
     bool delStudent(QString studId, QString grpId = 0);
-    bool studUnique(const QString Surname, const QString Name, const QString Patronymic, QString grpId = 0, bool silent = 0);
+    bool uniqStudent(const QString Surname, const QString Name, const QString Patronymic, QString grpId = 0, bool silent = 0);
     //
     QString convertTypeOfQuestions(int type);
     QList<QMap<QString,QVariant> > getThemes();
     QList<QMap<QString,QVariant> > getThemeChild(QVariant parent_id);
     st_theme getThemeByID(QVariant theme_id);
-    bool themeUnique(const QString themeName, bool silent = 0);
+    bool uniqTheme(const QString themeName, bool silent = 0);
     bool addTheme(st_theme *new_data);
     bool updTheme(st_theme *new_data);
     bool delTheme(const QVariant theme_id);
@@ -71,14 +71,14 @@ public:
     QList<QMap<QString,QVariant> > getQuestions(int questions_type, QString theme_id = 0); // FIXME: переделать чтобы возвращало QList<st_quesion>
     st_quesion getQuestionById(QVariant q_id);
     bool addQuest(const QString questionName, QVariant for_learn, QString theme_id, QString ans_type, QString comment);
-    bool questUnique(const QString questionName, bool silent = 0);
+    bool uniqQuestion(const QString questionName, bool silent = 0);
     QVariant getQuestIdByNameAndType(QString questName, QVariant for_learn);
-    bool updateQuestions(st_quesion *new_data);
+    bool updateQuestion(st_quesion *new_data);
     //
     bool addAnswer(st_answer *answer);
     bool delAnswer(QString ans_id, QString question_id);
     QList<st_answer> getAnswers(QVariant question_id);
-   bool answerUnique(const st_answer *answer, bool silent = false);
+   bool uniqAnswer(const st_answer *answer, bool silent = false);
     //
     bool sendEMail();
     bool set_sendEMail(QVariant value);

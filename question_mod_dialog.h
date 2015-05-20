@@ -20,15 +20,16 @@ public:
     void addThemeToList(QString theme_name, QVariant theme_id);
     void setCurrentTheme(QVariant theme_id);
     void setQuestionText(QString text);
-    void setComment(QString text);
+    void setQuestionComment(QString text);
     void setAnswersType(int value);
     void loadAnswers(QList<st_answer> *answers);
-    QString getQuestion();
+    QString getQuestionText();
     QVariant getQuestionTheme();
     QVariant getAnswersType();
-    QString getComment();
+    QString getQuestionComment();
     bool uniqueAns();
     QList<st_answer> getAnswers();
+    st_quesion getQuestionData();
 private:
     int lastIndexOfAnswersType;
     Ui::question_mod_dialog *ui;

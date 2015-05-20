@@ -412,9 +412,9 @@ void admin_form::on_action_addQuest_triggered()
 
     if(queMD_dialog.exec()){
 
-        QString quest_text = queMD_dialog.getQuestion();
+        QString quest_text = queMD_dialog.getQuestionText();
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
-        QString comment = queMD_dialog.getComment();
+        QString comment = queMD_dialog.getQuestionComment();
 
         if(sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getAnswersType().toString(), comment)){
             QVariant q_id = sql->getQuestIdByNameAndType(quest_text,for_learn);
@@ -461,35 +461,38 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
     else{
         //        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
 
-
         question_mod_dialog queMD_dialog(this);
         prepareQuestDlg(&queMD_dialog);
         QTreeWidget *curQTW = get_curQTW();
+        st_quesion question_from_db;
         if(curQTW->currentItem()){
-            st_quesion question_from_db = sql->getQuestionById(curQTW->currentItem()->text(1));
+            question_from_db = sql->getQuestionById(curQTW->currentItem()->text(1));
             queMD_dialog.setQuestionText(question_from_db.text);
             queMD_dialog.setCurrentTheme(question_from_db.theme_id);
-            queMD_dialog.setComment(question_from_db.comment);
+            queMD_dialog.setQuestionComment(question_from_db.comment);
             queMD_dialog.setAnswersType(question_from_db.ans_type);
-
 
             QList<st_answer> answ_from_db;
             answ_from_db.clear();
             answ_from_db = sql->getAnswers(curQTW->currentItem()->text(1).trimmed());
             queMD_dialog.loadAnswers(&answ_from_db);
 
-            question_from_db.text = queMD_dialog.getQuestion();
-            question_from_db.comment = queMD_dialog.getComment();
-            question_from_db.ans_type = queMD_dialog.getAnswersType().toInt();
-
-            sql->updateQuestions(&question_from_db);
         }
         if(queMD_dialog.exec()){
+            st_quesion new_question_data = queMD_dialog.getQuestionData();
+            new_question_data.id = question_from_db.id;
+            sql->updateQuestion(&new_question_data);
+
+
             //            QString quest_text=queMD_dialog.getQuestion();
             //            QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
             //            if(sql->questUnique(quest_text)){
             //                sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString());
             //            }
+
+            getQuestionList(0);
+            getQuestionList(1);
+
         }
     }
 }
@@ -647,10 +650,10 @@ void admin_form::on_actionAddStud_triggered()
 
     if(prepareAddStudDlg(&dlg)){
         if(dlg.exec() == 1){
-            if(sql->studUnique(dlg.get_lineEdit_Surname().trimmed(),
-                               dlg.get_lineEdit_Name().trimmed(),
-                               dlg.get_lineEdit_Patronymic().trimmed(),
-                               dlg.get_group_id().toString())){
+            if(sql->uniqStudent(dlg.get_lineEdit_Surname().trimmed(),
+                                dlg.get_lineEdit_Name().trimmed(),
+                                dlg.get_lineEdit_Patronymic().trimmed(),
+                                dlg.get_group_id().toString())){
 
                 st_stud new_stud;
                 new_stud.grp_code = dlg.get_group_code();
@@ -682,7 +685,7 @@ void admin_form::on_pushButton_Edit_Stud_clicked()
                                                    QLineEdit::Normal,
                                                    curItem->text(0)).trimmed();
             if(in_grp.length() > 0){
-                if(sql->grpUnique(in_grp)){
+                if(sql->uniqGroup(in_grp)){
                     bool q_res = sql->SendSimpleQueryStr(" "+sql->crypt->mdEncrypt("groups",sql->groups_crypt_key)+
                                                          " SET "+sql->crypt->mdEncrypt("code",sql->groups_crypt_key)+"="+
                                                          sql->crypt->valueEncrypt(in_grp,sql->groups_crypt_key)+" WHERE "+
@@ -806,13 +809,13 @@ bool admin_form::sendStudData_toDB(QList<st_stud> *data)
 {
     bool result = true;
     for(int i=0; i<data->count();i++){
-        if(sql->grpUnique(data->at(i).grp_code,true)){
+        if(sql->uniqGroup(data->at(i).grp_code,true)){
             sql->addGroup(data->at(i).grp_code);
         }
-        if(sql->studUnique(data->at(i).surname,
-                           data->at(i).name,
-                           data->at(i).patronymic,
-                           sql->getGroupIdByCode(data->at(i).grp_code).toString(),true)){
+        if(sql->uniqStudent(data->at(i).surname,
+                            data->at(i).name,
+                            data->at(i).patronymic,
+                            sql->getGroupIdByCode(data->at(i).grp_code).toString(),true)){
             result = sql->addStudent(data->at(i));
         }
 

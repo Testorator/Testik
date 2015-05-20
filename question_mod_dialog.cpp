@@ -50,7 +50,7 @@ void question_mod_dialog::setCurrentTheme(QVariant theme_id)
     ui->comboBox_Themes->setCurrentIndex(ui->comboBox_Themes->findData(theme_id,Qt::UserRole,Qt::MatchExactly));
 }
 //
-QString question_mod_dialog::getQuestion()
+QString question_mod_dialog::getQuestionText()
 {
     return ui->textEdit_Question->toPlainText().trimmed();
 }
@@ -66,12 +66,12 @@ void question_mod_dialog::setQuestionText(QString text)
     ui->textEdit_Question->setText(text);
 }
 //
-QString question_mod_dialog::getComment()
+QString question_mod_dialog::getQuestionComment()
 {
     return ui->textEdit_AnsComment->toPlainText().trimmed();
 }
 //
-void question_mod_dialog::setComment(QString text){
+void question_mod_dialog::setQuestionComment(QString text){
     ui->textEdit_AnsComment->setText(text);
 }
 //
@@ -88,6 +88,18 @@ void question_mod_dialog::setAnswersType(int value)
     }
     ui->comboBox_Type->setCurrentIndex(item_index);
 }
+//
+st_quesion question_mod_dialog::getQuestionData()
+{
+    st_quesion result;
+    result.theme_id = getQuestionTheme().toString();
+    result.text = getQuestionText();
+    result.ans_type = getAnswersType().toInt();
+    result.comment = getQuestionComment();
+
+    return result;
+}
+
 //
 void question_mod_dialog::clear_AnswerList()
 {
