@@ -481,7 +481,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
         if(queMD_dialog.exec()){
             st_quesion new_question_data = queMD_dialog.getQuestionData();
             new_question_data.id = question_from_db.id;
-            sql->updateQuestion(&new_question_data);
+            bool q_updated = sql->updateQuestion(&new_question_data);
 
 
             //            QString quest_text=queMD_dialog.getQuestion();
@@ -489,12 +489,13 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             //            if(sql->questUnique(quest_text)){
             //                sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString());
             //            }
-
-            getQuestionList(0);
-            getQuestionList(1);
-
+            if(q_updated){
+                getQuestionList(0);
+                getQuestionList(1);
+            }
         }
     }
+}
 }
 //
 void admin_form::set_questions_buttons_availablity(QTreeWidgetItem *item)
