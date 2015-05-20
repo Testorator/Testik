@@ -451,10 +451,10 @@ bool sql_cl::updateQuestions(st_quesion *new_data)
     if(new_data->ans_type != db_data.ans_type){
         upd = true;
         upd_data.ans_type = new_data->ans_type;
-        query_str.append(crypt->valueEncrypt("answer_type",questions_crypt_key)+"="+crypt->valueEncrypt(new_data->ans_type,questions_crypt_key));
-    query_str.append(" WHERE rowid="+new_data->id+";");
+        query_str.append(crypt->valueEncrypt("answer_type",questions_crypt_key)+"="+crypt->valueEncrypt(QVariant(new_data->ans_type).toString(),questions_crypt_key));
+        query_str.append(" WHERE rowid="+new_data->id+";");
 }
-    if(questUnique(&upd_data)){
+    if(questUnique(upd_data.text)){
         if(upd){
             result = SendSimpleQueryStr(query_str);
         }
