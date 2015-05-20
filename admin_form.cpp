@@ -496,7 +496,6 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
         }
     }
 }
-}
 //
 void admin_form::set_questions_buttons_availablity(QTreeWidgetItem *item)
 {
