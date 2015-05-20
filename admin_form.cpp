@@ -472,14 +472,19 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             queMD_dialog.setComment(question_from_db.comment);
             queMD_dialog.setAnswersType(question_from_db.ans_type);
 
+
             QList<st_answer> answ_from_db;
             answ_from_db.clear();
             answ_from_db = sql->getAnswers(curQTW->currentItem()->text(1).trimmed());
             queMD_dialog.loadAnswers(&answ_from_db);
+
+            question_from_db.text = queMD_dialog.getQuestion();
+            question_from_db.comment = queMD_dialog.getComment();
+            question_from_db.ans_type = queMD_dialog.getAnswersType().toInt();
+
+            sql->updateQuestions(&question_from_db);
         }
-
         if(queMD_dialog.exec()){
-
             //            QString quest_text=queMD_dialog.getQuestion();
             //            QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
             //            if(sql->questUnique(quest_text)){
@@ -487,7 +492,6 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             //            }
         }
     }
-
 }
 //
 void admin_form::set_questions_buttons_availablity(QTreeWidgetItem *item)

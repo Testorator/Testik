@@ -430,7 +430,38 @@ st_quesion sql_cl::getQuestionById(QVariant q_id)
 
     return result;
 }
-
+//
+bool sql_cl::updateQuestions(st_quesion *new_data)
+{
+    bool result = false;
+    st_quesion upd_data;
+    st_quesion db_data = getQuestionById(new_data->id);
+    bool upd = false;
+    QString query_str = "UPDATE "+crypt->valueEncrypt("questions",questions_crypt_key)+" SET ";
+    if(new_data->text != db_data.text){
+        upd = true;
+        upd_data.text = new_data->text;
+        query_str.append(crypt->valueEncrypt("question",questions_crypt_key)+"="+crypt->valueEncrypt(new_data->text,questions_crypt_key));
+    };
+    if(new_data->comment != db_data.comment){
+        upd = true;
+        upd_data.comment = new_data->comment;
+        query_str.append(crypt->valueEncrypt("comment",questions_crypt_key)+"="+crypt->valueEncrypt(new_data->comment,questions_crypt_key));
+    };
+    if(new_data->ans_type != db_data.ans_type){
+        upd = true;
+        upd_data.ans_type = new_data->ans_type;
+        query_str.append(crypt->valueEncrypt("answer_type",questions_crypt_key)+"="+crypt->valueEncrypt(new_data->ans_type,questions_crypt_key));
+    query_str.append(" WHERE rowid="+new_data->id+";");
+}
+    if(questUnique(&upd_data)){
+        if(upd){
+            result = SendSimpleQueryStr(query_str);
+        }
+    }
+    return result;
+}
+//
 // **** QUESTIONS **** }}
 //**********************************************
 // **** ANSWERS **** {{
