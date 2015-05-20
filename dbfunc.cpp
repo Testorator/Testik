@@ -434,11 +434,13 @@ st_quesion sql_cl::getQuestionById(QVariant q_id)
 bool sql_cl::updateQuestion(st_quesion *new_data)
 {
     bool result = false;
-    st_quesion db_data = getQuestionById(new_data->id);
     bool upd = false;
+    bool checkUniq = false;
+    st_quesion db_data = getQuestionById(new_data->id);
     QString query_str = "UPDATE "+crypt->valueEncrypt("questions",questions_crypt_key)+" SET ";
     if(new_data->text != db_data.text){
         upd = true;
+        checkUniq = true;
         query_str.append(crypt->valueEncrypt("question",questions_crypt_key)+"="+crypt->valueEncrypt(new_data->text,questions_crypt_key));
     };
     if(new_data->comment != db_data.comment){
@@ -450,11 +452,13 @@ bool sql_cl::updateQuestion(st_quesion *new_data)
         query_str.append(crypt->valueEncrypt("answer_type",questions_crypt_key)+"="+crypt->valueEncrypt(QVariant(new_data->ans_type).toString(),questions_crypt_key));
     }
 
+    if(checkUniq){
+        upd = uniqQuestion(new_data->text);
+    }
+
     if(upd){
-        if(uniqQuestion(new_data->text)){
-            query_str.append(" WHERE "+crypt->mdEncrypt("id",questions_crypt_key)+"="+new_data->id+";");
-            result = SendSimpleQueryStr(query_str);
-        }
+        query_str.append(" WHERE "+crypt->mdEncrypt("id",questions_crypt_key)+"="+new_data->id+";");
+        result = SendSimpleQueryStr(query_str);
     }
     return result;
 }
