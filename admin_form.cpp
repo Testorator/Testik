@@ -491,32 +491,34 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
 
             if(answers_from_db.count() > new_answers_data.count()){
                 for(int i=0; i<answers_from_db.count(); i++){
-                    bool remAns = true;
+                    int delAnswerIndex = -1;
                     for(int j=0; j<new_answers_data.count();j++){
                         if(answers_from_db.at(i).ans_id == new_answers_data.at(j).ans_id){
-                            remAns = false;
-                        }
-                        else{
                             sql->updateAnswer(&new_answers_data.at(j));
                         }
+                        else{
+                            delAnswerIndex = i;
+                        }
                     }
-                    if(remAns){
+                    if(delAnswerIndex >= 0){
                         // FIXME: закончить функцию
-                        // sql->delAnswer(nswers_from_db.at(i).ans_id);
+                        // sql->delAnswer(nswers_from_db.at(delAnswerIndex).ans_id);
                     }
                 }
             }
             else if(answers_from_db.count() < new_answers_data.count()){
                 for(int i=0; i<new_answers_data.count(); i++){
-                    bool exstsAns = false;
+                    int newAnswerIndex = -1;
                     for(int j=0; j<answers_from_db.count();j++){
-                        if(answers_from_db.at(i).ans_id == new_answers_data.at(j).ans_id){
-                            exstsAns = true;
-                            sql->updateAnswer(&new_answers_data.at(i))
+                        if(answers_from_db.at(j).ans_id == new_answers_data.at(i).ans_id){
+                            sql->updateAnswer(&new_answers_data.at(i));
+                        }
+                        else{
+                            newAnswerIndex = i;
                         }
                     }
-                    if(!exstsAns){
-                        sql->addAnswer(&new_answers_data.at(j));
+                    if(newAnswerIndex >= 0){
+                        sql->addAnswer(&new_answers_data.at(newAnswerIndex));
                     }
                 }
             }
