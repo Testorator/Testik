@@ -79,6 +79,7 @@ public:
     bool delAnswer(QString ans_id, QString question_id);
     QList<st_answer> getAnswers(QVariant question_id);
    bool uniqAnswer(const st_answer *answer, bool silent = false);
+   bool updateAnswer(st_answer *new_data);
     //
     bool sendEMail();
     bool set_sendEMail(QVariant value);

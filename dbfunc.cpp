@@ -549,6 +549,34 @@ bool sql_cl::uniqAnswer(const st_answer *answer, bool silent)
     return result;
 }
 //
+bool sql_cl::updateAnswer(st_answer *new_data)
+{
+    bool result = false;
+    bool upd = false;
+    bool checkUniq = false;
+    st_answer db_data = getQuestionById(new_data->question_id);
+    QString query_str = "UPDATE "+crypt->valueEncrypt("answers",answers_crypt_key)+" SET ";
+    if(new_data->ans_text != db_data.ans_text){
+        upd = true;
+        checkUniq = true;
+        query_str.append(crypt->valueEncrypt("answer",answers_crypt_key)+"="+crypt->valueEncrypt(new_data->ans_text,questions_crypt_key));
+    };
+    if(new_data->ans_correct != db_data.ans_correct){
+        upd = true;
+        query_str.append(crypt->valueEncrypt("correct",answers_crypt_key)+"="+crypt->valueEncrypt(QVariant(new_data->ans_correct).toString(),questions_crypt_key));
+    }
+
+//    if(checkUniq){
+//        upd = uniqAnswer(new_data->ans_text);
+//    }
+
+    if(upd){
+        query_str.append(" WHERE "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+new_data->question_id+";");
+        result = SendSimpleQueryStr(query_str);
+    }
+    return result;
+}
+//
 // **** ANSWERS **** }}
 //**********************************************
 // **** GROUPS **** {{

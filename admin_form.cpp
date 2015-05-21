@@ -483,6 +483,13 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             new_question_data.id = question_from_db.id;
             bool q_updated = sql->updateQuestion(&new_question_data);
 
+            QList<st_answer> new_answers_data = queMD_dialog.getAnswers();
+            for(int i=0; i<new_answers_data.count(); i++){
+                st_answer update_answer = new_answers_data.at(i);
+                sql->updateAnswer(&update_answer);
+            }
+
+
 
             //            QString quest_text=queMD_dialog.getQuestion();
             //            QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
