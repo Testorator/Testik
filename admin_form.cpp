@@ -465,6 +465,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
         prepareQuestDlg(&queMD_dialog);
         QTreeWidget *curQTW = get_curQTW();
         st_quesion question_from_db;
+        QList<st_answer> answers_from_db;
         if(curQTW->currentItem()){
             question_from_db = sql->getQuestionById(curQTW->currentItem()->text(1));
             queMD_dialog.setQuestionText(question_from_db.text);
@@ -472,10 +473,9 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             queMD_dialog.setQuestionComment(question_from_db.comment);
             queMD_dialog.setAnswersType(question_from_db.ans_type);
 
-            QList<st_answer> answ_from_db;
-            answ_from_db.clear();
-            answ_from_db = sql->getAnswers(curQTW->currentItem()->text(1).trimmed());
-            queMD_dialog.loadAnswers(&answ_from_db);
+            answers_from_db.clear();
+            answers_from_db = sql->getAnswers(curQTW->currentItem()->text(1).trimmed());
+            queMD_dialog.loadAnswers(&answers_from_db);
 
         }
         if(queMD_dialog.exec()){
@@ -488,6 +488,40 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
                 st_answer update_answer = new_answers_data.at(i);
                 sql->updateAnswer(&update_answer);
             }
+
+            if(answers_from_db.count() > new_answers_data.count()){
+                for(int i=0; i<answers_from_db.count(); i++){
+                    bool remAns = true;
+                    for(int j=0; j<new_answers_data.count();j++){
+                        if(answers_from_db.at(i).ans_id == new_answers_data.at(j).ans_id){
+                            remAns = false;
+                        }
+                        else{
+                            sql->updateAnswer(&new_answers_data.at(j));
+                        }
+                    }
+                    if(remAns){
+                        // FIXME: закончить функцию
+                        // sql->delAnswer(nswers_from_db.at(i).ans_id);
+                    }
+                }
+            }
+            else if(answers_from_db.count() < new_answers_data.count()){
+                for(int i=0; i<new_answers_data.count(); i++){
+                    bool exstsAns = false;
+                    for(int j=0; j<answers_from_db.count();j++){
+                        if(answers_from_db.at(i).ans_id == new_answers_data.at(j).ans_id){
+                            exstsAns = true;
+                            sql->updateAnswer(&new_answers_data.at(i))
+                        }
+                    }
+                    if(!exstsAns){
+                        sql->addAnswer(&new_answers_data.at(j));
+                    }
+                }
+            }
+
+
 
 
 

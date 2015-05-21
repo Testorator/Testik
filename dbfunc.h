@@ -67,7 +67,8 @@ public:
     bool addTheme(st_theme *new_data);
     bool updTheme(st_theme *new_data);
     bool delTheme(const QVariant theme_id);
-    bool clearTheme(const QVariant theme_id);   
+    bool clearTheme(const QVariant theme_id);
+    //
     QList<QMap<QString,QVariant> > getQuestions(int questions_type, QString theme_id = 0); // FIXME: переделать чтобы возвращало QList<st_quesion>
     st_quesion getQuestionById(QVariant q_id);
     bool addQuest(const QString questionName, QVariant for_learn, QString theme_id, QString ans_type, QString comment);
@@ -78,8 +79,9 @@ public:
     bool addAnswer(st_answer *answer);
     bool delAnswer(QString ans_id, QString question_id);
     QList<st_answer> getAnswers(QVariant question_id);
-   bool uniqAnswer(const st_answer *answer, bool silent = false);
-   bool updateAnswer(st_answer *new_data);
+    st_answer getAnswerById(QVariant answer_id);
+    bool uniqAnswer(const st_answer *answer, bool silent = false);
+    bool updateAnswer(st_answer *new_data);
     //
     bool sendEMail();
     bool set_sendEMail(QVariant value);
