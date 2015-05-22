@@ -411,7 +411,6 @@ void admin_form::on_action_addQuest_triggered()
     }
 
     if(queMD_dialog.exec()){
-
         QString quest_text = queMD_dialog.getQuestionText();
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
         QString comment = queMD_dialog.getQuestionComment();
@@ -484,41 +483,42 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             bool q_updated = sql->updateQuestion(&new_question_data);
 
             QList<st_answer> new_answers_data = queMD_dialog.getAnswers();
-            for(int i=0; i<new_answers_data.count(); i++){
-                st_answer update_answer = new_answers_data.at(i);
-                sql->updateAnswer(&update_answer);
-            }
+//            QList<st_answer> new_answers_data;
+//            for(int i=0; i<new_answers_data.count(); i++){
+//                st_answer new_answer = answers_from_form.at(i);
+
+
+//            }
+            QVariant q_id = sql->getQuestIdByNameAndType(queMD_dialog.getQuestionText(),QVariant(ui->tabWidget_Questions->currentIndex()).toString());
 
             if(answers_from_db.count() > new_answers_data.count()){
                 for(int i=0; i<answers_from_db.count(); i++){
-                    int delAnswerIndex = -1;
+                    bool delItem = true;
                     for(int j=0; j<new_answers_data.count();j++){
                         if(answers_from_db.at(i).ans_id == new_answers_data.at(j).ans_id){
-                            sql->updateAnswer(&new_answers_data.at(j));
-                        }
-                        else{
-                            delAnswerIndex = i;
+                           delItem = false;
                         }
                     }
-                    if(delAnswerIndex >= 0){
+                    if(delItem){
                         // FIXME: закончить функцию
-                        //sql->delAnswer(answers_from_db.at(delAnswerIndex).ans_id);
+                        //sql->delAnswer(answers_from_db.at(i).ans_id);
                     }
                 }
             }
             else if(answers_from_db.count() < new_answers_data.count()){
                 for(int i=0; i<new_answers_data.count(); i++){
-                    int newAnswerIndex = -1;
+                    bool newAnswer = true;
                     for(int j=0; j<answers_from_db.count();j++){
                         if(answers_from_db.at(j).ans_id == new_answers_data.at(i).ans_id){
-                            sql->updateAnswer(&new_answers_data.at(i));
-                        }
-                        else{
-                            newAnswerIndex = i;
+                            newAnswer = false;
                         }
                     }
-                    if(newAnswerIndex >= 0){
-                        sql->addAnswer(&new_answers_data.at(newAnswerIndex));
+                    if(newAnswer){
+                        st_answer curAnswer = new_answers_data.at(i);
+                        if(curAnswer.question_id.trimmed().length() == 0){
+                            curAnswer.question_id = q_id.toString();
+                        }
+                        sql->addAnswer(&curAnswer);
                     }
                 }
             }
