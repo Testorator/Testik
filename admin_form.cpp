@@ -483,12 +483,6 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             bool q_updated = sql->updateQuestion(&new_question_data);
 
             QList<st_answer> new_answers_data = queMD_dialog.getAnswers();
-//            QList<st_answer> new_answers_data;
-//            for(int i=0; i<new_answers_data.count(); i++){
-//                st_answer new_answer = answers_from_form.at(i);
-
-
-//            }
             QVariant q_id = sql->getQuestIdByNameAndType(queMD_dialog.getQuestionText(),QVariant(ui->tabWidget_Questions->currentIndex()).toString());
 
             if(answers_from_db.count() > new_answers_data.count()){
