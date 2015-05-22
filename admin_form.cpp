@@ -501,7 +501,11 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
                     }
                     if(delItem){
                         // FIXME: закончить функцию
-                        //sql->delAnswer(answers_from_db.at(i).ans_id);
+                        st_answer curAnswer = answers_from_db.at(i);
+                        if(curAnswer.question_id.trimmed().length() == 0){
+                            curAnswer.question_id = q_id.toString();
+                        }
+                        sql->delAnswer(&curAnswer);
                     }
                 }
             }

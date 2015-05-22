@@ -484,7 +484,7 @@ bool sql_cl::delAnswer(st_answer *data)
 {
     return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
                               " WHERE "+crypt->mdEncrypt("id",answers_crypt_key)+"="+data->ans_id+
-                              " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+crypt->valueEncrypt(data->question_id,answers_crypt_key)+
+                              " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+data->question_id+
                               " AND "+crypt->mdEncrypt("correct",answers_crypt_key)+"="+crypt->valueEncrypt(QVariant(data->ans_correct).toString(),answers_crypt_key)+
                               "AND"+crypt->mdEncrypt("answer",answers_crypt_key)+"="+crypt->valueEncrypt(data->ans_text,answers_crypt_key)+";");
 }
