@@ -77,7 +77,7 @@ public:
     bool updateQuestion(st_quesion *new_data);
     //
     bool addAnswer(st_answer *answer);
-    bool delAnswer(QString ans_id, QString question_id);
+    bool delAnswer(st_answer *data);
     QList<st_answer> getAnswers(QVariant question_id);
     st_answer getAnswerById(QVariant answer_id);
     bool uniqAnswer(const st_answer *answer, bool silent = false);

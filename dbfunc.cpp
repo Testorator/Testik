@@ -480,12 +480,13 @@ bool sql_cl::addAnswer(st_answer *answer)
     return result;
 }
 //
-bool sql_cl::delAnswer(QString ans_id, QString question_id)
+bool sql_cl::delAnswer(st_answer *data)
 {
 
     return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
-                              " WHERE "+crypt->mdEncrypt("id",answers_crypt_key)+"="+ans_id+
-                              " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+question_id+";");
+                              " WHERE "+crypt->mdEncrypt("id",answers_crypt_key)+"="+data->ans_id+
+                              " AND "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+data->question_id+" AND "+
+                              +crypt->mdEncrypt("correct",answers_crypt_key)+"= "+ data->ans_correct+"AND"+crypt->mdEncrypt("answer",answers_crypt_key)+"="+data->ans_text+";");
 }
 //
 QList<st_answer> sql_cl::getAnswers(QVariant question_id)
@@ -577,25 +578,23 @@ bool sql_cl::updateAnswer(st_answer *new_data)
     bool checkUniq = false;
     st_answer db_data = getAnswerById(new_data->ans_id);
 
-    //    QString query_str = "UPDATE "+crypt->valueEncrypt("answers",answers_crypt_key)+" SET ";
-    //    if(new_data->ans_text != db_data.ans_text){
-    //        upd = true;
-    //        checkUniq = true;
-    //        query_str.append(crypt->valueEncrypt("answer",answers_crypt_key)+"="+crypt->valueEncrypt(new_data->ans_text,questions_crypt_key));
-    //    };
-    //    if(new_data->ans_correct != db_data.ans_correct){
-    //        upd = true;
-    //        query_str.append(crypt->valueEncrypt("correct",answers_crypt_key)+"="+crypt->valueEncrypt(QVariant(new_data->ans_correct).toString(),questions_crypt_key));
-    //    }
+  //       QString query_str = "INSERT INTO "+crypt->valueEncrypt("answers",answers_crypt_key)+" SET ";
+  //           if(new_data->ans_text != db_data.ans_text){
+  //           upd = true;
+  //            checkUniq = true;
+  //            return SendSimpleQueryStr("DELETE FROM "+crypt->mdEncrypt("answers",answers_crypt_key)+
+  //                                      " WHERE "+crypt->mdEncrypt("correct",answers_crypt_key)+"= "+ new_data->ans_correct+" AND "+crypt->mdEncrypt("answer",answers_crypt_key)+"="+new_data->ans_text+";");
+  //           query_str.append(crypt->valueEncrypt("answer",answers_crypt_key)+"="+crypt->valueEncrypt(new_data->ans_text,questions_crypt_key));
+  //           query_str.append(crypt->valueEncrypt("correct",answers_crypt_key)+"="+crypt->valueEncrypt(QVariant(new_data->ans_correct).toString(),questions_crypt_key));
+  //        };
+  //        if(checkUniq){
+  //            upd = uniqAnswer(new_data->ans_text);
+  //        }
 
-    ////    if(checkUniq){
-    ////        upd = uniqAnswer(new_data->ans_text);
-    ////    }
-
-    //    if(upd){
-    //        query_str.append(" WHERE "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+new_data->question_id+";");
-    //        result = SendSimpleQueryStr(query_str);
-    //    }
+  //        if(upd){
+  //            query_str.append(" WHERE "+crypt->mdEncrypt("question_id",answers_crypt_key)+"="+new_data->question_id+";");
+  //            result = SendSimpleQueryStr(query_str);
+  //        }
     return result;
 }
 //

@@ -502,7 +502,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
                     }
                     if(delAnswerIndex >= 0){
                         // FIXME: закончить функцию
-                        // sql->delAnswer(nswers_from_db.at(delAnswerIndex).ans_id);
+                        //sql->delAnswer(answers_from_db.at(delAnswerIndex).ans_id);
                     }
                 }
             }
