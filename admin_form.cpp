@@ -482,53 +482,29 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
             new_question_data.id = question_from_db.id;
             bool q_updated = sql->updateQuestion(&new_question_data);
 
-            QList<st_answer> new_answers_data = queMD_dialog.getAnswers();
+            st_updAnswers new_answers_data = queMD_dialog.getAnswers4Update();
             QVariant q_id = sql->getQuestIdByNameAndType(queMD_dialog.getQuestionText(),QVariant(ui->tabWidget_Questions->currentIndex()).toString());
 
-            if(answers_from_db.count() > new_answers_data.count()){
-                for(int i=0; i<answers_from_db.count(); i++){
-                    bool delItem = true;
-                    for(int j=0; j<new_answers_data.count();j++){
-                        if(answers_from_db.at(i).ans_id == new_answers_data.at(j).ans_id){
-                           delItem = false;
-                        }
-                    }
-                    if(delItem){
-                        st_answer curAnswer = answers_from_db.at(i);
-                        if(curAnswer.question_id.trimmed().length() == 0){
-                            curAnswer.question_id = q_id.toString();
-                        }
-                        sql->delAnswer(&curAnswer);
-                    }
-                }
+            for(int i=0; i < new_answers_data.answers4remove.count(); i++){
+                st_answer answer4del;
+                answer4del.ans_id = new_answers_data.answers4remove.at(i);
+                answer4del.question_id = q_id.toString();
+                sql->delAnswer(&answer4del);
             }
-            else if(answers_from_db.count() < new_answers_data.count()){
-                for(int i=0; i<new_answers_data.count(); i++){
-                    bool newAnswer = true;
-                    for(int j=0; j<answers_from_db.count();j++){
-                        if(answers_from_db.at(j).ans_id == new_answers_data.at(i).ans_id){
-                            newAnswer = false;
-                        }
-                    }
-                    if(newAnswer){
-                        st_answer curAnswer = new_answers_data.at(i);
-                        if(curAnswer.question_id.trimmed().length() == 0){
-                            curAnswer.question_id = q_id.toString();
-                        }
-                        sql->addAnswer(&curAnswer);
-                    }
+
+            for(int i=0; i < new_answers_data.answers4update.count(); i++){
+                st_answer curAnswer = new_answers_data.answers4update.at(i);
+                if(curAnswer.question_id.trimmed().length() == 0){
+                    curAnswer.question_id = q_id.toString();
+                }
+                if(curAnswer.ans_id.trimmed().length()>0){
+                    sql->updateAnswer(&curAnswer);
+                }
+                else{
+                    sql->addAnswer(&curAnswer);
                 }
             }
 
-
-
-
-
-            //            QString quest_text=queMD_dialog.getQuestion();
-            //            QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
-            //            if(sql->questUnique(quest_text)){
-            //                sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString());
-            //            }
             if(q_updated){
                 getQuestionList(0);
                 getQuestionList(1);

@@ -236,6 +236,9 @@ void question_mod_dialog::on_delAns_triggered()
 {
     QTableWidgetItem *itm = ui->tableWidget_Answers->currentItem();
     if(itm){
+        if(ui->tableWidget_Answers->item(itm->row(),2)->text().trimmed().length() > 0){
+            removedAnswersId.append(ui->tableWidget_Answers->item(itm->row(),2)->text().trimmed());
+        }
         removeAnswer(itm->row());
         if(ui->comboBox_Type->currentData().toInt() == 1){
             addAns->setEnabled(true);
@@ -348,6 +351,7 @@ void question_mod_dialog::removeAnswer(int row, bool quiet)
 QList<st_answer> question_mod_dialog::getAnswers()
 {
     QList<st_answer> result;
+
     result.clear();
     for(int i=0; i<ui->tableWidget_Answers->rowCount(); i++)
     {
@@ -365,3 +369,12 @@ QList<st_answer> question_mod_dialog::getAnswers()
     return result;
 }
 //
+st_updAnswers question_mod_dialog::getAnswers4Update()
+{
+    st_updAnswers result;
+
+    result.answers4update = getAnswers();
+    result.answers4remove = removedAnswersId;
+
+    return result;
+}

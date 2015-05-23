@@ -6,6 +6,11 @@
 #include <QTableWidgetItem>
 #include <QCheckBox>
 
+struct st_updAnswers{
+    QList<st_answer> answers4update;
+    QStringList answers4remove;
+};
+
 namespace Ui {
 class question_mod_dialog;
 }
@@ -29,10 +34,12 @@ public:
     QString getQuestionComment();
     bool uniqueAns();
     QList<st_answer> getAnswers();
+    st_updAnswers getAnswers4Update();
     st_quesion getQuestionData();
 private:
     int lastIndexOfAnswersType;
     Ui::question_mod_dialog *ui;
+    QStringList removedAnswersId;
     QList<st_answer> *answers_from_db;
     QList<st_answer> answers;
     QList< QCheckBox* > answersChecks;
