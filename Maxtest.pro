@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     smtpclient/quotedprintable.cpp \
     smtpclient/smtpclient.cpp \
     smtp_set.cpp \
-    answer_mod_dlg.cpp
+    answer_mod_dlg.cpp \
+    login_dlg.cpp
 
 HEADERS  += \
     test_results.h \
@@ -76,7 +77,8 @@ HEADERS  += \
     smtpclient/smtpexports.h \
     smtpclient/SmtpMime \
     smtp_set.h \
-    answer_mod_dlg.h
+    answer_mod_dlg.h \
+    login_dlg.h
 
 FORMS    += \
     second.ui \
@@ -91,7 +93,8 @@ FORMS    += \
     stud_dlg.ui \
     email_dlg.ui \
     smtp_set.ui \
-    answer_mod_dlg.ui
+    answer_mod_dlg.ui \
+    login_dlg.ui
 
 DISTFILES += \
     muse.zip \
