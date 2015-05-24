@@ -4,6 +4,11 @@
 #include <QString>
 #include <QList>
 
+struct st_group{
+    QString id;
+    QString code;
+};
+
 struct st_theme{
     QString id;
     QString parent_id;

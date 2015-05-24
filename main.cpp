@@ -1,4 +1,5 @@
 #include "admin_form.h"
+#include "login_dlg.h"
 #include "crypt.h"
 #include <QApplication>
 #include <QMessageBox>
@@ -13,7 +14,7 @@ int main(int argc, char *argv[])
     bool launch_app = true;
 
     admin_form af;
-//    Maxtest nf;
+    login_dlg lf;
 
     if(argc > 1){
         for (int i = 0; i < argc; ++i){
@@ -31,13 +32,7 @@ int main(int argc, char *argv[])
                                            QObject::tr("Please input admin password"),
                                            QLineEdit::Password);
 
-//        qDebug() << "pw = " << in_pw << " hash = " <<
-//                    QVariant(QCryptographicHash::hash(QVariant(QCryptographicHash::hash(in_pw.toByteArray(),
-//                             QCryptographicHash::Sha3_512).toHex()).toByteArray(),QCryptographicHash::Sha3_512).toHex()).toByteArray();
-
         QSettings settings(QApplication::applicationDirPath().append("/maxtest.prp"),QSettings::IniFormat);
-
-//       settings.setValue("crc", cryptStr(in_pw));
 
         if(settings.value("crc").toString() == cryptStr(in_pw)){
             af.show();
@@ -51,6 +46,8 @@ int main(int argc, char *argv[])
     else
     {
         qDebug() << "Start in normal mode";
+        lf.setModal(true);
+        lf.show();
 
     }
 

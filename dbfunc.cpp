@@ -626,12 +626,24 @@ bool sql_cl::updateAnswer(st_answer *new_data)
 // **** ANSWERS **** }}
 //**********************************************
 // **** GROUPS **** {{
-QList<QMap<QString,QVariant> > sql_cl::getGroups(){
-    st_qRes result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",groups_crypt_key)+", "+
-                                          crypt->mdEncrypt("code",groups_crypt_key)+" FROM "+
-                                          crypt->mdEncrypt("groups",groups_crypt_key),groups_crypt_key);
+QList<st_group> sql_cl::getGroups()
+{
+    QList<st_group> result;
+    st_qRes q_result = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",groups_crypt_key)+", "+
+                                            crypt->mdEncrypt("code",groups_crypt_key)+" FROM "+
+                                            crypt->mdEncrypt("groups",groups_crypt_key),groups_crypt_key);
 
-    return result.sel_data;
+    if(q_result.q_result){
+        result.clear();
+        for(int i=0; i<q_result.sel_data.count(); i++){
+            st_group group;
+            group.id = q_result.sel_data.at(i)["id"].toString();
+            group.code = q_result.sel_data.at(i)["code"].toString();
+            result.append(group);
+        }
+    }
+
+    return result;
 }
 //
 QString sql_cl::getGroupCodeById(QString grpId)

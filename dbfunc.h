@@ -47,7 +47,7 @@ public:
     //
     QString getGroupCodeById(QString grpId);
     QVariant getGroupIdByCode(QString grpCode);
-    QList<QMap<QString,QVariant> > getGroups();
+    QList<st_group> getGroups();
     bool addGroup(const QString grpCode);
     bool clearGroup(const QVariant grpId);
     bool delGroup(const QVariant grpId);

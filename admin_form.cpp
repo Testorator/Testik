@@ -101,7 +101,7 @@ void admin_form::getDataBases()
                 QDir::Name,
                 QDir::Files|QDir::Readable|QDir::Writable|QDir::NoSymLinks);
 
-    QStringList db_files =db_dir.entryList();
+    QStringList db_files = db_dir.entryList();
     ui->listWidget_DB->clear();
 
     for(int i=0; i < db_files.count(); i++){
@@ -205,7 +205,9 @@ void admin_form::on_listWidget_DB_clicked()
         ui->groupBox_SendEMail->setChecked(sql->sendEMail());
     }
     else{
-
+        QMessageBox::critical(this,
+                              tr("Error"),
+                              tr("Can't open database")+" \""+db_file+".qlt\"");
     }
 }
 // --- Database --- }}
@@ -528,8 +530,9 @@ void admin_form::set_questions_buttons_availablity(QTreeWidgetItem *item)
 // !!!! --- tab students --- !!!! {{
 void admin_form::getStudentsList()
 {
-    QList<QMap<QString,QVariant> > q_res_groups, q_res_stud;
-    q_res_groups.append(sql->getGroups());
+    QList<QMap<QString,QVariant> > q_res_stud;
+
+    QList<st_group> q_res_groups = sql->getGroups();
 
     if(q_res_groups.count() > 0){
         QList<QTreeWidgetItem *> groups, students;
@@ -540,11 +543,11 @@ void admin_form::getStudentsList()
             group.clear();
             students.clear();
 
-            group.append(q_res_groups.at(i)["code"].toString());
-            group.append(q_res_groups.at(i)["id"].toString());
+            group.append(q_res_groups.at(i).code);
+            group.append(q_res_groups.at(i).id);
 
             q_res_stud.clear();
-            q_res_stud = sql->getStudents(q_res_groups.at(i)["id"].toString());
+            q_res_stud = sql->getStudents(q_res_groups.at(i).id);
 
             for(int s = 0;s < q_res_stud.count(); s++){
                 student.clear();
@@ -630,13 +633,12 @@ void admin_form::on_actionAddGroup_triggered(QString group_code)
 //
 bool admin_form::prepareAddStudDlg(stud_dlg *dlg)
 {
-    QList<QMap<QString,QVariant> > q_res_groups = sql->getGroups();
+    QList<st_group> q_res_groups = sql->getGroups();
     bool result;
     if(q_res_groups.count() > 0){
         dlg->comboBox_groups_clear();
         for(int i = 0;i < q_res_groups.count(); i++){
-            dlg->comboBox_groups_addItem(q_res_groups.at(i)["code"].toString(),
-                    q_res_groups.at(i)["id"]);
+            dlg->comboBox_groups_addItem(q_res_groups.at(i).code,q_res_groups.at(i).id);
         }
 
         if(ui->treeWidget_students->currentItem() && ui->treeWidget_students->currentItem()->parent()){
