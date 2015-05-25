@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
     bool admin_mode = false;
     bool launch_app = true;
 
-    admin_form af;
-    login_dlg lf;
+    admin_form *af = new admin_form();
+    login_dlg *lf = new login_dlg();
 
     if(argc > 1){
         for (int i = 0; i < argc; ++i){
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
     if(admin_mode){
         qDebug() << "Start in admin mode";
-
+        delete lf;
         QVariant in_pw = QInputDialog::getText(new QWidget,
                                            QObject::tr("Input password"),
                                            QObject::tr("Please input admin password"),
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         QSettings settings(QApplication::applicationDirPath().append("/maxtest.prp"),QSettings::IniFormat);
 
         if(settings.value("crc").toString() == cryptStr(in_pw)){
-            af.show();
+            af->show();
         }
         else{
             qDebug() << "err: Wrong admin password.";
@@ -46,8 +46,9 @@ int main(int argc, char *argv[])
     else
     {
         qDebug() << "Start in normal mode";
-        lf.setModal(true);
-        lf.show();
+        delete af;
+        lf->setModal(true);
+        lf->show();
 
     }
 

@@ -17,13 +17,6 @@ struct st_qRes{
     QList<QMap<QString,QVariant> > sel_data;
 };
 
-struct st_stud {
-    QString grp_code;
-    QString surname;
-    QString name;
-    QString patronymic;
-};
-
 class sql_cl
 {
 private:
@@ -53,9 +46,9 @@ public:
     bool delGroup(const QVariant grpId);
     bool uniqGroup(const QString grpCode, bool silent = 0);
     //
-    QList<QMap<QString,QVariant> > getStudents(QString groupID = 0 );
+    QList<st_student> getStudents(QString groupID = 0 );
     st_qRes getStudent(QString studId, QString groupID);
-    bool addStudent(st_stud data);
+    bool addStudent(st_student data);
     bool delStudent(QString studId, QString grpId = 0);
     bool uniqStudent(const QString Surname, const QString Name, const QString Patronymic, QString grpId = 0, bool silent = 0);
     //

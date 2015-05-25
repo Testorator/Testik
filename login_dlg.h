@@ -19,11 +19,15 @@ public:
 private slots:
     void on_pushButton_Exit_clicked();
     void on_comboBox_DB_currentIndexChanged(int index);
+    void on_comboBox_Groups_currentIndexChanged(int index);
+    void on_comboBox_Students_currentIndexChanged(int index);
 
 private:
     Ui::login_dlg *ui;
-    sql_cl *sql;
     void getDataBases();
+
+protected:
+        sql_cl *sql;
 };
 
 #endif // LOGIN_DLG_H

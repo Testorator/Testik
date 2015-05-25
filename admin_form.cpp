@@ -530,7 +530,7 @@ void admin_form::set_questions_buttons_availablity(QTreeWidgetItem *item)
 // !!!! --- tab students --- !!!! {{
 void admin_form::getStudentsList()
 {
-    QList<QMap<QString,QVariant> > q_res_stud;
+    QList<st_student> q_res_stud;
 
     QList<st_group> q_res_groups = sql->getGroups();
 
@@ -551,10 +551,10 @@ void admin_form::getStudentsList()
 
             for(int s = 0;s < q_res_stud.count(); s++){
                 student.clear();
-                student.append(q_res_stud.at(s)["surname"].toString()+" "+
-                        q_res_stud.at(s)["name"].toString()+" "+
-                        q_res_stud.at(s)["patronymic"].toString());
-                student.append(q_res_stud.at(s)["id"].toString());
+                student.append(q_res_stud.at(s).surname+" "+
+                        q_res_stud.at(s).name+" "+
+                        q_res_stud.at(s).patronymic);
+                student.append(q_res_stud.at(s).id);
                 QTreeWidgetItem *stud_item = new QTreeWidgetItem((QTreeWidget*)0,QStringList(student));
                 stud_item->setIcon(0,QIcon(":/stud/stud"));
                 students.append(stud_item);
@@ -673,8 +673,8 @@ void admin_form::on_actionAddStud_triggered()
                                 dlg.get_lineEdit_Patronymic().trimmed(),
                                 dlg.get_group_id().toString())){
 
-                st_stud new_stud;
-                new_stud.grp_code = dlg.get_group_code();
+                st_student new_stud;
+                new_stud.group.code = dlg.get_group_code();
                 new_stud.name = dlg.get_lineEdit_Name();
                 new_stud.surname = dlg.get_lineEdit_Surname();
                 new_stud.patronymic = dlg.get_lineEdit_Patronymic();
@@ -823,17 +823,17 @@ void admin_form::on_pushButton_Delete_Stud_clicked()
     }
 }
 //
-bool admin_form::sendStudData_toDB(QList<st_stud> *data)
+bool admin_form::sendStudData_toDB(QList<st_student> *data)
 {
     bool result = true;
     for(int i=0; i<data->count();i++){
-        if(sql->uniqGroup(data->at(i).grp_code,true)){
-            sql->addGroup(data->at(i).grp_code);
+        if(sql->uniqGroup(data->at(i).group.code,true)){
+            sql->addGroup(data->at(i).group.code);
         }
         if(sql->uniqStudent(data->at(i).surname,
                             data->at(i).name,
                             data->at(i).patronymic,
-                            sql->getGroupIdByCode(data->at(i).grp_code).toString(),true)){
+                            sql->getGroupIdByCode(data->at(i).group.code).toString(),true)){
             result = sql->addStudent(data->at(i));
         }
 
@@ -846,7 +846,7 @@ bool admin_form::sendStudData_toDB(QList<st_stud> *data)
 //
 void admin_form::on_pushButton_Import_Stud_clicked()
 {
-    QList<st_stud> impData;
+    QList<st_student> impData;
 
     QFile file(QFileDialog::getOpenFileName(this, tr("Open files"),"/home/", "(*.csv)"));
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -855,10 +855,10 @@ void admin_form::on_pushButton_Import_Stud_clicked()
         QTextStream in(&file);
         const int step = 10;
         while (!in.atEnd()) {
-            st_stud new_stud;
+            st_student new_stud;
             strings = in.readLine().split(";");
 
-            new_stud.grp_code = strings.at(0).trimmed();
+            new_stud.group.code = strings.at(0).trimmed();
             new_stud.surname = strings.at(1).trimmed();
             new_stud.name = strings.at(2).trimmed();
             new_stud.patronymic = strings.at(3).trimmed();

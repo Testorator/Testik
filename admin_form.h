@@ -17,8 +17,9 @@ class admin_form;
 class admin_form : public QMainWindow
 {
     Q_OBJECT
-private:
+protected:
     sql_cl *sql;
+
 public:
     explicit admin_form(QWidget *parent = 0);
     ~admin_form();
@@ -71,7 +72,7 @@ private:
     void getStudentsList();
     void setAvailabilityOfItems(bool val);
     bool prepareAddStudDlg(stud_dlg *dlg);
-    bool sendStudData_toDB(QList<st_stud> *data);
+    bool sendStudData_toDB(QList<st_student> *data);
     // questions
     QTreeWidget* get_curQTW(int q_type = -1);
     void getQuestionList(int q_type = -1);

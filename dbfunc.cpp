@@ -11,7 +11,7 @@
 
 sql_cl::sql_cl()
 {
-    cur_db = QSqlDatabase::addDatabase("QSQLITE");
+
     crypt = new encryption();
     tabs_crypt_key = cur_db.databaseName();
     students_crypt_key = crypt->valueEncrypt("students",tabs_crypt_key);
@@ -21,6 +21,8 @@ sql_cl::sql_cl()
     groups_crypt_key = crypt->valueEncrypt("groups",tabs_crypt_key);
     answers_crypt_key = crypt->valueEncrypt("answers",tabs_crypt_key);
     email_addreses_crypt_key = crypt->valueEncrypt("email_addreses",tabs_crypt_key);
+    // FIXME: я помнится спрашивал, у тебя определена переменная шифрования, есть в ней значение? Чтото не вижу чтобы ей чтото было назначено!
+//    data_tests_crypt_key = ???????????
 }
 //
 sql_cl::~sql_cl()
@@ -99,9 +101,11 @@ bool sql_cl::createNewDB()
 //
 bool sql_cl::openDB(QString db_file)
 {
-    bool result;
-
-    if(dbIsOpen()) cur_db.close();
+    bool result = false;
+    if(dbIsOpen()) {
+        cur_db.close();
+    }
+    cur_db = QSqlDatabase::addDatabase("QSQLITE");
     cur_db.setDatabaseName(db_file);
     cur_db.open();
     result = cur_db.isOpen();
@@ -116,6 +120,7 @@ bool sql_cl::openDB(QString db_file)
     else{
         qDebug() << "DB openinig - success";
     }
+
     return result;
 }
 //
@@ -164,7 +169,7 @@ QString sql_cl::convertTypeOfQuestions(int type)
 //**********************************************
 st_qRes sql_cl::SendSimpleQueryStrWR(const QString& q_str, QString crypt_key)
 {
-    //        qDebug() << q_str;
+//    qDebug() << q_str;
     st_qRes result;
 
     result.sel_data.clear();
@@ -743,20 +748,41 @@ bool sql_cl::uniqGroup(const QString grpCode, bool silent)
 }
 // **** GROUPS **** }}
 // **** STUDENTS **** {{
-QList<QMap<QString, QVariant> > sql_cl::getStudents(QString groupID)
+QList<st_student> sql_cl::getStudents(QString groupID)
 {
-    st_qRes result;
+    QList<st_student> result;
+    st_qRes q_res;
     QString condition;
     if(groupID.isEmpty() || groupID.isNull() || groupID.trimmed().length() < 1){
         condition.clear();
     }
     else{
-        condition = " WHERE "+crypt->mdEncrypt("group_id",students_crypt_key)+"="+groupID.trimmed();
+        condition = " AND "+crypt->mdEncrypt("group_id",students_crypt_key)+"="+groupID.trimmed();
     }
-    result = SendSimpleQueryStrWR("SELECT * FROM "+crypt->mdEncrypt("students",students_crypt_key)+
-                                  condition+";",students_crypt_key);
+    q_res = SendSimpleQueryStrWR("SELECT st."+crypt->mdEncrypt("id",students_crypt_key)+" as "+crypt->mdEncrypt("stud_id",students_crypt_key)+
+                                 ", st."+crypt->mdEncrypt("name",students_crypt_key)+", st."+crypt->mdEncrypt("surname",students_crypt_key)+
+                                 ", st."+crypt->mdEncrypt("patronymic",students_crypt_key)+", gp."+crypt->mdEncrypt("id",groups_crypt_key)+
+                                 " as "+crypt->mdEncrypt("group_id",students_crypt_key)+", gp."+crypt->mdEncrypt("code",groups_crypt_key)+" as "+
+                                 crypt->mdEncrypt("group_code",students_crypt_key)+" FROM "+crypt->mdEncrypt("students",students_crypt_key)+" as st,"+
+                                 crypt->mdEncrypt("groups",groups_crypt_key)+" as gp"+" WHERE st."+crypt->mdEncrypt("group_id",students_crypt_key)+"="+
+                                 "gp."+crypt->mdEncrypt("id",groups_crypt_key)+condition+";",students_crypt_key);
 
-    return result.sel_data;
+
+    if(q_res.q_result){
+        for(int i=0; i < q_res.sel_data.count(); i++){
+            st_student db_stud;
+            db_stud.id = q_res.sel_data.at(i)["stud_id"].toString();
+            db_stud.group.id = q_res.sel_data.at(i)["group_id"].toString();
+            db_stud.group.code = q_res.sel_data.at(i)["group_code"].toString();
+            db_stud.name = q_res.sel_data.at(i)["name"].toString();
+            db_stud.surname = q_res.sel_data.at(i)["surname"].toString();
+            db_stud.patronymic = q_res.sel_data.at(i)["patronymic"].toString();
+
+            result.append(db_stud);
+        }
+    }
+
+    return result;
 }
 //
 st_qRes sql_cl::getStudent(QString studId, QString groupID)
@@ -766,14 +792,14 @@ st_qRes sql_cl::getStudent(QString studId, QString groupID)
                                 " AND "+crypt->mdEncrypt("group_id",students_crypt_key)+"="+groupID+";",students_crypt_key);
 }
 //
-bool sql_cl::addStudent(st_stud data)
+bool sql_cl::addStudent(st_student data)
 {
     return SendSimpleQueryStr("INSERT INTO "+crypt->mdEncrypt("students",students_crypt_key)+
                               "("+crypt->mdEncrypt("group_id",students_crypt_key)+
                               ","+crypt->mdEncrypt("name",students_crypt_key)+","+
                               crypt->mdEncrypt("surname",students_crypt_key)+","+
                               crypt->mdEncrypt("patronymic",students_crypt_key)+") VALUES("+
-                              getGroupIdByCode(data.grp_code).toString()+","+crypt->valueEncrypt(data.name,students_crypt_key)+","+
+                              getGroupIdByCode(data.group.code).toString()+","+crypt->valueEncrypt(data.name,students_crypt_key)+","+
                               crypt->valueEncrypt(data.surname,students_crypt_key)+","+
                               crypt->valueEncrypt(data.patronymic,students_crypt_key)+");");
 }

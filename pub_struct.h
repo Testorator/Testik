@@ -9,6 +9,14 @@ struct st_group{
     QString code;
 };
 
+struct st_student{
+    QString id;
+    st_group group;
+    QString surname;
+    QString name;
+    QString patronymic;
+};
+
 struct st_theme{
     QString id;
     QString parent_id;
