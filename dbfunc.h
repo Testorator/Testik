@@ -29,7 +29,7 @@ class sql_cl
 private:
     QSqlDatabase cur_db;
     QString tabs_crypt_key,questions_crypt_key,options_crypt_key,
-    answers_crypt_key,email_addreses_crypt_key;
+    answers_crypt_key,email_addreses_crypt_key, tests_crypt_key, data_tests_crypt_key;
 
 public:
     sql_cl();

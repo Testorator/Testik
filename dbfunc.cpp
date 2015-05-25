@@ -71,6 +71,14 @@ bool sql_cl::createNewDB()
     queries.append("CREATE TABLE "+crypt->valueEncrypt("email_addreses",email_addreses_crypt_key)+" ("+
                    crypt->valueEncrypt("recipient_name",email_addreses_crypt_key)+" TEXT NOT NULL, "+crypt->valueEncrypt("address",email_addreses_crypt_key)+
                    "TEXT NOT NULL );");
+    queries.append("CREATE TABLE "+crypt->valueEncrypt("tests",tests_crypt_key)+" ("+
+                   crypt->valueEncrypt("id",tests_crypt_key)+" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE , "+crypt->valueEncrypt("test_name",tests_crypt_key)+
+                   "TEXT NOT NULL );");
+    queries.append("CREATE TABLE "+crypt->valueEncrypt("data_tests",data_tests_crypt_key)+" ("+crypt->valueEncrypt("tests_id",data_tests_crypt_key)+" INTEGER NOT NULL, "+
+                   crypt->valueEncrypt("theme_id",data_tests_crypt_key)+" INTEGER NOT NULL, FOREIGN KEY ("+crypt->valueEncrypt("tests_id",data_tests_crypt_key)+") REFERENCES "+
+                   crypt->valueEncrypt("tests",data_tests_crypt_key)+"( "+crypt->valueEncrypt("id",data_tests_crypt_key)+"), FOREIGN KEY ("+
+                   crypt->valueEncrypt("theme_id",data_tests_crypt_key)+") REFERENCES "+crypt->valueEncrypt("questions",data_tests_crypt_key)+" ("+
+                   crypt->valueEncrypt("theme_id",data_tests_crypt_key)+"));");
     queries.append("CREATE VIEW "+crypt->valueEncrypt("vw_test_questions",questions_crypt_key)+
                    " AS SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+","+
                    crypt->mdEncrypt("theme_id",questions_crypt_key)+","+crypt->mdEncrypt("question",questions_crypt_key)
