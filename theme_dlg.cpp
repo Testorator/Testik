@@ -23,10 +23,13 @@ void theme_dlg::clear_PThemes()
 //
 QTreeWidgetItem* theme_dlg::getQTWItemByID(QString id)
 {
-    QTreeWidgetItem * result;
+    QTreeWidgetItem *result;
     QList<QTreeWidgetItem * > Items = ui->treeWidget_Themes->findItems(id,Qt::MatchExactly,1);
     if(Items.count() > 0){
         result = Items.at(0);
+    }
+    else{
+        result = ui->treeWidget_Themes->takeTopLevelItem(0);
     }
     return result;
 }
@@ -37,7 +40,8 @@ void theme_dlg::add_PTheme(QString item, QString itemID, QString parent_ID)
     QStringList newItem;
     newItem << item << itemID;
     bool hasParent = false;
-    if(!parent_ID.isNull() && !parent_ID.isEmpty() && parent_ID.trimmed().length() > 0){
+    if(!parent_ID.isNull() && !parent_ID.isEmpty() && parent_ID.trimmed().length() > 0 &&
+            QVariant(parent_ID).toInt() > 0){
         parentItem_QTWI = getQTWItemByID(parent_ID);
         if(parentItem_QTWI) hasParent = true;
     }
@@ -68,10 +72,12 @@ QString theme_dlg::get_ThemeName()
 //
 QString theme_dlg::get_PThemeID()
 {
-    QString result = 0;
+    QString result = "0";
     QTreeWidgetItem *curItem = ui->treeWidget_Themes->currentItem();
-    if(curItem) result = curItem->text(1).trimmed();
 
+    if(curItem){
+        result = curItem->text(1).trimmed();
+    }
     return result;
 }
 //

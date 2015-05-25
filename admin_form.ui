@@ -290,13 +290,13 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_Opt">
+      <widget class="QWidget" name="tab_EMail">
        <attribute name="icon">
         <iconset resource="res.qrc">
-         <normaloff>:/resourse/options</normaloff>:/resourse/options</iconset>
+         <normaloff>:/mail/email</normaloff>:/mail/email</iconset>
        </attribute>
        <attribute name="title">
-        <string>Options</string>
+        <string>EMail</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
@@ -314,15 +314,50 @@
             </property>
             <layout class="QGridLayout" name="gridLayout_11">
              <item row="0" column="0">
-              <layout class="QGridLayout" name="gridLayout_10">
-               <item row="1" column="0">
-                <widget class="QListWidget" name="listWidget_EMail_Recipients"/>
+              <layout class="QGridLayout" name="gridLayout_email">
+               <item row="1" column="0" colspan="2">
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
                </item>
-               <item row="0" column="0">
+               <item row="0" column="0" colspan="2">
                 <widget class="QLabel" name="label">
                  <property name="text">
                   <string>Recipients:</string>
                  </property>
+                </widget>
+               </item>
+               <item row="2" column="0" colspan="2">
+                <widget class="QTableWidget" name="tableWidget_email">
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
+                 </property>
+                 <property name="sortingEnabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="columnCount">
+                  <number>3</number>
+                 </property>
+                 <column>
+                  <property name="text">
+                   <string>Recipient name</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Address</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>id</string>
+                  </property>
+                 </column>
                 </widget>
                </item>
               </layout>
@@ -331,13 +366,6 @@
            </widget>
           </item>
          </layout>
-        </item>
-        <item row="1" column="0">
-         <widget class="QDialogButtonBox" name="buttonBox">
-          <property name="standardButtons">
-           <set>QDialogButtonBox::Save</set>
-          </property>
-         </widget>
         </item>
        </layout>
       </widget>
@@ -365,7 +393,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionChange_admin_password">
    <property name="icon">
-    <iconset resource="res.qrc">
+    <iconset>
      <normaloff>:/resourse/settings</normaloff>:/resourse/settings</iconset>
    </property>
    <property name="text">

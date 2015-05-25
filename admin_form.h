@@ -2,26 +2,23 @@
 #define ADMIN_FORM_H
 
 #include "change_admin_pw_dialog.h"
+#include "dbfunc.h"
 #include "stud_dlg.h"
 #include "theme_dlg.h"
-#include "dbfunc.h"
+#include "question_mod_dialog.h"
 
 #include <QApplication>
 #include <QMainWindow>
-#include <QtSql/QSqlDatabase>
-
-
 
 namespace Ui {
 class admin_form;
 }
 
-
-
 class admin_form : public QMainWindow
 {
     Q_OBJECT
-
+private:
+    sql_cl *sql;
 public:
     explicit admin_form(QWidget *parent = 0);
     ~admin_form();
@@ -43,26 +40,32 @@ private slots:
     void on_pushButton_DelDB_clicked();
     void on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int column);
     // questions
+
     void on_toolButton_Add_Quest_clicked();
+    void on_action_addQuest_triggered();
     void on_action_addTheme_triggered();
     void on_pushButton_Edit_Quest_clicked();
     void set_questions_buttons_availablity(QTreeWidgetItem *item);
+    void on_pushButton_Del_Quest_clicked();
+
+    // email
+    void on_groupBox_SendEMail_clicked();
+    void on_action_addAddr_triggered();
+    void on_action_editAddr_triggered();
+    void on_action_delAddr_trigered();
+    void on_action_SMTP_settings_triggered();
+    void on_tableWidget_email_clicked(const QModelIndex &index);
 
 private:
     Ui::admin_form *ui;
-    struct st_theme{
-        QString theme_parent_id;
-        QString theme_id;
-        QString theme_name;
-    };
+
     struct st_QTWI{
         QString parent_id;
         QTreeWidgetItem *qtwi;
     };
 
     QString DBPath = QApplication::applicationDirPath()+"/data/";
-    QSqlDatabase db;
-    QAction *act_addGroup, *act_addStud, *act_addTheme, *act_addQuest;
+    QAction *act_addGroup, *act_addStud, *act_addTheme, *act_addQuest, *addAddr, *editAddr, *delAddr, *SMTP_settings;
     void getDataBases();
     // students
     void getStudentsList();
@@ -73,6 +76,10 @@ private:
     QTreeWidget* get_curQTW(int q_type = -1);
     void getQuestionList(int q_type = -1);
     void prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString exclude_id = 0);
+    void prepareQuestDlg(question_mod_dialog *dlg);
+    // email
+    void clearEMailTable();
+    void getEMailAddrList();
 
 };
 

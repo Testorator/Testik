@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,10 +14,8 @@ TEMPLATE = app
 DESTDIR += ../Testik_bin
 
 SOURCES += main.cpp\
-        maxtest.cpp \
     test_results.cpp \
     test.cpp \
-    begin_first.cpp \
     third.cpp \
     second.cpp \
     admin_form.cpp \
@@ -27,12 +25,29 @@ SOURCES += main.cpp\
     question_mod_dialog.cpp \
     dbfunc.cpp \
     theme_dlg.cpp \
-    stud_dlg.cpp
+    stud_dlg.cpp \
+    encryption.cpp \
+    email.cpp \
+    email_dlg.cpp \
+    smtpclient/emailaddress.cpp \
+    smtpclient/mimeattachment.cpp \
+    smtpclient/mimecontentformatter.cpp \
+    smtpclient/mimefile.cpp \
+    smtpclient/mimehtml.cpp \
+    smtpclient/mimeinlinefile.cpp \
+    smtpclient/mimemessage.cpp \
+    smtpclient/mimemultipart.cpp \
+    smtpclient/mimepart.cpp \
+    smtpclient/mimetext.cpp \
+    smtpclient/quotedprintable.cpp \
+    smtpclient/smtpclient.cpp \
+    smtp_set.cpp \
+    answer_mod_dlg.cpp \
+    login_dlg.cpp
 
-HEADERS  += maxtest.h \
+HEADERS  += \
     test_results.h \
     test.h \
-    begin_first.h \
     third.h \
     second.h \
     admin_form.h \
@@ -42,21 +57,44 @@ HEADERS  += maxtest.h \
     question_mod_dialog.h \
     dbfunc.h \
     theme_dlg.h \
-    stud_dlg.h
+    stud_dlg.h \
+    encryption.h \
+    email.h \
+    email_dlg.h \
+    pub_struct.h \
+    smtpclient/emailaddress.h \
+    smtpclient/mimeattachment.h \
+    smtpclient/mimecontentformatter.h \
+    smtpclient/mimefile.h \
+    smtpclient/mimehtml.h \
+    smtpclient/mimeinlinefile.h \
+    smtpclient/mimemessage.h \
+    smtpclient/mimemultipart.h \
+    smtpclient/mimepart.h \
+    smtpclient/mimetext.h \
+    smtpclient/quotedprintable.h \
+    smtpclient/smtpclient.h \
+    smtpclient/smtpexports.h \
+    smtpclient/SmtpMime \
+    smtp_set.h \
+    answer_mod_dlg.h \
+    login_dlg.h
 
-FORMS    += maxtest.ui \
+FORMS    += \
     second.ui \
-    testendquestion.ui \
     test_results.ui \
     test.ui \
-    begin_first.ui \
     third.ui \
     admin_form.ui \
     test_help.ui \
     change_admin_pw_dialog.ui \
     question_mod_dialog.ui \
     theme_dlg.ui \
-    stud_dlg.ui
+    stud_dlg.ui \
+    email_dlg.ui \
+    smtp_set.ui \
+    answer_mod_dlg.ui \
+    login_dlg.ui
 
 DISTFILES += \
     muse.zip \
@@ -65,9 +103,11 @@ DISTFILES += \
     buglist.txt \
     drivers/win32/qsqlibase.dll \
     drivers/win32/qsqlibased.dll \
-    data/BLANK.QLT \
     drivers/mac_os_x64/libqsqlibase_debug.dylib \
-    drivers/mac_os_x64/libqsqlibase.dylib
+    drivers/mac_os_x64/libqsqlibase.dylib \
+    data/QSLITE_BLANK.QLT \
+    data/db_ddl.sql \
+    smtpclient/readme.txt
 
 RESOURCES += \
     res.qrc
