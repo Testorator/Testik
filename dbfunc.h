@@ -53,8 +53,8 @@ public:
     bool uniqStudent(const QString Surname, const QString Name, const QString Patronymic, QString grpId = 0, bool silent = 0);
     //
     QString convertTypeOfQuestions(int type);
-    QList<QMap<QString,QVariant> > getThemes();
-    QList<QMap<QString,QVariant> > getThemeChild(QVariant parent_id);
+    QList<st_theme> getThemes();
+    QList<st_theme> getThemeChild(QVariant parent_id);
     st_theme getThemeByID(QVariant theme_id);
     bool uniqTheme(const QString themeName, bool silent = 0);
     bool addTheme(st_theme *new_data);

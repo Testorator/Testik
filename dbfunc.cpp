@@ -267,16 +267,28 @@ st_theme sql_cl::getThemeByID(QVariant theme_id)
     return result;
 }
 //
-QList<QMap<QString, QVariant> > sql_cl::getThemes()
+QList<st_theme> sql_cl::getThemes()
 {
+    QList<st_theme> result;
+    result.clear();
     QString q_themes_crypted = crypt->mdEncrypt("q_themes",q_themes_crypt_key);
     QString q_themes_id_crypted = crypt->mdEncrypt("id",q_themes_crypt_key);
-    st_qRes result = SendSimpleQueryStrWR("SELECT "+q_themes_crypted+"."+q_themes_id_crypted+", "+
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+q_themes_crypted+"."+q_themes_id_crypted+", "+
                                           q_themes_crypted+"."+crypt->mdEncrypt("parent_id",q_themes_crypt_key)+", "+
                                           q_themes_crypted+"."+crypt->mdEncrypt("name",q_themes_crypt_key)+
                                           " FROM "+q_themes_crypted+" ORDER BY "+q_themes_crypted+"."+q_themes_id_crypted,
                                           q_themes_crypt_key);
-    return result.sel_data;
+
+    if(q_res.q_result){
+        for(int i=0; i < q_res.sel_data.count(); i++){
+            st_theme theme;
+            theme.id = q_res.sel_data.at(i)["id"].toString();
+            theme.parent_id = q_res.sel_data.at(i)["parent_id"].toString();
+            theme.name = q_res.sel_data.at(i)["name"].toString();
+            result.append(theme);
+        }
+    }
+    return result;
 }
 
 //
@@ -334,12 +346,24 @@ bool sql_cl::clearTheme(const QVariant theme_id)
 
 }
 //
-QList<QMap<QString, QVariant> > sql_cl::getThemeChild(QVariant parent_id)
+QList<st_theme> sql_cl::getThemeChild(QVariant parent_id)
 {
-    st_qRes result = SendSimpleQueryStrWR("SELECT * FROM "+crypt->valueEncrypt("q_themes",q_themes_crypt_key)+" WHERE "+
+    QList<st_theme> result;
+    result.clear();
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT * FROM "+crypt->valueEncrypt("q_themes",q_themes_crypt_key)+" WHERE "+
                                           crypt->valueEncrypt("parent_id",q_themes_crypt_key)+"="+parent_id.toString()+
                                           ";",q_themes_crypt_key);
-    return result.sel_data;
+    if(q_res.q_result){
+        for(int i=0; i<q_res.sel_data.count(); i++){
+            st_theme theme;
+            theme.id = q_res.sel_data.at(i)["id"].toString();
+            theme.parent_id = q_res.sel_data.at(i)["parent_id"].toString();
+            theme.name = q_res.sel_data.at(i)["name"].toString();
+            result.append(theme);
+        }
+    }
+
+    return result;
 }
 //
 bool sql_cl::addQuest(const QString questionName, QVariant for_learn, QString theme_id, QString ans_type, QString comment)
