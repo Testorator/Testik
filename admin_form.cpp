@@ -1,6 +1,7 @@
 #include "admin_form.h"
 #include "ui_admin_form.h"
 #include "change_admin_pw_dialog.h"
+#include "test_mod_dlg.h"
 #include "email.h"
 #include "email_dlg.h"
 #include "smtp_set.h"
@@ -120,6 +121,63 @@ void admin_form::getDataBases()
     this->setCursor(Qt::ArrowCursor);
 }
 //
+void admin_form::loadQuestions(QTreeWidget *curQTW, int q_type)
+{
+    curQTW->clear();
+    QList<st_theme> q_res = sql->getThemes(); // select themes from database
+    QList<st_QTWI> tmp_ThemeList;
+    if(q_res.count() > 0){
+        st_QTWI newitem_data; // create struct for saving theme data
+        for(int i = 0; i < q_res.count(); i++){
+            QStringList newItem_sl;
+            newItem_sl.append(q_res.at(i).name);
+            newItem_sl.append(q_res.at(i).id);
+            newItem_sl.append("t"); // set mark
+            newitem_data.parent_id = (q_res.at(i).parent_id.toInt() != 0) ? q_res.at(i).parent_id.trimmed(): ""; // save theme parent id
+            newitem_data.qtwi = new QTreeWidgetItem(newItem_sl); // create theme item
+
+            // add questions to theme
+            QList<QMap<QString,QVariant> > themeQuestions = sql->getQuestions(q_type,q_res.at(i).id);
+            if(themeQuestions.count()>0){ // if questions is found, then add founded questions to theme item
+                for(int q=0;q<themeQuestions.count();q++){
+                    QStringList newQuestion;
+                    newQuestion.append(themeQuestions.at(q)["question"].toString());
+                    newQuestion.append(themeQuestions.at(q)["id"].toString());
+                    newQuestion.append("q"); // set mark
+                    newitem_data.qtwi->addChild(new QTreeWidgetItem(newQuestion));
+                }
+            }
+
+            if(newitem_data.parent_id.trimmed().length() > 0){ // check for having parent for current theme
+                QList<QTreeWidgetItem *> parentItems = curQTW->findItems(newitem_data.parent_id,Qt::MatchExactly,1); // if parent exists, find him in tree
+                if(parentItems.count() > 0){
+                    parentItems.at(0)->addChild(newitem_data.qtwi); // if parent found, add current theme item to parent
+                }
+                else{
+                    tmp_ThemeList.append(newitem_data); // if parent not found, save current theme item to the temporery list
+                }
+            }
+            else{
+                curQTW->insertTopLevelItem(0,newitem_data.qtwi); // if theme without parent, add current theme item to the root of the tree
+            }
+        }
+        if(tmp_ThemeList.count() > 0){ // if temporary list is not empty then
+            for(int i=0;i<tmp_ThemeList.count();i++){
+                QList<QTreeWidgetItem *> parentItems = curQTW->findItems(tmp_ThemeList.at(i).parent_id,Qt::MatchExactly,1); // find parent for theme item from list
+                if(parentItems.count() > 0){
+                    parentItems.at(0)->addChild(newitem_data.qtwi); // if found parent for theme item from list, then add this theme item to parent
+                }
+                else{
+                    curQTW->insertTopLevelItem(0,newitem_data.qtwi); // if not found, then add theme item to the root of the tree
+                }
+            }
+        }
+    }
+    curQTW->setSortingEnabled(true);
+    curQTW->sortItems(0,Qt::AscendingOrder);
+}
+
+//
 // --- Database --- {{
 void admin_form::on_pushButton_AddDB_clicked()
 {
@@ -234,75 +292,21 @@ void admin_form::getQuestionList(int q_type)
 {
     this->setCursor(Qt::BusyCursor);
     QTreeWidget *curQTW = get_curQTW(q_type);
-
-    curQTW->clear();
-    QList<QMap<QString,QVariant> > q_res = sql->getThemes(); // select themes from database
-    QList<st_QTWI> tmp_ThemeList;
-    if(q_res.count() > 0){
-        st_QTWI newitem_data; // create struct for saving theme data
-        for(int i = 0; i < q_res.count(); i++){
-            QStringList newItem_sl;
-            newItem_sl.append(q_res.at(i)["name"].toString());
-            newItem_sl.append(q_res.at(i)["id"].toString());
-            newItem_sl.append("t"); // set mark
-            newitem_data.parent_id = (q_res.at(i)["parent_id"].toInt() != 0) ? q_res.at(i)["parent_id"].toString().trimmed(): ""; // save theme parent id
-            newitem_data.qtwi = new QTreeWidgetItem(newItem_sl); // create theme item
-
-            // add questions to theme
-            QList<QMap<QString,QVariant> > themeQuestions = sql->getQuestions(q_type,q_res.at(i)["id"].toString());
-            if(themeQuestions.count()>0){ // if questions is found, then add founded questions to theme item
-                for(int q=0;q<themeQuestions.count();q++){
-                    QStringList newQuestion;
-                    newQuestion.append(themeQuestions.at(q)["question"].toString());
-                    newQuestion.append(themeQuestions.at(q)["id"].toString());
-                    newQuestion.append("q"); // set mark
-                    newitem_data.qtwi->addChild(new QTreeWidgetItem(newQuestion));
-                }
-            }
-
-            if(newitem_data.parent_id.trimmed().length() > 0){ // check for having parent for current theme
-                QList<QTreeWidgetItem *> parentItems = curQTW->findItems(newitem_data.parent_id,Qt::MatchExactly,1); // if parent exists, find him in tree
-                if(parentItems.count() > 0){
-                    parentItems.at(0)->addChild(newitem_data.qtwi); // if parent found, add current theme item to parent
-                }
-                else{
-                    tmp_ThemeList.append(newitem_data); // if parent not found, save current theme item to the temporery list
-                }
-            }
-            else{
-                curQTW->insertTopLevelItem(0,newitem_data.qtwi); // if theme without parent, add current theme item to the root of the tree
-            }
-        }
-        if(tmp_ThemeList.count() > 0){ // if temporary list is not empty then
-            for(int i=0;i<tmp_ThemeList.count();i++){
-                QList<QTreeWidgetItem *> parentItems = curQTW->findItems(tmp_ThemeList.at(i).parent_id,Qt::MatchExactly,1); // find parent for theme item from list
-                if(parentItems.count() > 0){
-                    parentItems.at(0)->addChild(newitem_data.qtwi); // if found parent for theme item from list, then add this theme item to parent
-                }
-                else{
-                    curQTW->insertTopLevelItem(0,newitem_data.qtwi); // if not found, then add theme item to the root of the tree
-                }
-            }
-        }
-    }
-    curQTW->setSortingEnabled(true);
-    curQTW->sortItems(0,Qt::AscendingOrder);
+    loadQuestions(curQTW,q_type);
     this->setCursor(Qt::ArrowCursor);
 }
 //
 void admin_form::prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString exclude_id)
 {
-    QList<QMap<QString,QVariant> > q_res_themes = sql->getThemes();
+    QList<st_theme> q_res_themes = sql->getThemes();
     dlg->clear_PThemes();
     dlg->add_PTheme(tr("."),"0");
 
     if(q_res_themes.count() > 0){
 
         for(int i = 0;i < q_res_themes.count(); i++){
-            if(q_res_themes.at(i)["id"].toString() != exclude_id){
-                dlg->add_PTheme(q_res_themes.at(i)["name"].toString(),
-                        q_res_themes.at(i)["id"].toString(),
-                        q_res_themes.at(i)["parent_id"].toString());
+            if(q_res_themes.at(i).id != exclude_id){
+                dlg->add_PTheme(q_res_themes.at(i).name,q_res_themes.at(i).id,q_res_themes.at(i).parent_id);
             }
         }
     }
@@ -392,11 +396,11 @@ void admin_form::on_toolButton_Add_Quest_clicked()
 //
 void admin_form::prepareQuestDlg(question_mod_dialog *dlg)
 {
-    QList<QMap<QString,QVariant> > q_res_themes = sql->getThemes();
+    QList<st_theme> q_res_themes = sql->getThemes();
 
     if(q_res_themes.count() > 0){
         for(int i = 0;i < q_res_themes.count(); i++){
-            dlg->addThemeToList(q_res_themes.at(i)["name"].toString(),q_res_themes.at(i)["id"].toString());
+            dlg->addThemeToList(q_res_themes.at(i).name,q_res_themes.at(i).id);
         }
     }
 }
@@ -1016,13 +1020,18 @@ void admin_form::on_action_SMTP_settings_triggered()
 }
 
 //
-//  !!!! --- tab email --- !!!! {{
+//  !!!! --- tab email --- !!!! }}
+//  !!!! --- tab tests --- !!!! {{
+void admin_form::on_pushButton_createTest_clicked()
+{
+        this->setCursor(Qt::BusyCursor);
+    test_mod_dlg *dlg = new test_mod_dlg();
+    loadQuestions(dlg->takeTW_DBQ(),0);
 
-
-
-
-
-
-
-
-
+    if(dlg->exec()){
+        qDebug() << "Yahoo";
+    }
+    delete dlg;
+        this->setCursor(Qt::ArrowCursor);
+}
+//  !!!! --- tab tests --- !!!! }}

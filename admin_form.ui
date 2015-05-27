@@ -194,7 +194,7 @@
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_14">
           <item row="0" column="0">
-           <widget class="QTreeWidget" name="treeWidget_test_questions_2">
+           <widget class="QTreeWidget" name="treeWidget_tests">
             <attribute name="headerVisible">
              <bool>false</bool>
             </attribute>
@@ -218,14 +218,14 @@
           <item row="1" column="0">
            <layout class="QGridLayout" name="gridLayout_10">
             <item row="0" column="0">
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="pushButton_createTest">
               <property name="text">
-               <string>Add</string>
+               <string>Create</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QPushButton" name="pushButton_Edit_Quest_2">
+             <widget class="QPushButton" name="pushButton_EditTest">
               <property name="maximumSize">
                <size>
                 <width>157</width>
@@ -238,7 +238,7 @@
              </widget>
             </item>
             <item row="0" column="2">
-             <widget class="QPushButton" name="pushButton_Del_Quest_2">
+             <widget class="QPushButton" name="pushButton_DelTest">
               <property name="maximumSize">
                <size>
                 <width>158</width>

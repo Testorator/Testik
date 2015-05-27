@@ -1,17 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>test_create_dlg</class>
- <widget name="test_create_dlg" class="QDialog">
+ <class>test_mod_dlg</class>
+ <widget class="QDialog" name="test_mod_dlg">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>662</width>
+    <height>463</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="2">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="8" column="0" colspan="5">
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QToolButton" name="toolButton_addAll">
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>&gt;&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QToolButton" name="toolButton_addOne">
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <spacer name="verticalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="5" column="2">
+      <widget class="QToolButton" name="toolButton_remOne">
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>&lt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="5">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Test name:</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_9">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="0" column="0">
+           <widget class="QLineEdit" name="lineEdit_TestName"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <widget class="QToolButton" name="toolButton_remAll">
+       <property name="minimumSize">
+        <size>
+         <width>30</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>&lt;&lt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" rowspan="7" colspan="2">
+      <widget class="QGroupBox" name="groupBox_2">
+       <property name="title">
+        <string>Questions</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_10">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_7">
+          <item row="0" column="0">
+           <widget class="QTreeWidget" name="treeWidget_DBQuestions">
+            <property name="rootIsDecorated">
+             <bool>true</bool>
+            </property>
+            <attribute name="headerVisible">
+             <bool>false</bool>
+            </attribute>
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="7" column="2">
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="3" rowspan="7" colspan="2">
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="title">
+        <string>Questions included in test</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QTreeWidget" name="treeWidget_testQuestions">
+            <attribute name="headerVisible">
+             <bool>false</bool>
+            </attribute>
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

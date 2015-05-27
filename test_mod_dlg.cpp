@@ -1,14 +1,34 @@
-#include "test_create_dlg.h"
-#include "ui_test_create_dlg.h"
+#include "test_mod_dlg.h"
+#include "ui_test_mod_dlg.h"
 
-test_create_dlg::test_create_dlg(QWidget *parent) :
+test_mod_dlg::test_mod_dlg(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::test_create_dlg)
+    ui(new Ui::test_mod_dlg)
 {
     ui->setupUi(this);
 }
-
-test_create_dlg::~test_create_dlg()
+//
+test_mod_dlg::~test_mod_dlg()
 {
     delete ui;
+}
+//
+QTreeWidget* test_mod_dlg::takeTW_DBQ()
+{
+    return ui->treeWidget_DBQuestions;
+}
+//
+QTreeWidget* test_mod_dlg::takeTW_TQ()
+{
+    return ui->treeWidget_testQuestions;
+}
+//
+void test_mod_dlg::on_buttonBox_accepted()
+{
+    this->accept();
+}
+//
+void test_mod_dlg::on_buttonBox_rejected()
+{
+    this->reject();
 }

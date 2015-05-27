@@ -57,6 +57,8 @@ private slots:
     void on_action_SMTP_settings_triggered();
     void on_tableWidget_email_clicked(const QModelIndex &index);
 
+    void on_pushButton_createTest_clicked();
+
 private:
     Ui::admin_form *ui;
 
@@ -68,6 +70,7 @@ private:
     QString DBPath = QApplication::applicationDirPath()+"/data/";
     QAction *act_addGroup, *act_addStud, *act_addTheme, *act_addQuest, *addAddr, *editAddr, *delAddr, *SMTP_settings;
     void getDataBases();
+    void loadQuestions(QTreeWidget *curQTW, int q_type);
     // students
     void getStudentsList();
     void setAvailabilityOfItems(bool val);
