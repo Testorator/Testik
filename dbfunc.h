@@ -62,7 +62,7 @@ public:
     bool delTheme(const QVariant theme_id);
     bool clearTheme(const QVariant theme_id);
     //
-    QList<st_question> getQuestions(int questions_type, QString theme_id = 0); // FIXME: переделать чтобы возвращало QList<st_quesion>
+    QList<st_question> getQuestions(int questions_type, QString theme_id = 0);
     st_question getQuestionById(QVariant q_id);
     bool addQuest(const QString questionName, QVariant for_learn, QString theme_id, QString ans_type, QString comment);
     bool uniqQuestion(const QString questionName, bool silent = 0);
