@@ -23,7 +23,7 @@ struct st_theme{
     QString name;
 };
 
-struct st_quesion{
+struct st_question{
     QString id;
     QString theme_id;
     QString text;

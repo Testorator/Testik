@@ -137,12 +137,12 @@ void admin_form::loadQuestions(QTreeWidget *curQTW, int q_type)
             newitem_data.qtwi = new QTreeWidgetItem(newItem_sl); // create theme item
 
             // add questions to theme
-            QList<QMap<QString,QVariant> > themeQuestions = sql->getQuestions(q_type,q_res.at(i).id);
+            QList<st_question> themeQuestions = sql->getQuestions(q_type,q_res.at(i).id);
             if(themeQuestions.count()>0){ // if questions is found, then add founded questions to theme item
                 for(int q=0;q<themeQuestions.count();q++){
                     QStringList newQuestion;
-                    newQuestion.append(themeQuestions.at(q)["question"].toString());
-                    newQuestion.append(themeQuestions.at(q)["id"].toString());
+                    newQuestion.append(themeQuestions.at(q).text);
+                    newQuestion.append(themeQuestions.at(q).id);
                     newQuestion.append("q"); // set mark
                     newitem_data.qtwi->addChild(new QTreeWidgetItem(newQuestion));
                 }
@@ -469,7 +469,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
         question_mod_dialog queMD_dialog(this);
         prepareQuestDlg(&queMD_dialog);
         QTreeWidget *curQTW = get_curQTW();
-        st_quesion question_from_db;
+        st_question question_from_db;
         QList<st_answer> answers_from_db;
         if(curQTW->currentItem()){
             question_from_db = sql->getQuestionById(curQTW->currentItem()->text(1));
@@ -484,7 +484,7 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
 
         }
         if(queMD_dialog.exec()){
-            st_quesion new_question_data = queMD_dialog.getQuestionData();
+            st_question new_question_data = queMD_dialog.getQuestionData();
             new_question_data.id = question_from_db.id;
             bool q_updated = sql->updateQuestion(&new_question_data);
 

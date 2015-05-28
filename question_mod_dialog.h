@@ -35,7 +35,7 @@ public:
     bool uniqueAns();
     QList<st_answer> getAnswers();
     st_updAnswers getAnswers4Update();
-    st_quesion getQuestionData();
+    st_question getQuestionData();
 private:
     int lastIndexOfAnswersType;
     Ui::question_mod_dialog *ui;

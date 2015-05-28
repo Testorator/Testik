@@ -89,9 +89,9 @@ void question_mod_dialog::setAnswersType(int value)
     ui->comboBox_Type->setCurrentIndex(item_index);
 }
 //
-st_quesion question_mod_dialog::getQuestionData()
+st_question question_mod_dialog::getQuestionData()
 {
-    st_quesion result;
+    st_question result;
     result.theme_id = getQuestionTheme().toString();
     result.text = getQuestionText();
     result.ans_type = getAnswersType().toInt();

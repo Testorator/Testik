@@ -62,12 +62,12 @@ public:
     bool delTheme(const QVariant theme_id);
     bool clearTheme(const QVariant theme_id);
     //
-    QList<QMap<QString,QVariant> > getQuestions(int questions_type, QString theme_id = 0); // FIXME: переделать чтобы возвращало QList<st_quesion>
-    st_quesion getQuestionById(QVariant q_id);
+    QList<st_question> getQuestions(int questions_type, QString theme_id = 0); // FIXME: переделать чтобы возвращало QList<st_quesion>
+    st_question getQuestionById(QVariant q_id);
     bool addQuest(const QString questionName, QVariant for_learn, QString theme_id, QString ans_type, QString comment);
     bool uniqQuestion(const QString questionName, bool silent = 0);
     QVariant getQuestIdByNameAndType(QString questName, QVariant for_learn);
-    bool updateQuestion(st_quesion *new_data);
+    bool updateQuestion(st_question *new_data);
     //
     bool addAnswer(st_answer *answer);
     bool delAnswer(st_answer *data);

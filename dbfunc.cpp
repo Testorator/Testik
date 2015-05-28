@@ -76,20 +76,22 @@ bool sql_cl::createNewDB()
     queries.append("CREATE TABLE "+crypt->valueEncrypt("tests",tests_crypt_key)+" ("+
                    crypt->valueEncrypt("id",tests_crypt_key)+" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE , "+crypt->valueEncrypt("test_name",tests_crypt_key)+
                    "TEXT NOT NULL );");
-    queries.append("CREATE TABLE "+crypt->valueEncrypt("data_tests",data_tests_crypt_key)+" ("+crypt->valueEncrypt("tests_id",data_tests_crypt_key)+" INTEGER NOT NULL, "+
+    queries.append("CREATE TABLE "+crypt->valueEncrypt("tests_data",data_tests_crypt_key)+" ("+crypt->valueEncrypt("tests_id",data_tests_crypt_key)+" INTEGER NOT NULL, "+
                    crypt->valueEncrypt("theme_id",data_tests_crypt_key)+" INTEGER NOT NULL, FOREIGN KEY ("+crypt->valueEncrypt("tests_id",data_tests_crypt_key)+") REFERENCES "+
                    crypt->valueEncrypt("tests",data_tests_crypt_key)+"( "+crypt->valueEncrypt("id",data_tests_crypt_key)+"), FOREIGN KEY ("+
                    crypt->valueEncrypt("theme_id",data_tests_crypt_key)+") REFERENCES "+crypt->valueEncrypt("questions",data_tests_crypt_key)+" ("+
                    crypt->valueEncrypt("theme_id",data_tests_crypt_key)+"));");
     queries.append("CREATE VIEW "+crypt->valueEncrypt("vw_test_questions",questions_crypt_key)+
                    " AS SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+","+
-                   crypt->mdEncrypt("theme_id",questions_crypt_key)+","+crypt->mdEncrypt("question",questions_crypt_key)
-                   +" FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+" WHERE "+
-                   crypt->mdEncrypt("for_learn",questions_crypt_key)+" = "+crypt->valueEncrypt("0",questions_crypt_key)+";");
+                   crypt->mdEncrypt("theme_id",questions_crypt_key)+","+crypt->mdEncrypt("question",questions_crypt_key)+","+
+                   crypt->mdEncrypt("comment",questions_crypt_key)+","+crypt->mdEncrypt("answer_type",questions_crypt_key)+
+                   " FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+" WHERE "+crypt->mdEncrypt("for_learn",questions_crypt_key)+
+                   " = "+crypt->valueEncrypt("0",questions_crypt_key)+";");
     queries.append("CREATE VIEW "+crypt->valueEncrypt("vw_learn_questions",questions_crypt_key)+
                    " AS SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+","+crypt->mdEncrypt("theme_id",questions_crypt_key)+
-                   ","+crypt->mdEncrypt("question",questions_crypt_key)+" FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+
-                   " WHERE "+crypt->mdEncrypt("for_learn",questions_crypt_key)+" > "+crypt->valueEncrypt("0",questions_crypt_key)+" ;");
+                   ","+crypt->mdEncrypt("question",questions_crypt_key)+","+crypt->mdEncrypt("comment",questions_crypt_key)+","+
+                   crypt->mdEncrypt("answer_type",questions_crypt_key)+" FROM "+crypt->mdEncrypt("questions",questions_crypt_key)+
+                   " WHERE "+crypt->mdEncrypt("for_learn",questions_crypt_key)+" > "+crypt->valueEncrypt("0",questions_crypt_key)+";");
 
     for(int i=0; i<queries.count();i++){
         result = SendSimpleQueryStr(queries.at(i));
@@ -411,10 +413,12 @@ bool sql_cl::uniqQuestion(const QString questionName, bool silent)
     return result;
 }
 //
-QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString theme_id)
+QList<st_question> sql_cl::getQuestions(int questions_type, QString theme_id)
 {
-    QString condition = "";
+    QList<st_question> result;
+    result.clear();
 
+    QString condition = "";
     QString cur_view = "vw_"+convertTypeOfQuestions(questions_type)+"_questions";
     QString cur_view_crypted = crypt->mdEncrypt(cur_view,questions_crypt_key);
     QString fld_id_crypted = crypt->mdEncrypt("id",questions_crypt_key);
@@ -425,10 +429,22 @@ QList<QMap<QString, QVariant> > sql_cl::getQuestions(int questions_type, QString
         condition = " WHERE "+fld_theme_id_crypted+" = "+theme_id.trimmed()+" ";
     }
 
-    st_qRes result = SendSimpleQueryStrWR("SELECT "+fld_id_crypted+","+fld_theme_id_crypted+","+fld_question_crypted+
+    st_qRes q_res = SendSimpleQueryStrWR("SELECT "+fld_id_crypted+","+fld_theme_id_crypted+","+fld_question_crypted+
                                           " FROM "+cur_view_crypted+condition+"order by "+cur_view_crypted+"."+fld_id_crypted+
                                           ","+cur_view_crypted+"."+fld_question_crypted,questions_crypt_key);
-    return result.sel_data;
+    if(q_res.q_result){
+        for(int i = 0; i < q_res.sel_data.count(); i++){
+            st_question question;
+            question.id = q_res.sel_data.at(i)["id"].toString();
+            question.theme_id = q_res.sel_data.at(i)["theme_id"].toString();
+            question.text = q_res.sel_data.at(i)["question"].toString();
+            question.comment = q_res.sel_data.at(i)["comment"].toString();
+            question.ans_type = q_res.sel_data.at(i)["answer_type"].toInt();
+            result.append(question);
+        }
+    }
+
+    return result;
 }
 //
 QVariant sql_cl::getQuestIdByNameAndType(QString questName, QVariant for_learn)
@@ -449,9 +465,9 @@ QVariant sql_cl::getQuestIdByNameAndType(QString questName, QVariant for_learn)
     return result;
 }
 //
-st_quesion sql_cl::getQuestionById(QVariant q_id)
+st_question sql_cl::getQuestionById(QVariant q_id)
 {
-    st_quesion result;
+    st_question result;
 
     st_qRes q_res = SendSimpleQueryStrWR("SELECT "+crypt->mdEncrypt("id",questions_crypt_key)+","+crypt->mdEncrypt("theme_id",questions_crypt_key)+
                                          ","+crypt->mdEncrypt("question",questions_crypt_key)+","+crypt->mdEncrypt("answer_type",questions_crypt_key)+
@@ -468,12 +484,12 @@ st_quesion sql_cl::getQuestionById(QVariant q_id)
     return result;
 }
 //
-bool sql_cl::updateQuestion(st_quesion *new_data)
+bool sql_cl::updateQuestion(st_question *new_data)
 {
     bool result = false;
     bool upd = false;
     bool checkUniq = false;
-    st_quesion db_data = getQuestionById(new_data->id);
+    st_question db_data = getQuestionById(new_data->id);
     QString query_str = "UPDATE "+crypt->valueEncrypt("questions",questions_crypt_key)+" SET ";
     if(new_data->text != db_data.text){
         upd = true;
