@@ -270,13 +270,19 @@ void admin_form::on_listWidget_DB_clicked()
 }
 // --- Database --- }}
 // --- tab questions --- {{
+int admin_form::get_curQTW_index()
+{
+    return (ui->tabWidget_Questions->currentIndex()<2) ? ui->tabWidget_Questions->currentIndex() : 0;
+}
+
+//
 QTreeWidget* admin_form::get_curQTW(int q_type)
 {
     QTreeWidget *result;
     int question_Type = q_type;
 
     if(q_type == -1){
-        question_Type = (ui->tabWidget_Questions->currentIndex()<2) ? ui->tabWidget_Questions->currentIndex() : 0;
+        question_Type = get_curQTW_index();
     }
 
     if(question_Type == 0){
@@ -333,7 +339,6 @@ void admin_form::on_action_addTheme_triggered()
 {
     QTreeWidget *curQTW = get_curQTW();
 
-    // save last selection for Add button as "theme"
     ui->toolButton_Add_Quest->setText(tr("Add theme"));
     connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addTheme_triggered()));
 
@@ -360,8 +365,7 @@ void admin_form::on_action_addTheme_triggered()
 
             q_result = sql->addTheme(&new_data);
             if(q_result) {
-                getQuestionList(0);
-                getQuestionList(1);
+                getQuestionList(get_curQTW_index());
             }
         }
     }
@@ -409,87 +413,92 @@ void admin_form::on_action_addQuest_triggered()
 {
     ui->toolButton_Add_Quest->setText(tr("Add question"));
     connect(ui->toolButton_Add_Quest,SIGNAL(clicked()),this,SLOT(on_action_addQuest_triggered()));
-    question_mod_dialog queMD_dialog(this);
-    prepareQuestDlg(&queMD_dialog);
+    question_mod_dialog *queMD_dialog = new question_mod_dialog();
+    queMD_dialog->setWindowTitle(tr("Add question"));
+    prepareQuestDlg(queMD_dialog);
     QTreeWidget *curQTW = get_curQTW();
     if(curQTW->currentItem()){
-        queMD_dialog.setCurrentTheme(curQTW->currentItem()->text(1));
+        queMD_dialog->setCurrentTheme(curQTW->currentItem()->text(1));
     }
 
-    if(queMD_dialog.exec()){
-        QString quest_text = queMD_dialog.getQuestionText();
+    bool success = false;
+    if(queMD_dialog->exec()){
+        QString quest_text = queMD_dialog->getQuestionText();
         QString for_learn = QVariant(ui->tabWidget_Questions->currentIndex()).toString();
-        QString comment = queMD_dialog.getQuestionComment();
+        QString comment = queMD_dialog->getQuestionComment();
 
-        if(sql->addQuest(quest_text,for_learn,queMD_dialog.getQuestionTheme().toString(), queMD_dialog.getAnswersType().toString(), comment)){
+        if(sql->addQuest(quest_text,for_learn,queMD_dialog->getQuestionTheme().toString(), queMD_dialog->getAnswersType().toString(), comment)){
             QVariant q_id = sql->getQuestIdByNameAndType(quest_text,for_learn);
-            QList<st_answer> newAnswers = queMD_dialog.getAnswers();
+            QList<st_answer> newAnswers = queMD_dialog->getAnswers();
             for(int i=0; i<newAnswers.count(); i++){
                 st_answer new_answer = newAnswers.at(i);
                 new_answer.question_id = q_id.toString();
-                sql->addAnswer(&new_answer);
+                success = sql->addAnswer(&new_answer);
             }
         }
-        getQuestionList(0);
-        getQuestionList(1);
+    }
+    delete queMD_dialog;
+    if(success){
+        getQuestionList(get_curQTW_index());
     }
 }
 ////
 void admin_form::on_pushButton_Edit_Quest_clicked()
 {
     QTreeWidget *curQTW = get_curQTW();
+    bool success = false;
     if(curQTW->currentItem()->text(2) == "t"){
-        theme_dlg th_dlg(this);
-        th_dlg.setWindowTitle(tr("Edit theme"));
+        theme_dlg *th_dlg = new theme_dlg();
+        th_dlg->setWindowTitle(tr("Edit theme"));
 
-        prepareThemesDlg(&th_dlg,curQTW,curQTW->currentItem()->text(1).trimmed());
-        th_dlg.set_current_ThemeName(curQTW->currentItem()->text(0).trimmed());
+        prepareThemesDlg(th_dlg,curQTW,curQTW->currentItem()->text(1).trimmed());
+        th_dlg->set_current_ThemeName(curQTW->currentItem()->text(0).trimmed());
 
-        if(th_dlg.exec() == 1){
+        if(th_dlg->exec() == 1){
             QString new_themeName, PThemeID, upd_data;
-            new_themeName = th_dlg.get_ThemeName();
-            PThemeID = th_dlg.get_PThemeID();
+            new_themeName = th_dlg->get_ThemeName();
+            PThemeID = th_dlg->get_PThemeID();
             upd_data.clear();
             if(new_themeName.trimmed().length() > 0){
                 st_theme new_data;
                 new_data.id = curQTW->currentItem()->text(1).trimmed();
                 new_data.name = new_themeName.trimmed();
                 new_data.parent_id = (curQTW->currentItem()->parent()) ? curQTW->currentItem()->parent()->text(1).trimmed() : "0";
-
-                if(sql->updTheme(&new_data)){
-                    getQuestionList(0);
-                    getQuestionList(1);
-                }
+                success = sql->updTheme(&new_data);
             }
+        }
+        delete th_dlg;
+        if(success){
+            getQuestionList(0);
+            getQuestionList(1);
         }
     }
     else{
-        //        qDebug() << "edit question: " << curQTW->currentItem()->text(0);
-
-        question_mod_dialog queMD_dialog(this);
-        prepareQuestDlg(&queMD_dialog);
+        question_mod_dialog *queMD_dialog = new question_mod_dialog();
+        queMD_dialog->setWindowTitle(tr("Edit question"));
+        prepareQuestDlg(queMD_dialog);
         QTreeWidget *curQTW = get_curQTW();
         st_question question_from_db;
         QList<st_answer> answers_from_db;
         if(curQTW->currentItem()){
             question_from_db = sql->getQuestionById(curQTW->currentItem()->text(1));
-            queMD_dialog.setQuestionText(question_from_db.text);
-            queMD_dialog.setCurrentTheme(question_from_db.theme_id);
-            queMD_dialog.setQuestionComment(question_from_db.comment);
-            queMD_dialog.setAnswersType(question_from_db.ans_type);
+            queMD_dialog->setQuestionText(question_from_db.text);
+            queMD_dialog->setCurrentTheme(question_from_db.theme_id);
+            queMD_dialog->setQuestionComment(question_from_db.comment);
+            queMD_dialog->setAnswersType(question_from_db.ans_type);
 
             answers_from_db.clear();
             answers_from_db = sql->getAnswers(curQTW->currentItem()->text(1).trimmed());
-            queMD_dialog.loadAnswers(&answers_from_db);
+            queMD_dialog->loadAnswers(&answers_from_db);
 
         }
-        if(queMD_dialog.exec()){
-            st_question new_question_data = queMD_dialog.getQuestionData();
+        if(queMD_dialog->exec()){
+            st_question new_question_data = queMD_dialog->getQuestionData();
             new_question_data.id = question_from_db.id;
-            bool q_updated = sql->updateQuestion(&new_question_data);
+            success = sql->updateQuestion(&new_question_data);
 
-            st_updAnswers new_answers_data = queMD_dialog.getAnswers4Update();
-            QVariant q_id = sql->getQuestIdByNameAndType(queMD_dialog.getQuestionText(),QVariant(ui->tabWidget_Questions->currentIndex()).toString());
+            st_updAnswers new_answers_data = queMD_dialog->getAnswers4Update();
+            QVariant q_id = sql->getQuestIdByNameAndType(queMD_dialog->getQuestionText(),QVariant(ui->tabWidget_Questions->currentIndex()).toString());
 
             for(int i=0; i < new_answers_data.answers4remove.count(); i++){
                 st_answer answer4del;
@@ -510,11 +519,11 @@ void admin_form::on_pushButton_Edit_Quest_clicked()
                     sql->addAnswer(&curAnswer);
                 }
             }
-
-            if(q_updated){
-                getQuestionList(0);
-                getQuestionList(1);
-            }
+        }
+        delete queMD_dialog;
+        if(success){
+            getQuestionList(0);
+            getQuestionList(1);
         }
     }
 }
@@ -556,8 +565,8 @@ void admin_form::getStudentsList()
             for(int s = 0;s < q_res_stud.count(); s++){
                 student.clear();
                 student.append(q_res_stud.at(s).surname+" "+
-                        q_res_stud.at(s).name+" "+
-                        q_res_stud.at(s).patronymic);
+                               q_res_stud.at(s).name+" "+
+                               q_res_stud.at(s).patronymic);
                 student.append(q_res_stud.at(s).id);
                 QTreeWidgetItem *stud_item = new QTreeWidgetItem((QTreeWidget*)0,QStringList(student));
                 stud_item->setIcon(0,QIcon(":/stud/stud"));
@@ -1024,7 +1033,7 @@ void admin_form::on_action_SMTP_settings_triggered()
 //  !!!! --- tab tests --- !!!! {{
 void admin_form::on_pushButton_createTest_clicked()
 {
-        this->setCursor(Qt::BusyCursor);
+    this->setCursor(Qt::BusyCursor);
     test_mod_dlg *dlg = new test_mod_dlg();
     loadQuestions(dlg->takeTW_DBQ(),0);
 
@@ -1032,6 +1041,6 @@ void admin_form::on_pushButton_createTest_clicked()
         qDebug() << "Yahoo";
     }
     delete dlg;
-        this->setCursor(Qt::ArrowCursor);
+    this->setCursor(Qt::ArrowCursor);
 }
 //  !!!! --- tab tests --- !!!! }}

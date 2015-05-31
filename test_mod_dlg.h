@@ -22,6 +22,8 @@ private slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
 
+    void on_toolButton_addOne_clicked();
+
 private:
     Ui::test_mod_dlg *ui;
 };

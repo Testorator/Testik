@@ -41,14 +41,12 @@ private slots:
     void on_pushButton_DelDB_clicked();
     void on_treeWidget_students_itemClicked(QTreeWidgetItem *item, int column);
     // questions
-
     void on_toolButton_Add_Quest_clicked();
     void on_action_addQuest_triggered();
     void on_action_addTheme_triggered();
     void on_pushButton_Edit_Quest_clicked();
     void set_questions_buttons_availablity(QTreeWidgetItem *item);
     void on_pushButton_Del_Quest_clicked();
-
     // email
     void on_groupBox_SendEMail_clicked();
     void on_action_addAddr_triggered();
@@ -56,7 +54,7 @@ private slots:
     void on_action_delAddr_trigered();
     void on_action_SMTP_settings_triggered();
     void on_tableWidget_email_clicked(const QModelIndex &index);
-
+    // tests
     void on_pushButton_createTest_clicked();
 
 private:
@@ -77,6 +75,7 @@ private:
     bool prepareAddStudDlg(stud_dlg *dlg);
     bool sendStudData_toDB(QList<st_student> *data);
     // questions
+    int get_curQTW_index();
     QTreeWidget* get_curQTW(int q_type = -1);
     void getQuestionList(int q_type = -1);
     void prepareThemesDlg(theme_dlg *dlg, QTreeWidget *curQTW, QString exclude_id = 0);

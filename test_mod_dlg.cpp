@@ -1,5 +1,6 @@
 #include "test_mod_dlg.h"
 #include "ui_test_mod_dlg.h"
+#include <QMessageBox>
 
 test_mod_dlg::test_mod_dlg(QWidget *parent) :
     QDialog(parent),
@@ -31,4 +32,15 @@ void test_mod_dlg::on_buttonBox_accepted()
 void test_mod_dlg::on_buttonBox_rejected()
 {
     this->reject();
+}
+//
+void test_mod_dlg::on_toolButton_addOne_clicked()
+{
+    QTreeWidgetItem *curTWI = ui->treeWidget_DBQuestions->currentItem();
+    if(curTWI){
+        int x= 0;
+    }
+    else{
+        QMessageBox::information(this,tr("Information"),tr("Plrqse select question or theme, before adding"));
+    }
 }
